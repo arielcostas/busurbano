@@ -7,9 +7,9 @@
       "outputLocation": "dist",
       "apiLanguage": "dotnetisolated",
       "apiVersion": "8.0",
-      "appBuildCommand": "yarn build",
+      "appBuildCommand": "npm run build",
       "apiBuildCommand": "dotnet publish -c Release",
-      "run": "yarn dev",
+      "run": "npm run dev",
       "appDevserverUrl": "http://localhost:5173"
     }
   }
