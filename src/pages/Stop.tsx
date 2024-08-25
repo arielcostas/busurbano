@@ -19,7 +19,7 @@ interface StopDetails {
 export function Stop(): JSX.Element {
 	const params = useParams();
 
-	const { data, error, isLoading } = useSWR<StopDetails>('home', async () => {
+	const { data, error, isLoading } = useSWR<StopDetails>(`stop-${params.stopId}`, async () => {
 		let response;
 
 		try {
@@ -30,6 +30,15 @@ export function Stop(): JSX.Element {
 			throw new Error(`Failed to fetch data, status ${response!.status}, body: ${await response!.text()}`)
 		}
 	});
+
+	const absoluteArrivalTime = (minutes: number) => {
+		const now = new Date()
+		const arrival = new Date(now.getTime() + minutes * 60000)
+		return Intl.DateTimeFormat(navigator.language, {
+			hour: '2-digit',
+			minute: '2-digit'
+		}).format(arrival)
+	}
 
 	if (isLoading) return <h1>Loading...</h1>
 	if (error) return <h1>Error: {JSON.stringify(error)}</h1>
@@ -58,12 +67,23 @@ export function Stop(): JSX.Element {
 							<tr key={idx}>
 								<td>{estimate.line}</td>
 								<td>{estimate.route}</td>
-								<td>{estimate.minutes}</td>
-								<td>{estimate.meters}</td>
+								<td>
+									{estimate.minutes} ({absoluteArrivalTime(estimate.minutes)})
+								</td>
+								<td>
+									{estimate.meters > -1
+										? `${estimate.meters} metros`
+										: "No disponible"
+									}
+								</td>
 							</tr>
 						))}
 				</tbody>
 			</table>
+
+			<p>
+				<a href="/">Volver al inicio</a>
+			</p>
 		</>
 	)
 }
