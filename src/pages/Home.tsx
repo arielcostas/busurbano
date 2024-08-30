@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useSWR from "swr";
 
 interface Stop {
@@ -75,9 +75,9 @@ export function Home() {
 			<ul>
 				{data?.sort((a, b) => a.stopId - b.stopId).map((stop: Stop) => (
 					<li key={stop.stopId}>
-						<a href={`/${stop.stopId}`}>
+						<Link to={`/${stop.stopId}`}>
 							({stop.stopId}) {stop.name} - {stop.lines?.join(', ')}
-						</a>
+						</Link>
 					</li>
 				))}
 			</ul>
