@@ -10,20 +10,19 @@ interface Stop {
 }
 
 interface CachedStopList {
-	timetsamp: number;
+	timestamp: number;
 	data: Stop[];
 }
 
 export function Home() {
 	const navigate = useNavigate()
 	const { data, error, isLoading } = useSWR<Stop[]>('home', async () => {
-		const cachedData = localStorage.getItem('cachedStopList')
-		if (cachedData) {
-			const parsedData: CachedStopList = JSON.parse(cachedData)
+		const rawCachedData = localStorage.getItem('cachedStopList');
+		if (rawCachedData) {
+			const parsedData: CachedStopList = JSON.parse(rawCachedData)
 
 			// Cache for 12 hours
-			if (Date.now() - parsedData.timetsamp < 1000 * 60 * 60 * 12) {
-				console.log("parsed data: ", parsedData.data)
+			if (Date.now() - parsedData.timestamp < 1000 * 60 * 60 * 12) {
 				return parsedData.data
 			} else {
 				localStorage.removeItem('cachedStopList')
@@ -33,10 +32,12 @@ export function Home() {
 		const response = await fetch('/api/ListStops')
 		const body = await response.json();
 
-		localStorage.setItem('cachedStopList', JSON.stringify({
+		const cachedData: CachedStopList = {
 			timestamp: Date.now(),
 			data: body
-		}));
+		}
+
+		localStorage.setItem('cachedStopList', JSON.stringify(cachedData));
 		
 		return body;
 	});
