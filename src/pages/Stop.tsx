@@ -1,5 +1,6 @@
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import useSWR from "swr";
+import { StopDataProvider } from "../data/stopDataProvider";
 
 interface StopDetails {
 	stop: {
@@ -8,28 +9,33 @@ interface StopDetails {
 		latitude: number;
 		longitude: number;
 	}
-	estimates: [{
+	estimates: {
 		line: string;
 		route: string;
 		minutes: number;
 		meters: number;
-	}]
+	}[]
 }
 
 export function Stop(): JSX.Element {
+	const sdp = new StopDataProvider();
+	const [data, setData] = useState<StopDetails | null>(null);
+	const [favourited, setFavourited] = useState(false);
 	const params = useParams();
 
-	const { data, error, isLoading } = useSWR<StopDetails>(`stop-${params.stopId}`, async () => {
-		let response;
+	const loadData = () => {
+		fetch(`/api/GetStopEstimates?id=${params.stopId}`)
+			.then(r => r.json())
+			.then((body: StopDetails) => setData(body));
+	};
 
-		try {
-			response = await fetch(`/api/GetStopEstimates?id=${params.stopId}`)
-			return response.json()
-		} catch (error) {
-			console.error(error)
-			throw new Error(`Failed to fetch data, status ${response!.status}, body: ${await response!.text()}`)
-		}
-	});
+	useEffect(() => {
+		loadData();
+
+		setFavourited(
+			sdp.isFavourite(parseInt(params.stopId ?? ""))
+		);
+	})
 
 	const absoluteArrivalTime = (minutes: number) => {
 		const now = new Date()
@@ -40,9 +46,7 @@ export function Stop(): JSX.Element {
 		}).format(arrival)
 	}
 
-	if (isLoading) return <h1>Loading...</h1>
-	if (error) return <h1>Error: {JSON.stringify(error)}</h1>
-	if (data === undefined) return <h1>No data</h1>
+	if (data === null) return <h1>Cargando datos en tiempo real...</h1>
 
 	return (
 		<>
@@ -50,21 +54,31 @@ export function Stop(): JSX.Element {
 				<h1>{data?.stop.name} ({data?.stop.id})</h1>
 			</div>
 
-			<Link to="/">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					strokeWidth="2"
-					strokeLinecap="round"
-					strokeLinejoin="round"
-					style={{marginInlineEnd: '0.5em', width: '1em', height: '1em'}}
-				>
-					<path d="M19 12H5M12 19l-7-7 7-7" />
-				</svg>
-				Volver al listado de paradas
-			</Link>
+			<div style={{display: 'flex', gap: '1rem'}}>
+				<Link to="/" className="button">
+					🔙 Volver al listado de paradas
+				</Link>
+
+				{!favourited && (
+					<button type="button" onClick={() => {
+						sdp.addFavourite(parseInt(params.stopId ?? ""));
+						setFavourited(true);
+					}}>
+						⭐ Añadir a favoritos
+					</button>
+				)}
+
+				{favourited && (
+					<button type="button" onClick={() => {
+						sdp.removeFavourite(parseInt(params.stopId ?? ""));
+						setFavourited(false);
+					}}>
+						⭐Quitar de favoritos
+					</button>
+				)}
+
+				<button onClick={loadData}>⬇️ Recargar</button>
+			</div>
 
 			<table>
 				<caption>Estimaciones de llegadas</caption>
@@ -97,6 +111,14 @@ export function Stop(): JSX.Element {
 							</tr>
 						))}
 				</tbody>
+
+				{data?.estimates.length === 0 && (
+					<tfoot>
+						<tr>
+							<td colSpan={4}>No hay estimaciones disponibles</td>
+						</tr>
+					</tfoot>
+				)}
 			</table>
 
 			<p>

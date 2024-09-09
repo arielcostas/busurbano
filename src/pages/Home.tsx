@@ -1,46 +1,16 @@
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import useSWR from "swr";
+import { Stop, StopDataProvider } from "../data/stopDataProvider";
 
-interface Stop {
-	stopId: number
-	name: string;
-	latitude?: number;
-	longitude?: number;
-	lines: string[];
-}
-
-interface CachedStopList {
-	timestamp: number;
-	data: Stop[];
-}
+const sdp = new StopDataProvider();
 
 export function Home() {
-	const navigate = useNavigate()
-	const { data, error, isLoading } = useSWR<Stop[]>('home', async () => {
-		const rawCachedData = localStorage.getItem('cachedStopList');
-		if (rawCachedData) {
-			const parsedData: CachedStopList = JSON.parse(rawCachedData)
+	const [data, setData] = useState<Stop[] | null>(null)
+	const navigate = useNavigate();
 
-			// Cache for 12 hours
-			if (Date.now() - parsedData.timestamp < 1000 * 60 * 60 * 12) {
-				return parsedData.data
-			} else {
-				localStorage.removeItem('cachedStopList')
-			}
-		}
-
-		const response = await fetch('/api/ListStops')
-		const body = await response.json();
-
-		const cachedData: CachedStopList = {
-			timestamp: Date.now(),
-			data: body
-		}
-
-		localStorage.setItem('cachedStopList', JSON.stringify(cachedData));
-		
-		return body;
-	});
+	useEffect(() => {
+		sdp.getStops().then((stops: Stop[]) => setData(stops))
+	}, []);
 
 	const handleStopSearch = async (event: React.FormEvent) => {
 		event.preventDefault()
@@ -54,12 +24,15 @@ export function Home() {
 		}
 	}
 
-	if (isLoading) return <h1>Loading...</h1>
-	if (error) return <h1>Error</h1>
+	const favouritedStops = useMemo(() => {
+		return data?.filter(stop => stop.favourite) ?? []
+	}, [data])
+
+	if (data === null) return <h1>Loading...</h1>
 
 	return (
 		<>
-			<h1>Home</h1>
+			<h1>UrbanoVigo Web</h1>
 
 			<form action="none" onSubmit={handleStopSearch}>
 				<div>
@@ -71,6 +44,26 @@ export function Home() {
 
 				<button type="submit">Buscar</button>
 			</form>
+
+			<h2>Paradas favoritas</h2>
+
+			{favouritedStops?.length == 1 && (
+				<p>
+					Accede a una parada y márcala como favorita para verla aquí.
+				</p>
+			)}
+
+			<ul>
+				{favouritedStops?.sort((a, b) => a.stopId - b.stopId).map((stop: Stop) => (
+					<li key={stop.stopId}>
+						<Link to={`/${stop.stopId}`}>
+							({stop.stopId}) {stop.name} - {stop.lines?.join(', ')}
+						</Link>
+					</li>
+				))}
+			</ul>
+
+			<h2>Paradas</h2>
 
 			<ul>
 				{data?.sort((a, b) => a.stopId - b.stopId).map((stop: Stop) => (
