@@ -75,7 +75,8 @@ export class StopDataProvider {
 		recentStops.add(stopId);
 		if (recentStops.size > this.RECENT_STOPS_LIMIT) {
 			const iterator = recentStops.values();
-			recentStops.delete(iterator.next().value);
+			const val = iterator.next().value as number;
+			recentStops.delete(val);
 		}
 
 		localStorage.setItem('recentStops', JSON.stringify(Array.from(recentStops)));
