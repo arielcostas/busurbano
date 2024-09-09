@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Stop, StopDataProvider } from "../data/stopDataProvider";
+import { Stop, StopDataProvider } from "../data/StopDataProvider";
 
 const sdp = new StopDataProvider();
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { StopDataProvider } from "../data/stopDataProvider";
+import { StopDataProvider } from "../data/StopDataProvider";
 
 interface StopDetails {
 	stop: {
