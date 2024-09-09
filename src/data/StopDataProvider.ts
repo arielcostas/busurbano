@@ -62,4 +62,30 @@ export class StopDataProvider {
 		}
 		return false;
 	}
+
+	RECENT_STOPS_LIMIT = 10;
+
+	pushRecent(stopId: number) {
+		const rawRecentStops = localStorage.getItem('recentStops');
+		let recentStops: Set<number> = new Set();
+		if (rawRecentStops) {
+			recentStops = new Set(JSON.parse(rawRecentStops) as number[]);
+		}
+
+		recentStops.add(stopId);
+		if (recentStops.size > this.RECENT_STOPS_LIMIT) {
+			const iterator = recentStops.values();
+			recentStops.delete(iterator.next().value);
+		}
+
+		localStorage.setItem('recentStops', JSON.stringify(Array.from(recentStops)));
+	}
+
+	getRecent(): number[] {
+		const rawRecentStops = localStorage.getItem('recentStops');
+		if (rawRecentStops) {
+			return JSON.parse(rawRecentStops) as number[];
+		}
+		return [];
+	}
 }

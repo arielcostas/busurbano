@@ -28,6 +28,14 @@ export function Home() {
 		return data?.filter(stop => stop.favourite) ?? []
 	}, [data])
 
+	const recentStops = useMemo(() => {
+		const recent = sdp.getRecent();
+
+		if (recent.length === 0) return null;
+		
+		return recent.map(stopId => data?.find(stop => stop.stopId === stopId) as Stop).reverse();
+	}, [data])
+
 	if (data === null) return <h1>Loading...</h1>
 
 	return (
@@ -55,6 +63,18 @@ export function Home() {
 
 			<ul>
 				{favouritedStops?.sort((a, b) => a.stopId - b.stopId).map((stop: Stop) => (
+					<li key={stop.stopId}>
+						<Link to={`/${stop.stopId}`}>
+							({stop.stopId}) {stop.name} - {stop.lines?.join(', ')}
+						</Link>
+					</li>
+				))}
+			</ul>
+
+			<h2>Recientes</h2>
+
+			<ul>
+				{recentStops?.map((stop: Stop) => (
 					<li key={stop.stopId}>
 						<Link to={`/${stop.stopId}`}>
 							({stop.stopId}) {stop.name} - {stop.lines?.join(', ')}

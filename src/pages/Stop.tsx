@@ -32,6 +32,8 @@ export function Stop(): JSX.Element {
 	useEffect(() => {
 		loadData();
 
+		sdp.pushRecent(parseInt(params.stopId ?? ""));
+
 		setFavourited(
 			sdp.isFavourite(parseInt(params.stopId ?? ""))
 		);
