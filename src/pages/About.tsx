@@ -1,24 +1,9 @@
 import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTheme } from "../ThemeContext";
 
 export function About() {
-    const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-            return savedTheme as 'light' | 'dark';
-        }
-        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        return prefersDark ? 'dark' : 'light';
-    });
-
-    useEffect(() => {
-        document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('theme', theme);
-    }, [theme]);
-
-    const toggleTheme = () => {
-        setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
-    };
+    const {theme, toggleTheme} = useTheme();
 
     return (
         <div className="about-page">
