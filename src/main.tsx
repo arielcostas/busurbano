@@ -7,7 +7,7 @@ import { StopList } from './pages/StopList.tsx'
 import { Estimates } from './pages/Estimates.tsx'
 import { StopMap } from './pages/Map.tsx'
 import { Layout } from './Layout.tsx'
-import { About } from './pages/About.tsx'
+import { Settings } from './pages/Settings.tsx'
 import { AppProvider } from './AppContext.tsx'
 import ErrorBoundary from './ErrorBoundary'
 
@@ -29,8 +29,8 @@ const router = createBrowserRouter([
     element: <Layout><Estimates /></Layout>
   },
   {
-    path: '/about',
-    element: <Layout><About /></Layout>
+    path: '/settings',
+    element: <Layout><Settings /></Layout>
   }
 ])
 

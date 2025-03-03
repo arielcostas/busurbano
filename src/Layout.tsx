@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { Link, useLocation } from 'react-router';
-import { MapPin, Map, Info } from 'lucide-react';
+import { MapPin, Map, Settings } from 'lucide-react';
 import './Layout.css';
 
 interface LayoutProps {
@@ -22,9 +22,9 @@ export function Layout({ children }: LayoutProps) {
       path: '/map'
     },
     {
-      name: 'Acerca de',
-      icon: Info,
-      path: '/about'
+      name: 'Ajustes',
+      icon: Settings,
+      path: '/settings'
     }
   ];
 

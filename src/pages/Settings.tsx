@@ -1,8 +1,7 @@
-import { List, Moon, Sun, Table, Table2, TableCellsMerge, TableColumnsSplit } from "lucide-react";
 import { useApp } from "../AppContext";
-import "../styles/About.css";
+import "../styles/Settings.css";
 
-export function About() {
+export function Settings() {
     const { theme, setTheme, tableStyle, setTableStyle } = useApp();
 
     return (
@@ -16,14 +15,16 @@ export function About() {
                 <h2>Ajustes</h2>
                 <div className="settings-content-inline">
                     <label htmlFor="theme" className="form-label-inline">Modo:</label>
-                    <select id="theme" className="form-select-inline" value={theme} onChange={(e) => setTheme(e.target.value)}>
+                    <select id="theme" className="form-select-inline" value={theme} onChange={(e) => setTheme(e.target.value as "light" | "dark")}
+                        style={{ backgroundColor: theme === "dark" ? "#333" : "#fff", color: theme === "dark" ? "#fff" : "#000" }}>
                         <option value="light">Claro</option>
                         <option value="dark">Oscuro</option>
                     </select>
                 </div>
                 <div className="settings-content-inline">
                     <label htmlFor="tableStyle" className="form-label-inline">Estilo de tabla:</label>
-                    <select id="tableStyle" className="form-select-inline" value={tableStyle} onChange={(e) => setTableStyle(e.target.value)}>
+                    <select id="tableStyle" className="form-select-inline" value={tableStyle} onChange={(e) => setTableStyle(e.target.value as "regular" | "grouped")}
+                        style={{ backgroundColor: theme === "dark" ? "#333" : "#fff", color: theme === "dark" ? "#fff" : "#000" }}>
                         <option value="regular">Mostrar por orden</option>
                         <option value="grouped">Agrupar por línea</option>
                     </select>
@@ -43,16 +44,16 @@ export function About() {
             </section>
             <h2>Créditos</h2>
             <p>
-                <a href="https://github.com/arielcostas/urbanovigo-web" className="about-link">
+                <a href="https://github.com/arielcostas/urbanovigo-web" className="about-link" style={{ color: theme === "dark" ? "#bbb" : "#000" }}>
                     Código en GitHub
                 </a> -
-                Desarrollado por <a href="https://www.costas.dev" className="about-link">
+                Desarrollado por <a href="https://www.costas.dev" className="about-link" style={{ color: theme === "dark" ? "#bbb" : "#000" }}>
                     Ariel Costas
                 </a>
             </p>
             <p>
-                Datos obtenidos de <a href="https://datos.vigo.org">datos.vigo.org</a> bajo
-                licencia <a href="https://opendefinition.org/licenses/odc-by/">Open Data Commons Attribution License</a>
+                Datos obtenidos de <a href="https://datos.vigo.org" style={{ color: theme === "dark" ? "#bbb" : "#000" }}>datos.vigo.org</a> bajo
+                licencia <a href="https://opendefinition.org/licenses/odc-by/" style={{ color: theme === "dark" ? "#bbb" : "#000" }}>Open Data Commons Attribution License</a>
             </p>
         </div>
     )
