@@ -1,6 +1,6 @@
 {
 	"$schema": "https://raw.githubusercontent.com/SchemaStore/schemastore/refs/heads/master/src/schemas/json/web-manifest.json",
-	"id": "https://busurbano.costas.dev",
+	"id": "https://busurbano.costas.dev/",
 	"name": "UrbanoVigo Web",
 	"description": "Aplicación web para encontrar paradas y tiempos de llegada de los autobuses urbanos de Vigo, España.",
 	"short_name": "UrbanoVigo",

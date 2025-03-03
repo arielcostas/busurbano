@@ -116,10 +116,6 @@ body {
   border-bottom: 1px solid var(--border-color);
 }
 
-.list-item:last-child {
-  border-bottom: none;
-}
-
 .list-item-link {
   display: block;
   color: var(--text-color);
