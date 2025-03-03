@@ -1,11 +1,13 @@
 import { JSX, useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { StopDataProvider } from "../data/StopDataProvider";
-import LineIcon from "../components/LineIcon";
 import { Star } from 'lucide-react';
 import "../styles/Estimates.css";
+import { RegularTable } from "../components/RegularTable";
+import { useApp } from "../AppContext";
+import { GroupedTable } from "../components/GroupedTable";
 
-interface StopDetails {
+export interface StopDetails {
 	stop: {
 		id: number;
 		name: string;
@@ -32,6 +34,7 @@ export function Estimates(): JSX.Element {
 	const [dataDate, setDataDate] = useState<Date | null>(null);
 	const [favourited, setFavourited] = useState(false);
 	const params = useParams();
+	const { tableStyle } = useApp();
 
 	useEffect(() => {
 		loadData(params.stopId!)
@@ -48,22 +51,6 @@ export function Estimates(): JSX.Element {
 		);
 	}, [params.stopId]);
 
-	const absoluteArrivalTime = (minutes: number) => {
-		const now = new Date()
-		const arrival = new Date(now.getTime() + minutes * 60000)
-		return Intl.DateTimeFormat(navigator.language, {
-			hour: '2-digit',
-			minute: '2-digit'
-		}).format(arrival)
-	}
-
-	const formatDistance = (meters: number) => {
-		if (meters > 1024) {
-			return `${(meters / 1000).toFixed(1)} km`;
-		} else {
-			return `${meters} m`;
-		}
-	}
 
 	const toggleFavourite = () => {
 		if (favourited) {
@@ -87,48 +74,9 @@ export function Estimates(): JSX.Element {
 			</div>
 
 			<div className="table-responsive">
-				<table className="table">
-					<caption>Estimaciones de llegadas a las {dataDate?.toLocaleTimeString()}</caption>
-
-					<thead>
-						<tr>
-							<th>Línea</th>
-							<th>Ruta</th>
-							<th>Minutos</th>
-							<th>Metros</th>
-						</tr>
-					</thead>
-
-					<tbody>
-						{data.estimates
-							.sort((a, b) => a.minutes - b.minutes)
-							.map((estimate, idx) => (
-								<tr key={idx}>
-									<td><LineIcon line={estimate.line} /></td>
-									<td>{estimate.route}</td>
-									<td>
-										{estimate.minutes > 15
-											? absoluteArrivalTime(estimate.minutes)
-											: `${estimate.minutes} min`}
-									</td>
-									<td>
-										{estimate.meters > -1
-											? formatDistance(estimate.meters)
-											: "No disponible"
-										}
-									</td>
-								</tr>
-							))}
-					</tbody>
-
-					{data?.estimates.length === 0 && (
-						<tfoot>
-							<tr>
-								<td colSpan={4}>No hay estimaciones disponibles</td>
-							</tr>
-						</tfoot>
-					)}
-				</table>
+				{tableStyle === 'grouped' ?
+					<GroupedTable data={data} dataDate={dataDate} /> :
+					<RegularTable data={data} dataDate={dataDate} />}
 			</div>
 		</div>
 	)
