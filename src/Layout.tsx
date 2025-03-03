@@ -1,7 +1,6 @@
 import { ReactNode } from 'react';
 import { Link, useLocation } from 'react-router';
 import { MapPin, Map, Info } from 'lucide-react';
-import { useTheme } from './ThemeContext';
 import './Layout.css';
 
 interface LayoutProps {

@@ -8,7 +8,15 @@ import LineIcon from '../components/LineIcon';
 import { Link } from 'react-router';
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-markercluster";
-import { LatLngTuple } from "leaflet";
+import { Icon, LatLngTuple } from "leaflet";
+
+const icon = new Icon({
+	iconUrl: '/map-pin-icon.png',
+	iconSize: [25, 41],
+	iconAnchor: [12, 41],
+	popupAnchor: [1, -34],
+	shadowSize: [41, 41]
+});
 
 const sdp = new StopDataProvider();
 
@@ -28,7 +36,7 @@ export function StopMap() {
 			/>
 			<MarkerClusterGroup>
 				{stops.map((stop) => (
-					<Marker key={stop.stopId} position={[stop.latitude, stop.longitude] as LatLngTuple}>
+					<Marker key={stop.stopId} position={[stop.latitude, stop.longitude] as LatLngTuple} icon={icon}>
 						<Popup>
 							<Link to={`/estimates/${stop.stopId}`}>{stop.name}</Link>
 							<br />
