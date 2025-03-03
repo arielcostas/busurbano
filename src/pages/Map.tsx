@@ -9,6 +9,7 @@ import { Link } from 'react-router';
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import { Icon, LatLngTuple } from "leaflet";
+import { LocateControl } from "../controls/LocateControl";
 
 const icon = new Icon({
 	iconUrl: '/map-pin-icon.png',
@@ -34,6 +35,7 @@ export function StopMap() {
 				attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>'
 				url="https://d.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png"
 			/>
+			<LocateControl />
 			<MarkerClusterGroup>
 				{stops.map((stop) => (
 					<Marker key={stop.stopId} position={[stop.latitude, stop.longitude] as LatLngTuple} icon={icon}>
