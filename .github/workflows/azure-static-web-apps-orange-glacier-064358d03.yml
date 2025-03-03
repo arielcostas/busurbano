@@ -15,13 +15,12 @@ jobs:
         with:
           submodules: true
           lfs: false
-      - name: Remove package-lock.json
-        run: rm package-lock.json
-      - uses: actions/setup-node@v4.0.3
+      - uses: actions/setup-node@v4.2.0
         with:
-          node-version: '20'
+          node-version: '22'
+          cache: 'npm'
       - name: Install dependencies
-        run: yarn
+        run: npm ci
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
