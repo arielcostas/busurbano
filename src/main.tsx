@@ -8,6 +8,8 @@ import { Estimates } from './pages/Estimates.tsx'
 import { StopMap } from './pages/Map.tsx'
 import { Layout } from './Layout.tsx'
 import { About } from './pages/About.tsx'
+import { ThemeProvider } from './ThemeContext'
+import ErrorBoundary from './ErrorBoundary'
 
 const router = createBrowserRouter([
   {
@@ -33,5 +35,9 @@ const router = createBrowserRouter([
 ])
 
 createRoot(document.getElementById('root')!).render(
-  <RouterProvider router={router} />,
+  <ErrorBoundary>
+    <ThemeProvider>
+      <RouterProvider router={router} />
+    </ThemeProvider>
+  </ErrorBoundary>
 )

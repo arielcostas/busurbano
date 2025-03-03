@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { Link, useLocation } from 'react-router';
 import { MapPin, Map, Info } from 'lucide-react';
+import { useTheme } from './ThemeContext';
 import './Layout.css';
 
 interface LayoutProps {
@@ -30,17 +31,14 @@ export function Layout({ children }: LayoutProps) {
 
   return (
     <div className="app-container">
-      {/* Main content area */}
       <main className="main-content">
         {children}
       </main>
-      
-      {/* Android style bottom navigation bar */}
       <nav className="nav-bar">
         {navItems.map(item => {
           const Icon = item.icon;
           const isActive = location.pathname.startsWith(item.path);
-          
+
           return (
             <Link 
               key={item.name}
