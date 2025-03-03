@@ -23,13 +23,17 @@ interface StopDetails {
 export function Estimates(): JSX.Element {
 	const sdp = new StopDataProvider();
 	const [data, setData] = useState<StopDetails | null>(null);
+	const [dataDate, setDataDate] = useState<Date | null>(null);
 	const [favourited, setFavourited] = useState(false);
 	const params = useParams();
 
 	const loadData = () => {
 		fetch(`/api/GetStopEstimates?id=${params.stopId}`)
 			.then(r => r.json())
-			.then((body: StopDetails) => setData(body));
+			.then((body: StopDetails) => {
+				setData(body);
+				setDataDate(new Date());
+			});
 	};
 
 	useEffect(() => {
@@ -80,17 +84,9 @@ export function Estimates(): JSX.Element {
 				</h1>
 			</div>
 
-			<div className="button-group">
-				<Link to="/stops" className="button">
-					🔙 Volver al listado de paradas
-				</Link>
-
-				<button className="button" onClick={loadData}>⬇️ Recargar</button>
-			</div>
-
 			<div className="table-responsive">
 				<table className="table">
-					<caption>Estimaciones de llegadas</caption>
+					<caption>Estimaciones de llegadas a las {dataDate?.toLocaleTimeString()}</caption>
 
 					<thead>
 						<tr>
