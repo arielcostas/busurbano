@@ -1,16 +1,49 @@
+:root {
+  --background-color: #ffffff;
+  --text-color: #333333;
+  --subtitle-color: #444444;
+  --border-color: #eeeeee;
+  --button-background-color: #007bff;
+  --button-hover-background-color: #0069d9;
+  --button-disabled-background-color: #cccccc;
+  --star-color: #ffcc00;
+  --message-background-color: #f8f9fa;
+
+  font-family: 'Outfit Variable', Roboto, Arial, sans-serif;
+}
+
+[data-theme='dark'] {
+  --background-color: #121212;
+  --text-color: #ffffff;
+  --subtitle-color: #bbbbbb;
+  --border-color: #444444;
+  --button-background-color: #1e88e5;
+  --button-hover-background-color: #1565c0;
+  --button-disabled-background-color: #555555;
+  --star-color: #ffcc00;
+  --message-background-color: #333333;
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
 /* Mobile-first page styles */
 
 /* Common page styles */
 .page-container {
   max-width: 100%;
   padding: 0 16px;
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
 
 .page-title {
   font-size: 1.8rem;
   margin-bottom: 1rem;
   font-weight: 600;
-  color: #333;
+  color: var(--text-color);
 }
 
 .page-subtitle {
@@ -18,7 +51,7 @@
   margin-top: 1.5rem;
   margin-bottom: 0.75rem;
   font-weight: 500;
-  color: #444;
+  color: var(--subtitle-color);
 }
 
 /* Form styles */
@@ -41,13 +74,13 @@
 .form-input {
   padding: 0.75rem;
   font-size: 1rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
 }
 
 .form-button {
   padding: 0.75rem 1rem;
-  background-color: #007bff;
+  background-color: var(--button-background-color);
   color: white;
   border: none;
   border-radius: 8px;
@@ -59,7 +92,7 @@
 }
 
 .form-button:hover {
-  background-color: #0069d9;
+  background-color: var(--button-hover-background-color);
 }
 
 /* List styles */
@@ -75,7 +108,7 @@
 
 .list-item {
   padding: 1rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .list-item:last-child {
@@ -84,23 +117,23 @@
 
 .list-item-link {
   display: block;
-  color: #333;
+  color: var(--text-color);
   text-decoration: none;
   font-size: 1.1rem; /* Increased font size for stop name */
 }
 
 .list-item-link:hover {
-  color: #007bff;
+  color: var(--button-background-color);
 }
 
 .list-item-link:hover .line-icon {
-    color: #333;
-  }
+  color: var(--text-color);
+}
 
 /* Message styles */
 .message {
   padding: 1rem;
-  background-color: #f8f9fa;
+  background-color: var(--message-background-color);
   border-radius: 8px;
   margin-bottom: 1rem;
 }
@@ -112,7 +145,7 @@
 }
 
 .about-version {
-  color: #666;
+  color: var(--subtitle-color);
   font-size: 0.9rem;
   margin-top: 2rem;
 }
@@ -138,7 +171,7 @@
 
 .estimates-stop-id {
   font-size: 1rem;
-  color: #666;
+  color: var(--subtitle-color);
   margin-left: 0.5rem;
 }
 
@@ -160,7 +193,7 @@
 
 .button {
   padding: 0.75rem 1rem;
-  background-color: #007bff;
+  background-color: var(--button-background-color);
   color: white;
   border: none;
   border-radius: 8px;
@@ -173,11 +206,11 @@
 }
 
 .button:hover {
-  background-color: #0069d9;
+  background-color: var(--button-hover-background-color);
 }
 
 .button:disabled {
-  background-color: #cccccc;
+  background-color: var(--button-disabled-background-color);
   cursor: not-allowed;
 }
 
@@ -188,8 +221,8 @@
 }
 
 .star-icon.active {
-  color: #ffcc00; /* Yellow color for active star */
-  fill: #ffcc00;
+  color: var(--star-color); /* Yellow color for active star */
+  fill: var(--star-color);
 }
 
 /* Tablet and larger breakpoint */
@@ -227,7 +260,7 @@
   }
   
   .list-item {
-    border: 1px solid #eee;
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     margin-bottom: 0;
   }

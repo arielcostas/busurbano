@@ -5,6 +5,18 @@ import Fuse from "fuse.js";
 
 const sdp = new StopDataProvider();
 
+const placeholders = [
+  "Urzaiz",
+  "Gran Vía",
+  "Castelao",
+  "García Barbón",
+  "Valladares",
+  "Florida",
+  "Pizarro",
+  "Estrada Madrid",
+  "Sanjurjo Badía"
+];
+
 export function StopList() {
 	const [data, setData] = useState<Stop[] | null>(null)
 	const [searchResults, setSearchResults] = useState<Stop[] | null>(null);
@@ -36,6 +48,8 @@ export function StopList() {
 
 	if (data === null) return <h1 className="page-title">Loading...</h1>
 
+	const randomPlaceholder = placeholders[Math.floor(Math.random() * placeholders.length)];
+
 	return (
 		<div className="page-container">
 			<h1 className="page-title">UrbanoVigo Web</h1>
@@ -43,9 +57,9 @@ export function StopList() {
 			<form className="search-form">
 				<div className="form-group">
 					<label className="form-label" htmlFor="stopName">
-						Nombre de la parada
+						Buscar paradas
 					</label>
-					<input className="form-input" type="text" placeholder="Nombre de la parada" id="stopName" onChange={handleStopSearch} />
+					<input className="form-input" type="text" placeholder={randomPlaceholder} id="stopName" onChange={handleStopSearch} />
 				</div>
 			</form>
 

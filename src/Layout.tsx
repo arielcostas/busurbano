@@ -9,20 +9,20 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   const location = useLocation();
-  
+
   const navItems = [
     {
-      name: 'Stops',
+      name: 'Paradas',
       icon: MapPin,
       path: '/stops'
     },
     {
-      name: 'Maps',
+      name: 'Mapa',
       icon: Map,
       path: '/map'
     },
     {
-      name: 'About',
+      name: 'Acerca de',
       icon: Info,
       path: '/about'
     }
