@@ -1,18 +1,37 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" href="/favicon.ico" />
-    <link rel="icon" type="image/jpg" href="/logo-512.jpg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8" />
 
-    <title>UrbanoVigo Web</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+  <title>UrbanoVigo Web</title>
+
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="icon" type="image/jpg" href="/logo-512.jpg" />
+  <link rel="apple-touch-icon" href="/logo-512.jpg" sizes="512x512" />
+  <meta name="theme-color" content="#000000" />
+
+  <link rel="manifest" href="/manifest.webmanifest" />
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js');
+    }
+  </script>
+</body>
+
 </html>

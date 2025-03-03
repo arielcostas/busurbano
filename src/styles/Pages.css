@@ -1,0 +1,245 @@
+/* Mobile-first page styles */
+
+/* Common page styles */
+.page-container {
+  max-width: 100%;
+  padding: 0 16px;
+}
+
+.page-title {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.page-subtitle {
+  font-size: 1.4rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  font-weight: 500;
+  color: #444;
+}
+
+/* Form styles */
+.search-form {
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+.form-input {
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.form-button {
+  padding: 0.75rem 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.form-button:hover {
+  background-color: #0069d9;
+}
+
+/* List styles */
+.list-container {
+  margin-bottom: 1.5rem;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.list-item {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+.list-item-link {
+  display: block;
+  color: #333;
+  text-decoration: none;
+  font-size: 1.1rem; /* Increased font size for stop name */
+}
+
+.list-item-link:hover {
+  color: #007bff;
+}
+
+.list-item-link:hover .line-icon {
+    color: #333;
+  }
+
+/* Message styles */
+.message {
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+/* About page specific styles */
+.about-page {
+  text-align: center;
+  padding: 1rem;
+}
+
+.about-version {
+  color: #666;
+  font-size: 0.9rem;
+  margin-top: 2rem;
+}
+
+.about-description {
+  margin-top: 1rem;
+  line-height: 1.6;
+}
+
+/* Map page specific styles */
+.map-container {
+  height: calc(100vh - 140px);
+  margin: -16px;
+  margin-bottom: 1rem;
+}
+
+/* Estimates page specific styles */
+.estimates-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.estimates-stop-id {
+  font-size: 1rem;
+  color: #666;
+  margin-left: 0.5rem;
+}
+
+.estimates-arrival {
+  color: #28a745;
+  font-weight: 500;
+}
+
+.estimates-delayed {
+  color: #dc3545;
+}
+
+.button-group {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.button {
+  padding: 0.75rem 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.button:hover {
+  background-color: #0069d9;
+}
+
+.button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.star-icon {
+  margin-right: 0.5rem;
+  color: #ccc;
+  fill: none;
+}
+
+.star-icon.active {
+  color: #ffcc00; /* Yellow color for active star */
+  fill: #ffcc00;
+}
+
+/* Tablet and larger breakpoint */
+@media (min-width: 768px) {
+  .page-container {
+    width: 90%;
+    max-width: 768px;
+    margin: 0 auto;
+  }
+  
+  .page-title {
+    font-size: 2.2rem;
+  }
+  
+  .search-form {
+    display: flex;
+    align-items: flex-end;
+    gap: 1rem;
+  }
+  
+  .form-group {
+    flex: 1;
+    margin-bottom: 0;
+  }
+  
+  .form-button {
+    width: auto;
+    margin-top: 0;
+  }
+  
+  .list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+  }
+  
+  .list-item {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    margin-bottom: 0;
+  }
+}
+
+/* Desktop breakpoint */
+@media (min-width: 1024px) {
+  .page-container {
+    max-width: 1024px;
+  }
+  
+  .list {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  }
+}

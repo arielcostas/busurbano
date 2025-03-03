@@ -1,0 +1,28 @@
+.table-responsive {
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table caption {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.table th, .table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.table th {
+  border-bottom: 2px solid #ddd;
+}
+
+.table tfoot td {
+  text-align: center;
+}

@@ -1,5 +1,3 @@
-import stops from './stops.json';
-
 export interface CachedStopList {
 	timestamp: number;
 	data: Stop[];
@@ -21,6 +19,9 @@ export class StopDataProvider {
 		if (rawFavouriteStops) {
 			favouriteStops = JSON.parse(rawFavouriteStops) as number[];
 		}
+
+		const response = await fetch('/api/GetStopList');
+		const stops = await response.json() as Stop[];
 
 		return stops.map((stop: Stop) => {
 			return {
