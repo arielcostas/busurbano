@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router";
+import { JSX, useEffect, useState } from "react";
+import { useParams } from "react-router";
 import { StopDataProvider } from "../data/StopDataProvider";
 import LineIcon from "../components/LineIcon";
 import { Star } from 'lucide-react';
@@ -20,31 +20,33 @@ interface StopDetails {
 	}[]
 }
 
+const sdp = new StopDataProvider();
+
+const loadData = async (stopId: string) => {
+	const resp = await fetch(`/api/GetStopEstimates?id=${stopId}`);
+	return await resp.json();
+};
+
 export function Estimates(): JSX.Element {
-	const sdp = new StopDataProvider();
 	const [data, setData] = useState<StopDetails | null>(null);
 	const [dataDate, setDataDate] = useState<Date | null>(null);
 	const [favourited, setFavourited] = useState(false);
 	const params = useParams();
 
-	const loadData = () => {
-		fetch(`/api/GetStopEstimates?id=${params.stopId}`)
-			.then(r => r.json())
+	useEffect(() => {
+		loadData(params.stopId!)
 			.then((body: StopDetails) => {
 				setData(body);
 				setDataDate(new Date());
-			});
-	};
+			})
 
-	useEffect(() => {
-		loadData();
 
 		sdp.pushRecent(parseInt(params.stopId ?? ""));
 
 		setFavourited(
 			sdp.isFavourite(parseInt(params.stopId ?? ""))
 		);
-	}, []);
+	}, [params.stopId]);
 
 	const absoluteArrivalTime = (minutes: number) => {
 		const now = new Date()

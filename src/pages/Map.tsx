@@ -6,17 +6,15 @@ import 'react-leaflet-markercluster/styles'
 import { useEffect, useState } from 'react';
 import LineIcon from '../components/LineIcon';
 import { Link } from 'react-router';
-import { MapContainer } from "react-leaflet/MapContainer";
-import { TileLayer } from "react-leaflet/TileLayer";
-import { Marker } from "react-leaflet/Marker";
-import { Popup } from "react-leaflet/Popup";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-markercluster";
+import { LatLngTuple } from "leaflet";
 
 const sdp = new StopDataProvider();
 
 export function StopMap() {
 	const [stops, setStops] = useState<Stop[]>([]);
-	const position = [42.229188855975046, -8.72246955783102]
+	const position: LatLngTuple = [42.229188855975046, -8.72246955783102]
 
 	useEffect(() => {
 		sdp.getStops().then((stops) => { setStops(stops); });
@@ -30,7 +28,7 @@ export function StopMap() {
 			/>
 			<MarkerClusterGroup>
 				{stops.map((stop) => (
-					<Marker key={stop.stopId} position={[stop.latitude, stop.longitude]}>
+					<Marker key={stop.stopId} position={[stop.latitude, stop.longitude] as LatLngTuple}>
 						<Popup>
 							<Link to={`/estimates/${stop.stopId}`}>{stop.name}</Link>
 							<br />
