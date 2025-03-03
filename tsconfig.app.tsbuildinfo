@@ -1,1 +1,0 @@
-{"root":["./src/errorboundary.tsx","./src/layout.tsx","./src/themecontext.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/components/lineicon.tsx","./src/components/stopitem.tsx","./src/data/stopdataprovider.ts","./src/pages/about.tsx","./src/pages/estimates.tsx","./src/pages/map.tsx","./src/pages/stoplist.tsx"],"version":"5.7.3"}
