@@ -11,5 +11,16 @@ export default defineConfig({
         changeOrigin: true
       }
     }
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ['react', 'react-dom'],
+          router: ['react-router'],
+          leaflet: ['leaflet', 'react-leaflet', 'leaflet.locatecontrol', 'leaflet.markercluster']
+        }
+      }
+    }
   }
 })

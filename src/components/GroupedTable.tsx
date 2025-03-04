@@ -7,16 +7,6 @@ interface GroupedTable {
 }
 
 export const GroupedTable: React.FC<GroupedTable> = ({ data, dataDate }) => {
-
-    const absoluteArrivalTime = (minutes: number) => {
-        const now = new Date()
-        const arrival = new Date(now.getTime() + minutes * 60000)
-        return Intl.DateTimeFormat(navigator.language, {
-            hour: '2-digit',
-            minute: '2-digit'
-        }).format(arrival)
-    }
-
     const formatDistance = (meters: number) => {
         if (meters > 1024) {
             return `${(meters / 1000).toFixed(1)} km`;
