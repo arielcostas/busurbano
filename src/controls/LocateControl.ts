@@ -26,10 +26,6 @@ export const EnhancedLocateControl = (props: EnhancedLocateControlProps) => {
         console.error('Error en la localización:', err);
         setLocationPermission(false);
       },
-      onLocationFound: (e) => {
-        setUserLocation([e.latitude, e.longitude]);
-        setLocationPermission(true);
-      },
       returnToPrevBounds: true,
       showPopup: false,
     };
