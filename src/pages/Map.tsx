@@ -6,10 +6,11 @@ import 'react-leaflet-markercluster/styles'
 import { useEffect, useState } from 'react';
 import LineIcon from '../components/LineIcon';
 import { Link } from 'react-router';
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import { Icon, LatLngTuple } from "leaflet";
-import { LocateControl } from "../controls/LocateControl";
+import { EnhancedLocateControl } from "../controls/LocateControl";
+import { useApp } from "../AppContext";
 
 const icon = new Icon({
 	iconUrl: '/map-pin-icon.png',
@@ -21,21 +22,43 @@ const icon = new Icon({
 
 const sdp = new StopDataProvider();
 
+// Componente auxiliar para detectar cambios en el mapa
+const MapEventHandler = () => {
+	const { updateMapState } = useApp();
+	
+	const map = useMapEvents({
+		moveend: () => {
+			const center = map.getCenter();
+			const zoom = map.getZoom();
+			updateMapState([center.lat, center.lng], zoom);
+		}
+	});
+	
+	return null;
+};
+
+// Componente principal del mapa
 export function StopMap() {
 	const [stops, setStops] = useState<Stop[]>([]);
-	const position: LatLngTuple = [42.229188855975046, -8.72246955783102]
+	const { mapState } = useApp();
 
 	useEffect(() => {
 		sdp.getStops().then((stops) => { setStops(stops); });
 	}, []);
 
 	return (
-		<MapContainer center={position} zoom={14} scrollWheelZoom={true} style={{ height: '100%' }}>
+		<MapContainer 
+			center={mapState.center} 
+			zoom={mapState.zoom} 
+			scrollWheelZoom={true} 
+			style={{ height: '100%' }}
+		>
 			<TileLayer
 				attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>'
 				url="https://d.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png"
 			/>
-			<LocateControl />
+				<EnhancedLocateControl />
+				<MapEventHandler />
 			<MarkerClusterGroup>
 				{stops.map((stop) => (
 					<Marker key={stop.stopId} position={[stop.latitude, stop.longitude] as LatLngTuple} icon={icon}>
@@ -49,7 +72,6 @@ export function StopMap() {
 					</Marker>
 				))}
 			</MarkerClusterGroup>
-
 		</MapContainer>
 	);
 }
