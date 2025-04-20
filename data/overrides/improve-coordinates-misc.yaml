@@ -11,13 +11,13 @@
 
 3130: #Avda. de Cesáreo Vázquez 169
   location:
-    latitude: 42.1909867388476
-    longitude: -8.799722173771636
+    latitude: 42.191019711713736
+    longitude: -8.799628565094565
 
 3090: # Avda. de Cesáreo Vázquez 182
   location:
-    latitude: 42.19102742639083
-    longitude: -8.799428820699774
+    latitude: 42.191024803868736
+    longitude: -8.799397387002196
 
 14294: # Avda. de Ricardo Mella 406
   location:
@@ -26,10 +26,10 @@
 
 3120: # Cesáreo Vázquez 141
   location:
-    latitude: 42.187377693269696
-    longitude: -8.800971611890894
+    latitude: 42.187488521491225
+    longitude: -8.801226626055183
 
 3080: # Cesáreo Vázquez 136
   location:
-    latitude: 42.18722607751238
-    longitude: -8.800947897477887
+    latitude: 42.1873653089623
+    longitude: -8.800886236766305
