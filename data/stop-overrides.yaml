@@ -1,0 +1,38 @@
+# This file contains overrides for specific bus stops.
+# Format:
+#   stopId:            # Numeric ID of the stop to override
+#     name:            # Override the name
+#     alternateNames:  # Additional names for the stop
+#       metro:         # Stop name in 
+#     location:        # Override location coordinates
+#       latitude:      # New latitude value
+#       longitude:     # New longitude value
+#     notes:           # Additional notes about the stop
+#     active:          # Boolean to indicate if stop is active
+#     amenities:       # List of amenities available at this stop
+#       - shelter      # Marquesina
+#       - real-time display # Display with real-time information
+
+6930: # Praza de América 1
+  alternateNames:
+    intersect: "Praza América - Camelias"
+  amenities:
+    - shelter
+    - real-time display
+
+14264:
+  alternateNames:
+    intersect: "Urzáiz - Príncipe"
+  amenities:
+    - shelter
+    - real-time display
+
+6620:
+  location:
+    latitude: 42.23757846151978
+    longitude: -8.721031378896738
+
+20193:
+  location:
+    latitude: 42.23767601188501
+    longitude: -8.721582630122455

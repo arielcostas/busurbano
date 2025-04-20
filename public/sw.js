@@ -1,6 +1,6 @@
 const API_CACHE_NAME = 'api-cache-v1'
 const API_URL_PATTERN = /\/api\/(GetStopList)/;
-const API_MAX_AGE = 72 * 60 * 60 * 1000; // 72 hours
+const API_MAX_AGE = 24 * 60 * 60 * 1000; // 24 hours
 
 self.addEventListener('install', (event) => {
     event.waitUntil(self.skipWaiting());

@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { Stop, StopDataProvider } from "../data/StopDataProvider";
+import StopDataProvider, { Stop } from "../data/StopDataProvider";
 import StopItem from "../components/StopItem";
 import Fuse from "fuse.js";
-
-const sdp = new StopDataProvider();
 
 const placeholders = [
   "Urzaiz",
@@ -22,7 +20,7 @@ export function StopList() {
 	const [searchResults, setSearchResults] = useState<Stop[] | null>(null);
 
 	useEffect(() => {
-		sdp.getStops().then((stops: Stop[]) => setData(stops))
+		StopDataProvider.getStops().then((stops: Stop[]) => setData(stops))
 	}, []);
 
 	const handleStopSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,7 +37,7 @@ export function StopList() {
 	}, [data])
 
 	const recentStops = useMemo(() => {
-		const recent = sdp.getRecent();
+		const recent = StopDataProvider.getRecent();
 
 		if (recent.length === 0) return null;
 		

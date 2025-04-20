@@ -1,6 +1,6 @@
 import { JSX, useEffect, useState } from "react";
 import { useParams } from "react-router";
-import { StopDataProvider } from "../data/StopDataProvider";
+import StopDataProvider from "../data/StopDataProvider";
 import { Star } from 'lucide-react';
 import "../styles/Estimates.css";
 import { RegularTable } from "../components/RegularTable";
@@ -22,8 +22,6 @@ export interface StopDetails {
 	}[]
 }
 
-const sdp = new StopDataProvider();
-
 const loadData = async (stopId: string) => {
 	const resp = await fetch(`/api/GetStopEstimates?id=${stopId}`);
 	return await resp.json();
@@ -44,20 +42,20 @@ export function Estimates(): JSX.Element {
 			})
 
 
-		sdp.pushRecent(parseInt(params.stopId ?? ""));
+		StopDataProvider.pushRecent(parseInt(params.stopId ?? ""));
 
 		setFavourited(
-			sdp.isFavourite(parseInt(params.stopId ?? ""))
+			StopDataProvider.isFavourite(parseInt(params.stopId ?? ""))
 		);
 	}, [params.stopId]);
 
 
 	const toggleFavourite = () => {
 		if (favourited) {
-			sdp.removeFavourite(parseInt(params.stopId ?? ""));
+			StopDataProvider.removeFavourite(parseInt(params.stopId ?? ""));
 			setFavourited(false);
 		} else {
-			sdp.addFavourite(parseInt(params.stopId ?? ""));
+			StopDataProvider.addFavourite(parseInt(params.stopId ?? ""));
 			setFavourited(true);
 		}
 	}

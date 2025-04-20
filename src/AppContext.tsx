@@ -155,7 +155,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         );
       }
     }
-  }, []);
+  }, [mapState.hasLocationPermission, mapState.userLocation]);
 
   return (
     <AppContext.Provider value={{ 

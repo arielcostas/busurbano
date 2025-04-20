@@ -1,0 +1,54 @@
+/* Stop Item Styling */
+
+.stop-notes {
+  font-size: 0.85rem;
+  font-style: italic;
+  color: #666;
+  margin: 2px 0;
+}
+
+.stop-amenities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.amenity-tag {
+  font-size: 0.75rem;
+  background-color: #e8f4f8;
+  color: #0078d4;
+  border-radius: 4px;
+  padding: 2px 6px;
+  display: inline-block;
+}
+
+/* Different colors for different amenity types */
+.amenity-tag[data-amenity="shelter"] {
+  background-color: #e3f1df;
+  color: #107c41;
+}
+
+.amenity-tag[data-amenity="bench"] {
+  background-color: #f0e8fc;
+  color: #5c2e91;
+}
+
+.amenity-tag[data-amenity="real-time display"] {
+  background-color: #fff4ce;
+  color: #986f0b;
+}
+
+/* When there are alternate names available, show an indicator */
+.has-alternate-names {
+  position: relative;
+}
+
+.has-alternate-names::after {
+  content: "⋯";
+  position: absolute;
+  right: -15px;
+  top: 0;
+  color: #0078d4;
+  font-weight: bold;
+}

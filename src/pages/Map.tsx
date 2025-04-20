@@ -1,4 +1,4 @@
-import { StopDataProvider, Stop } from "../data/StopDataProvider";
+import StopDataProvider, { Stop } from "../data/StopDataProvider";
 
 import 'leaflet/dist/leaflet.css'
 import 'react-leaflet-markercluster/styles'
@@ -19,8 +19,6 @@ const icon = new Icon({
 	popupAnchor: [1, -34],
 	shadowSize: [41, 41]
 });
-
-const sdp = new StopDataProvider();
 
 // Componente auxiliar para detectar cambios en el mapa
 const MapEventHandler = () => {
@@ -43,8 +41,16 @@ export function StopMap() {
 	const { mapState } = useApp();
 
 	useEffect(() => {
-		sdp.getStops().then((stops) => { setStops(stops); });
+		StopDataProvider.getStops().then((stops) => { setStops(stops); });
 	}, []);
+
+	const getDisplayName = (stop: Stop): string => {
+		if (typeof stop.name === 'string') {
+			return stop.name;
+		}
+		
+		return stop.name.intersect || stop.name.original;
+	}
 
 	return (
 		<MapContainer 
@@ -63,7 +69,7 @@ export function StopMap() {
 				{stops.map((stop) => (
 					<Marker key={stop.stopId} position={[stop.latitude, stop.longitude] as LatLngTuple} icon={icon}>
 						<Popup>
-							<Link to={`/estimates/${stop.stopId}`}>{stop.name}</Link>
+							<Link to={`/estimates/${stop.stopId}`}>{getDisplayName(stop)}</Link>
 							<br />
 							{stop.lines.map((line) => (
 								<LineIcon key={line} line={line} />

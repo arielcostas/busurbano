@@ -3,91 +3,113 @@ export interface CachedStopList {
 	data: Stop[];
 }
 
+export type StopName = {
+	original: string;
+	intersect?: string;
+}
+
 export interface Stop {
-	stopId: number
-	name: string;
+	stopId: number;
+	name: StopName;
 	latitude?: number;
 	longitude?: number;
 	lines: string[];
 	favourite?: boolean;
 }
 
-export class StopDataProvider {
-	async getStops(): Promise<Stop[]> {
-		const rawFavouriteStops = localStorage.getItem('favouriteStops');
-		let favouriteStops: number[] = [];
-		if (rawFavouriteStops) {
-			favouriteStops = JSON.parse(rawFavouriteStops) as number[];
-		}
+export default {
+	getStops,
+	getDisplayName,
+	addFavourite,
+	removeFavourite,
+	isFavourite,
+	pushRecent,
+	getRecent
+};
 
-		const response = await fetch('/api/GetStopList');
-		const stops = await response.json() as Stop[];
-
-		return stops.map((stop: Stop) => {
-			return {
-				...stop,
-				favourite: favouriteStops.includes(stop.stopId)
-			};
-		});	
+async function getStops(): Promise<Stop[]> {
+	const rawFavouriteStops = localStorage.getItem('favouriteStops');
+	let favouriteStops: number[] = [];
+	if (rawFavouriteStops) {
+		favouriteStops = JSON.parse(rawFavouriteStops) as number[];
 	}
 
-	addFavourite(stopId: number) {
-		const rawFavouriteStops = localStorage.getItem('favouriteStops');
-		let favouriteStops: number[] = [];
-		if (rawFavouriteStops) {
-			favouriteStops = JSON.parse(rawFavouriteStops) as number[];
-		}
+	const response = await fetch('/stops.json');
+	const stops = await response.json() as Stop[];
 
-		if (!favouriteStops.includes(stopId)) {
-			favouriteStops.push(stopId);
-			localStorage.setItem('favouriteStops', JSON.stringify(favouriteStops));
-		}
+	return stops.map((stop: Stop) => {
+		return {
+			...stop,
+			favourite: favouriteStops.includes(stop.stopId)
+		};
+	});
+}
+
+// Get display name based on preferences or context
+function getDisplayName(stop: Stop): string {
+	if (typeof stop.name === 'string') {
+		return stop.name;
 	}
 
-	removeFavourite(stopId: number) {
-		const rawFavouriteStops = localStorage.getItem('favouriteStops');
-		let favouriteStops: number[] = [];
-		if (rawFavouriteStops) {
-			favouriteStops = JSON.parse(rawFavouriteStops) as number[];
-		}
+	return stop.name.intersect || stop.name.original;
+}
 
-		const newFavouriteStops = favouriteStops.filter(id => id !== stopId);
-		localStorage.setItem('favouriteStops', JSON.stringify(newFavouriteStops));
+function addFavourite(stopId: number) {
+	const rawFavouriteStops = localStorage.getItem('favouriteStops');
+	let favouriteStops: number[] = [];
+	if (rawFavouriteStops) {
+		favouriteStops = JSON.parse(rawFavouriteStops) as number[];
 	}
 
-	isFavourite(stopId: number): boolean {
-		const rawFavouriteStops = localStorage.getItem('favouriteStops');
-		if (rawFavouriteStops) {
-			const favouriteStops = JSON.parse(rawFavouriteStops) as number[];
-			return favouriteStops.includes(stopId);
-		}
-		return false;
+	if (!favouriteStops.includes(stopId)) {
+		favouriteStops.push(stopId);
+		localStorage.setItem('favouriteStops', JSON.stringify(favouriteStops));
+	}
+}
+
+function removeFavourite(stopId: number) {
+	const rawFavouriteStops = localStorage.getItem('favouriteStops');
+	let favouriteStops: number[] = [];
+	if (rawFavouriteStops) {
+		favouriteStops = JSON.parse(rawFavouriteStops) as number[];
 	}
 
-	RECENT_STOPS_LIMIT = 10;
+	const newFavouriteStops = favouriteStops.filter(id => id !== stopId);
+	localStorage.setItem('favouriteStops', JSON.stringify(newFavouriteStops));
+}
 
-	pushRecent(stopId: number) {
-		const rawRecentStops = localStorage.getItem('recentStops');
-		let recentStops: Set<number> = new Set();
-		if (rawRecentStops) {
-			recentStops = new Set(JSON.parse(rawRecentStops) as number[]);
-		}
+function isFavourite(stopId: number): boolean {
+	const rawFavouriteStops = localStorage.getItem('favouriteStops');
+	if (rawFavouriteStops) {
+		const favouriteStops = JSON.parse(rawFavouriteStops) as number[];
+		return favouriteStops.includes(stopId);
+	}
+	return false;
+}
 
-		recentStops.add(stopId);
-		if (recentStops.size > this.RECENT_STOPS_LIMIT) {
-			const iterator = recentStops.values();
-			const val = iterator.next().value as number;
-			recentStops.delete(val);
-		}
+const RECENT_STOPS_LIMIT = 10;
 
-		localStorage.setItem('recentStops', JSON.stringify(Array.from(recentStops)));
+function pushRecent(stopId: number) {
+	const rawRecentStops = localStorage.getItem('recentStops');
+	let recentStops: Set<number> = new Set();
+	if (rawRecentStops) {
+		recentStops = new Set(JSON.parse(rawRecentStops) as number[]);
 	}
 
-	getRecent(): number[] {
-		const rawRecentStops = localStorage.getItem('recentStops');
-		if (rawRecentStops) {
-			return JSON.parse(rawRecentStops) as number[];
-		}
-		return [];
+	recentStops.add(stopId);
+	if (recentStops.size > RECENT_STOPS_LIMIT) {
+		const iterator = recentStops.values();
+		const val = iterator.next().value as number;
+		recentStops.delete(val);
 	}
+
+	localStorage.setItem('recentStops', JSON.stringify(Array.from(recentStops)));
+}
+
+function getRecent(): number[] {
+	const rawRecentStops = localStorage.getItem('recentStops');
+	if (rawRecentStops) {
+		return JSON.parse(rawRecentStops) as number[];
+	}
+	return [];
 }
