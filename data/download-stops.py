@@ -26,11 +26,7 @@ def apply_overrides(stops, overrides):
         stop_id = stop.get("stopId")
         if stop_id in overrides:
             override = overrides[stop_id]
-            
-            # Apply name override
-            if "name" in override:
-                stop["name"] = override["name"]
-            
+                       
             # Apply or add alternate names
             if "alternateNames" in override:
                 for key, value in override["alternateNames"].items():
@@ -84,9 +80,16 @@ def main():
         
         # Load and apply overrides
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        overrides_file = os.path.join(script_dir, "stop-overrides.yaml")
-        overrides = load_stop_overrides(overrides_file)
-        processed_stops = apply_overrides(processed_stops, overrides)
+        overrides_dir = os.path.join(script_dir, "overrides")
+        # For each YML/YAML file in the overrides directory, load and apply the overrides
+        for filename in os.listdir(overrides_dir):
+            if not filename.endswith(".yml") and not filename.endswith(".yaml"):
+                continue
+
+            print(f"Loading overrides from {filename}")
+            overrides_file = os.path.join(overrides_dir, filename)
+            overrides = load_stop_overrides(overrides_file)
+            processed_stops = apply_overrides(processed_stops, overrides)
         
         # Filter out hidden stops
         visible_stops = [stop for stop in processed_stops if not stop.get("hide")]

@@ -2,18 +2,13 @@
   {
     "stopId": 6930,
     "name": {
-      "original": "Praza de América  1",
-      "intersect": "Praza América - Camelias"
+      "original": "Praza de América  1"
     },
     "latitude": 42.220997313,
     "longitude": -8.732835177,
     "lines": [
       "C1",
       "N4"
-    ],
-    "amenities": [
-      "shelter",
-      "real-time display"
     ]
   },
   {
@@ -276,8 +271,7 @@
   {
     "stopId": 14264,
     "name": {
-      "original": "Rúa de Urzáiz - Príncipe",
-      "intersect": "Urzáiz - Príncipe"
+      "original": "Rúa de Urzáiz - Príncipe"
     },
     "latitude": 42.235873545,
     "longitude": -8.720083317,
@@ -302,10 +296,6 @@
       "28",
       "N1",
       "N4"
-    ],
-    "amenities": [
-      "shelter",
-      "real-time display"
     ]
   },
   {
@@ -3708,8 +3698,8 @@
     "name": {
       "original": "Avda. do Alcalde Gregorio Espino  57"
     },
-    "latitude": 42.227831786,
-    "longitude": -8.707855407,
+    "latitude": 42.22783722597372,
+    "longitude": -8.707849091551859,
     "lines": [
       "4C",
       "23",
@@ -3724,8 +3714,8 @@
     "name": {
       "original": "Avda. do Alcalde Gregorio Espino  33"
     },
-    "latitude": 42.230134504,
-    "longitude": -8.706992656,
+    "latitude": 42.23004933454558,
+    "longitude": -8.706947409683313,
     "lines": [
       "4C",
       "23",
@@ -6031,8 +6021,8 @@
     "name": {
       "original": "Avda. do Alcalde Gregorio Espino  44"
     },
-    "latitude": 42.227970137,
-    "longitude": -8.708024217,
+    "latitude": 42.227850036119314,
+    "longitude": -8.708105429626789,
     "lines": [
       "31",
       "H2"
@@ -8419,8 +8409,8 @@
     "name": {
       "original": "Avda. de Cesáreo Vázquez  136"
     },
-    "latitude": 42.187532955,
-    "longitude": -8.800948579,
+    "latitude": 42.18722607751238,
+    "longitude": -8.800947897477887,
     "lines": [
       "11"
     ]
@@ -8430,8 +8420,8 @@
     "name": {
       "original": "Avda. de Cesáreo Vázquez  182"
     },
-    "latitude": 42.190974769,
-    "longitude": -8.79947071,
+    "latitude": 42.19102742639083,
+    "longitude": -8.799428820699774,
     "lines": [
       "C3d",
       "10",
@@ -9100,8 +9090,8 @@
     "name": {
       "original": "Avda. de Cesáreo Vázquez  169"
     },
-    "latitude": 42.191030413,
-    "longitude": -8.799596773,
+    "latitude": 42.1909867388476,
+    "longitude": -8.799722173771636,
     "lines": [
       "11"
     ]
@@ -9111,8 +9101,8 @@
     "name": {
       "original": "Avda. de Cesáreo Vázquez  141"
     },
-    "latitude": 42.187320701,
-    "longitude": -8.801121407,
+    "latitude": 42.187377693269696,
+    "longitude": -8.800971611890894,
     "lines": [
       "11",
       "12A"
@@ -11483,8 +11473,8 @@
     "name": {
       "original": "Avda. do Alcalde Gregorio Espino  22"
     },
-    "latitude": 42.230108908,
-    "longitude": -8.707230032,
+    "latitude": 42.23003666347398,
+    "longitude": -8.707266671978003,
     "lines": [
       "31"
     ]
@@ -13231,8 +13221,8 @@
     "name": {
       "original": "Avda. de Ricardo Mella  406"
     },
-    "latitude": 42.190704974,
-    "longitude": -8.799306832,
+    "latitude": 42.190684424876565,
+    "longitude": -8.799308812770041,
     "lines": [
       "12A"
     ]
