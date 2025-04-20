@@ -7,32 +7,69 @@
 #     location:        # Override location coordinates
 #       latitude:      # New latitude value
 #       longitude:     # New longitude value
-#     notes:           # Additional notes about the stop
-#     active:          # Boolean to indicate if stop is active
+#     hide:            # Hide the stop from the map and list
 #     amenities:       # List of amenities available at this stop
 #       - shelter      # Marquesina
 #       - real-time display # Display with real-time information
 
-6930: # Praza de América 1
-  alternateNames:
-    intersect: "Praza América - Camelias"
-  amenities:
-    - shelter
-    - real-time display
+#6930: # Praza de América 1
+#  alternateNames:
 
-14264:
-  alternateNames:
-    intersect: "Urzáiz - Príncipe"
-  amenities:
-    - shelter
-    - real-time display
+#    intersect: "Praza América - Camelias"
+#  amenities:
+#    - shelter
+#    - real-time display
 
-6620:
+#14264: # Urzáiz - Príncipe
+#  alternateNames:
+#    intersect: "Urzáiz - Príncipe"
+#  amenities:
+#    - shelter
+#    - real-time display
+
+6620: # Policarpo Sanz, 40
   location:
     latitude: 42.23757846151978
     longitude: -8.721031378896738
 
-20193:
+20193: # Policarpo Sanz, 25
   location:
     latitude: 42.23767601188501
     longitude: -8.721582630122455
+
+5720: # Gregorio Espino, 33
+  location:
+    latitude: 42.23004933454558
+    longitude: -8.706947409683313
+
+5710: # Gregorio Espino, 22
+  location:
+    latitude: 42.23003666347398
+    longitude: -8.707266671978003
+
+5730: # Gregorio Espino, 44
+  location:
+    latitude: 42.227850036119314
+    longitude: -8.708105429626789
+
+5740: # Gregorio Espino, 57
+  location:
+    latitude: 42.22783722597372
+    longitude: -8.707849091551859
+
+#region Hidden stops
+20223: # Castrelos (Pavillón) - Final U1
+  hide: true
+20146: # García Barbón 7 - final líneas A y 18A
+  hide: true
+20220: # (Samil) COIA-SAMIL  - Final L15A
+  hide: true
+20001: # (Samil) Samil por Beiramar  - Final L15B
+  hide: true
+20002: # (Samil) Samil por Torrecedeira  - Final L15C
+  hide: true
+20144: # (Samil) Samil por Coia - Final C3D+C3i
+  hide: true
+20145: # (Samil) Samil por Bouzas - Final C3D+C3i
+  hide: true
+#endregion

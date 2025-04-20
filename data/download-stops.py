@@ -33,12 +33,6 @@ def apply_overrides(stops, overrides):
             
             # Apply or add alternate names
             if "alternateNames" in override:
-                if isinstance(stop["name"], str):
-                    # Convert simple name to object if it's a string
-                    original_name = stop["name"]
-                    stop["name"] = {"original": original_name}
-                
-                # Add alternate names
                 for key, value in override["alternateNames"].items():
                     stop["name"][key] = value
             
@@ -49,20 +43,14 @@ def apply_overrides(stops, overrides):
                 if "longitude" in override["location"]:
                     stop["longitude"] = override["location"]["longitude"]
             
-            # Add notes
-            if "notes" in override:
-                stop["notes"] = override["notes"]
-            
-            # Add active status
-            if "active" in override:
-                stop["active"] = override["active"]
-            
             # Add amenities
             if "amenities" in override:
                 stop["amenities"] = override["amenities"]
-            
-            print(f"Applied overrides to stop {stop_id} ({stop['name']})")
-    
+                
+            # Mark stop as hidden if needed
+            if "hide" in override:
+                stop["hide"] = override["hide"]
+                
     return stops
 
 def main():
@@ -100,11 +88,15 @@ def main():
         overrides = load_stop_overrides(overrides_file)
         processed_stops = apply_overrides(processed_stops, overrides)
         
+        # Filter out hidden stops
+        visible_stops = [stop for stop in processed_stops if not stop.get("hide")]
+        print(f"Removed {len(processed_stops) - len(visible_stops)} hidden stops")
+        
         # Save to public directory
         output_file = os.path.join(script_dir, "..", "public", "stops.json")
         
         with open(output_file, 'w', encoding='utf-8') as f:
-            json.dump(processed_stops, f, ensure_ascii=False, indent=2)
+            json.dump(visible_stops, f, ensure_ascii=False, indent=2)
             
         print(f"Saved processed stops data to {output_file}")
         return 0

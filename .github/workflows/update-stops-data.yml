@@ -1,0 +1,65 @@
+name: Update Stops Data
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  update-stops-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Run download script
+        run: python data/download-stops.py
+        
+      - name: Commit changes if any
+        id: commit
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git add public/stops.json
+          if git diff --staged --exit-code; then
+            echo "No changes to commit"
+            echo "changes_made=false" >> $GITHUB_OUTPUT
+          else
+            # Create a new branch with timestamp
+            BRANCH_NAME="update-stops-data-$(date +%Y-%m-%d-%H%M%S)"
+            git checkout -b $BRANCH_NAME
+            git commit -m "Update stops data"
+            git push origin $BRANCH_NAME
+            echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+            echo "changes_made=true" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Create Pull Request
+        if: steps.commit.outputs.changes_made == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH_NAME: ${{ steps.commit.outputs.branch_name }}
+        run: |
+          # Close any existing PRs created by this action
+          existing_prs=$(gh pr list --json number,title,headRefName --search "Update stops data in:title head:update-stops-data- author:app/github-actions is:open")
+          
+          if [[ $(echo "$existing_prs" | jq length) -gt 0 ]]; then
+            echo "Found existing PRs to close"
+            echo "$existing_prs" | jq -c '.[]' | while read pr; do
+              pr_number=$(echo "$pr" | jq -r '.number')
+              echo "Closing PR #$pr_number"
+              gh pr close $pr_number --comment "Superseded by a new PR with updated data"
+            done
+          fi
+          
+          # Create new PR
+          gh pr create \
+            --title "Update stops data" \
+            --body "Automatically generated PR with updated stops data from scheduled fetch." \
+            --base main \
+            --head "$BRANCH_NAME"

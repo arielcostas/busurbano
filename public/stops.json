@@ -1572,18 +1572,6 @@
     ]
   },
   {
-    "stopId": 20145,
-    "name": {
-      "original": "Samil por Bouzas"
-    },
-    "latitude": 42.215944153,
-    "longitude": -8.774726162,
-    "lines": [
-      "C3d",
-      "C3i"
-    ]
-  },
-  {
     "stopId": 6790,
     "name": {
       "original": "Avda. de Samil (fronte Hotel)"
@@ -1721,18 +1709,6 @@
       "15A",
       "PSA 1",
       "PSA 4"
-    ]
-  },
-  {
-    "stopId": 20144,
-    "name": {
-      "original": "Samil por Coia"
-    },
-    "latitude": 42.215903856,
-    "longitude": -8.774724852,
-    "lines": [
-      "C3d",
-      "C3i"
     ]
   },
   {
@@ -7125,18 +7101,6 @@
     ]
   },
   {
-    "stopId": 20146,
-    "name": {
-      "original": "Avda. de García Barbón  7"
-    },
-    "latitude": 42.237488035,
-    "longitude": -8.719378239,
-    "lines": [
-      "A",
-      "18A"
-    ]
-  },
-  {
     "stopId": 430,
     "name": {
       "original": "Rúa do Areal (Aduana)"
@@ -9908,17 +9872,6 @@
     ]
   },
   {
-    "stopId": 20002,
-    "name": {
-      "original": "Samil por Torrecedeira"
-    },
-    "latitude": 42.213660664,
-    "longitude": -8.774571223,
-    "lines": [
-      "15C"
-    ]
-  },
-  {
     "stopId": 20143,
     "name": {
       "original": "Rúa das Teixugueiras (fronte 1)"
@@ -9951,17 +9904,6 @@
     "lines": [
       "15A",
       "15B"
-    ]
-  },
-  {
-    "stopId": 20220,
-    "name": {
-      "original": "COIA - SAMIL"
-    },
-    "latitude": 42.213783955,
-    "longitude": -8.774372371,
-    "lines": [
-      "15A"
     ]
   },
   {
@@ -13660,17 +13602,6 @@
     ]
   },
   {
-    "stopId": 20001,
-    "name": {
-      "original": "Samil por Beiramar"
-    },
-    "latitude": 42.213957029,
-    "longitude": -8.774591463,
-    "lines": [
-      "15B"
-    ]
-  },
-  {
     "stopId": 14409,
     "name": {
       "original": "Estrada das Plantas (fronte cruce Avda. do Rebullón)"
@@ -15144,17 +15075,6 @@
     },
     "latitude": 42.175073486,
     "longitude": -8.713494654,
-    "lines": [
-      "U1"
-    ]
-  },
-  {
-    "stopId": 20223,
-    "name": {
-      "original": "Avda. de Castrelos (Pavillón)"
-    },
-    "latitude": 42.219691433,
-    "longitude": -8.732510039,
     "lines": [
       "U1"
     ]
