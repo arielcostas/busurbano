@@ -1,7 +1,7 @@
 import { JSX, useEffect, useState } from "react";
 import { useParams } from "react-router";
 import StopDataProvider from "../data/StopDataProvider";
-import { Star } from 'lucide-react';
+import { Star, Edit2 } from 'lucide-react';
 import "../styles/Estimates.css";
 import { RegularTable } from "../components/RegularTable";
 import { useApp } from "../AppContext";
@@ -28,10 +28,12 @@ const loadData = async (stopId: string) => {
 };
 
 export function Estimates(): JSX.Element {
+	const params = useParams();
+	const stopIdNum = parseInt(params.stopId ?? "");
+	const [customName, setCustomName] = useState<string | undefined>(undefined);
 	const [data, setData] = useState<StopDetails | null>(null);
 	const [dataDate, setDataDate] = useState<Date | null>(null);
 	const [favourited, setFavourited] = useState(false);
-	const params = useParams();
 	const { tableStyle } = useApp();
 
 	useEffect(() => {
@@ -39,6 +41,7 @@ export function Estimates(): JSX.Element {
 			.then((body: StopDetails) => {
 				setData(body);
 				setDataDate(new Date());
+				setCustomName(StopDataProvider.getCustomName(stopIdNum));
 			})
 
 
@@ -52,13 +55,27 @@ export function Estimates(): JSX.Element {
 
 	const toggleFavourite = () => {
 		if (favourited) {
-			StopDataProvider.removeFavourite(parseInt(params.stopId ?? ""));
+			StopDataProvider.removeFavourite(stopIdNum);
 			setFavourited(false);
 		} else {
-			StopDataProvider.addFavourite(parseInt(params.stopId ?? ""));
+			StopDataProvider.addFavourite(stopIdNum);
 			setFavourited(true);
 		}
 	}
+
+	const handleRename = () => {
+		const current = customName ?? data?.stop.name;
+		const input = window.prompt('Custom name for this stop:', current);
+		if (input === null) return; // cancelled
+		const trimmed = input.trim();
+		if (trimmed === '') {
+			StopDataProvider.removeCustomName(stopIdNum);
+			setCustomName(undefined);
+		} else {
+			StopDataProvider.setCustomName(stopIdNum, trimmed);
+			setCustomName(trimmed);
+		}
+	};
 
 	if (data === null) return <h1 className="page-title">Cargando datos en tiempo real...</h1>
 
@@ -67,7 +84,8 @@ export function Estimates(): JSX.Element {
 			<div className="estimates-header">
 				<h1 className="page-title">
 					<Star className={`star-icon ${favourited ? 'active' : ''}`} onClick={toggleFavourite} />
-					{data?.stop.name} <span className="estimates-stop-id">({data?.stop.id})</span>
+					<Edit2 className="edit-icon" onClick={handleRename} />
+					{(customName ?? data.stop.name)} <span className="estimates-stop-id">({data.stop.id})</span>
 				</h1>
 			</div>
 

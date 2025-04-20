@@ -41,16 +41,8 @@ export function StopMap() {
 	const { mapState } = useApp();
 
 	useEffect(() => {
-		StopDataProvider.getStops().then((stops) => { setStops(stops); });
+		StopDataProvider.getStops().then(setStops);
 	}, []);
-
-	const getDisplayName = (stop: Stop): string => {
-		if (typeof stop.name === 'string') {
-			return stop.name;
-		}
-		
-		return stop.name.intersect || stop.name.original;
-	}
 
 	return (
 		<MapContainer 
@@ -66,10 +58,10 @@ export function StopMap() {
 				<EnhancedLocateControl />
 				<MapEventHandler />
 			<MarkerClusterGroup>
-				{stops.map((stop) => (
+				{stops.map(stop => (
 					<Marker key={stop.stopId} position={[stop.latitude, stop.longitude] as LatLngTuple} icon={icon}>
 						<Popup>
-							<Link to={`/estimates/${stop.stopId}`}>{getDisplayName(stop)}</Link>
+							<Link to={`/estimates/${stop.stopId}`}>{StopDataProvider.getDisplayName(stop)}</Link>
 							<br />
 							{stop.lines.map((line) => (
 								<LineIcon key={line} line={line} />

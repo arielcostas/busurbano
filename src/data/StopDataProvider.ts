@@ -17,41 +17,72 @@ export interface Stop {
 	favourite?: boolean;
 }
 
-export default {
-	getStops,
-	getDisplayName,
-	addFavourite,
-	removeFavourite,
-	isFavourite,
-	pushRecent,
-	getRecent
-};
+// In-memory cache and lookup map
+let cachedStops: Stop[] | null = null;
+let stopsMap: Record<number, Stop> = {};
+// Custom names loaded from localStorage
+let customNames: Record<number, string> = {};
 
-async function getStops(): Promise<Stop[]> {
-	const rawFavouriteStops = localStorage.getItem('favouriteStops');
-	let favouriteStops: number[] = [];
-	if (rawFavouriteStops) {
-		favouriteStops = JSON.parse(rawFavouriteStops) as number[];
-	}
-
-	const response = await fetch('/stops.json');
-	const stops = await response.json() as Stop[];
-
-	return stops.map((stop: Stop) => {
-		return {
-			...stop,
-			favourite: favouriteStops.includes(stop.stopId)
-		};
-	});
+// Initialize cachedStops and customNames once
+async function initStops() {
+    if (!cachedStops) {
+        const response = await fetch('/stops.json');
+        const stops = await response.json() as Stop[];
+        // build array and map
+        stopsMap = {};
+        cachedStops = stops.map(stop => {
+            const entry = { ...stop, favourite: false } as Stop;
+            stopsMap[stop.stopId] = entry;
+            return entry;
+        });
+        // load custom names
+        const rawCustom = localStorage.getItem('customStopNames');
+        if (rawCustom) customNames = JSON.parse(rawCustom) as Record<number, string>;
+    }
 }
 
-// Get display name based on preferences or context
-function getDisplayName(stop: Stop): string {
-	if (typeof stop.name === 'string') {
-		return stop.name;
-	}
+async function getStops(): Promise<Stop[]> {
+    await initStops();
+    // update favourites
+    const rawFav = localStorage.getItem('favouriteStops');
+    const favouriteStops = rawFav ? JSON.parse(rawFav) as number[] : [];
+    cachedStops!.forEach(stop => stop.favourite = favouriteStops.includes(stop.stopId));
+    return cachedStops!;
+}
 
-	return stop.name.intersect || stop.name.original;
+// New: get single stop by id
+async function getStopById(stopId: number): Promise<Stop | undefined> {
+    await initStops();
+    const stop = stopsMap[stopId];
+    if (stop) {
+        const rawFav = localStorage.getItem('favouriteStops');
+        const favouriteStops = rawFav ? JSON.parse(rawFav) as number[] : [];
+        stop.favourite = favouriteStops.includes(stopId);
+    }
+    return stop;
+}
+
+// Updated display name to include custom names
+function getDisplayName(stop: Stop): string {
+    if (customNames[stop.stopId]) return customNames[stop.stopId];
+    const nameObj = stop.name;
+	return nameObj.intersect || nameObj.original;
+}
+
+// New: set or remove custom names
+function setCustomName(stopId: number, label: string) {
+    customNames[stopId] = label;
+    localStorage.setItem('customStopNames', JSON.stringify(customNames));
+}
+
+function removeCustomName(stopId: number) {
+    delete customNames[stopId];
+    localStorage.setItem('customStopNames', JSON.stringify(customNames));
+}
+
+// New: get custom label for a stop
+function getCustomName(stopId: number): string | undefined {
+    return customNames[stopId];
 }
 
 function addFavourite(stopId: number) {
@@ -113,3 +144,17 @@ function getRecent(): number[] {
 	}
 	return [];
 }
+
+export default {
+    getStops,
+    getStopById,
+    getCustomName,
+    getDisplayName,
+    setCustomName,
+    removeCustomName,
+    addFavourite,
+    removeFavourite,
+    isFavourite,
+    pushRecent,
+    getRecent
+};

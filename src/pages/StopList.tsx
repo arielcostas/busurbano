@@ -37,12 +37,16 @@ export function StopList() {
 	}, [data])
 
 	const recentStops = useMemo(() => {
-		const recent = StopDataProvider.getRecent();
-
-		if (recent.length === 0) return null;
-		
-		return recent.map(stopId => data?.find(stop => stop.stopId === stopId) as Stop).reverse();
-	}, [data])
+		// no recent items if data not loaded
+		if (!data) return null;
+		const recentIds = StopDataProvider.getRecent();
+		if (recentIds.length === 0) return null;
+		// map and filter out missing entries
+		const stopsList = recentIds
+			.map(id => data.find(stop => stop.stopId === id))
+			.filter((s): s is Stop => Boolean(s));
+		return stopsList.reverse();
+	}, [data]);
 
 	if (data === null) return <h1 className="page-title">Loading...</h1>
 
