@@ -8420,8 +8420,8 @@
     "name": {
       "original": "Avda. de Cesáreo Vázquez  182"
     },
-    "latitude": 42.191024803868736,
-    "longitude": -8.799397387002196,
+    "latitude": 42.191019711713736,
+    "longitude": -8.799628565094565,
     "lines": [
       "C3d",
       "10",
@@ -9090,8 +9090,8 @@
     "name": {
       "original": "Avda. de Cesáreo Vázquez  169"
     },
-    "latitude": 42.191019711713736,
-    "longitude": -8.799628565094565,
+    "latitude": 42.191024803868736,
+    "longitude": -8.799397387002196,
     "lines": [
       "11"
     ]

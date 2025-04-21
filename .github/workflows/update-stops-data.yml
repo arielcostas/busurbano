@@ -12,13 +12,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
-
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      
       - name: Run download script
-        run: python data/download-stops.py
+        run: uv run data/download-stops.py
         
       - name: Commit changes if any
         id: commit
