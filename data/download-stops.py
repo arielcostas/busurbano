@@ -99,7 +99,10 @@ def main():
         # Filter out hidden stops
         visible_stops = [stop for stop in processed_stops if not stop.get("hide")]
         print(f"Removed {len(processed_stops) - len(visible_stops)} hidden stops")
-        
+
+        # Sort stops by ID ascending
+        visible_stops.sort(key=lambda x: x["stopId"])
+
         # Save to public directory
         output_file = os.path.join(script_dir, "..", "public", "stops.json")
         
