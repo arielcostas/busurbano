@@ -1,35 +1,54 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import StopDataProvider, { Stop } from "../data/StopDataProvider";
 import StopItem from "../components/StopItem";
 import Fuse from "fuse.js";
 
 const placeholders = [
-  "Urzaiz",
-  "Gran Vía",
-  "Castelao",
-  "García Barbón",
-  "Valladares",
-  "Florida",
-  "Pizarro",
-  "Estrada Madrid",
-  "Sanjurjo Badía"
+	"Urzaiz",
+	"Gran Vía",
+	"Castelao",
+	"García Barbón",
+	"Valladares",
+	"Florida",
+	"Pizarro",
+	"Estrada Madrid",
+	"Sanjurjo Badía"
 ];
 
 export function StopList() {
 	const [data, setData] = useState<Stop[] | null>(null)
 	const [searchResults, setSearchResults] = useState<Stop[] | null>(null);
+	const searchTimeout = useRef<NodeJS.Timeout | null>(null);
+
+	const randomPlaceholder = useMemo(() => placeholders[Math.floor(Math.random() * placeholders.length)], []);
+	const fuse = useMemo(() => new Fuse(data || [], { threshold: 0.3, keys: ['name.original'] }), [data]);
 
 	useEffect(() => {
 		StopDataProvider.getStops().then((stops: Stop[]) => setData(stops))
 	}, []);
 
 	const handleStopSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-		const stopName = event.target.value;
-		if (data) {
-			const fuse = new Fuse(data, { keys: ['name'], threshold: 0.3 });
-			const results = fuse.search(stopName).map(result => result.item);
-			setSearchResults(results);
+		const stopName = event.target.value || "";
+
+		if (searchTimeout.current) {
+			clearTimeout(searchTimeout.current);
 		}
+
+		searchTimeout.current = setTimeout(() => {
+			if (stopName.length === 0) {
+				setSearchResults(null);
+				return;
+			}
+
+			if (!data) {
+				console.error("No data available for search");
+				return;
+			}
+
+			const results = fuse.search(stopName);
+			const items = results.map(result => result.item);
+			setSearchResults(items);
+		}, 300);
 	}
 
 	const favouritedStops = useMemo(() => {
@@ -49,8 +68,6 @@ export function StopList() {
 	}, [data]);
 
 	if (data === null) return <h1 className="page-title">Loading...</h1>
-
-	const randomPlaceholder = placeholders[Math.floor(Math.random() * placeholders.length)];
 
 	return (
 		<div className="page-container">

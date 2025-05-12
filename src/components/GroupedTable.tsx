@@ -46,7 +46,7 @@ export const GroupedTable: React.FC<GroupedTable> = ({ data, dataDate }) => {
                 groupedEstimates[line].map((estimate, idx) => (
                     <tr key={`${line}-${idx}`}>
                         {idx === 0 && (
-                            <td rowSpan={groupedEstimates[line].length} style={{ verticalAlign: 'top' }}>
+                            <td rowSpan={groupedEstimates[line].length}>
                                 <LineIcon line={line} />
                             </td>
                         )}

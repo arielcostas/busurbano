@@ -4,6 +4,7 @@ import { LatLngTuple } from 'leaflet';
 
 type Theme = 'light' | 'dark';
 type TableStyle = 'regular'|'grouped';
+type MapPositionMode = 'gps' | 'last';
 
 interface MapState {
   center: LatLngTuple;
@@ -27,6 +28,9 @@ interface AppContextProps {
   setUserLocation: (location: LatLngTuple | null) => void;
   setLocationPermission: (hasPermission: boolean) => void;
   updateMapState: (center: LatLngTuple, zoom: number) => void;
+
+  mapPositionMode: MapPositionMode;
+  setMapPositionMode: (mode: MapPositionMode) => void;
 }
 
 // Coordenadas por defecto centradas en Vigo
@@ -74,6 +78,17 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }, [tableStyle]);
   //#endregion
 
+  //#region Map Position Mode
+  const [mapPositionMode, setMapPositionMode] = useState<MapPositionMode>(() => {
+    const saved = localStorage.getItem('mapPositionMode');
+    return saved === 'last' ? 'last' : 'gps';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('mapPositionMode', mapPositionMode);
+  }, [mapPositionMode]);
+  //#endregion
+
   //#region Map State
   const [mapState, setMapState] = useState<MapState>(() => {
     const savedMapState = localStorage.getItem('mapState');
@@ -97,6 +112,37 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       hasLocationPermission: false
     };
   });
+
+  // Helper: check if coordinates are within Vigo bounds
+  function isWithinVigo([lat, lng]: LatLngTuple): boolean {
+    // Rough bounding box for Vigo
+    return lat >= 42.18 && lat <= 42.30 && lng >= -8.78 && lng <= -8.65;
+  }
+
+  // On app load, if mapPositionMode is 'gps', try to get GPS and set map center
+  useEffect(() => {
+    if (mapPositionMode === 'gps') {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            const coords: LatLngTuple = [latitude, longitude];
+            if (isWithinVigo(coords)) {
+              setMapState(prev => {
+                const newState = { ...prev, center: coords, zoom: 16, userLocation: coords };
+                localStorage.setItem('mapState', JSON.stringify(newState));
+                return newState;
+              });
+            }
+          },
+          () => {
+            // Ignore error, fallback to last
+          }
+        );
+      }
+    }
+    // If 'last', do nothing (already loaded from localStorage)
+  }, [mapPositionMode]);
 
   const setMapCenter = (center: LatLngTuple) => {
     setMapState(prev => {
@@ -170,7 +216,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       setMapZoom,
       setUserLocation,
       setLocationPermission,
-      updateMapState
+      updateMapState,
+      mapPositionMode,
+      setMapPositionMode
     }}>
       {children}
     </AppContext.Provider>
