@@ -2413,8 +2413,7 @@
     "lines": [
       "10",
       "15B",
-      "15C",
-      "TUR"
+      "15C"
     ]
   },
   {
@@ -6270,8 +6269,7 @@
       "14",
       "18A",
       "18B",
-      "18H",
-      "TUR"
+      "18H"
     ]
   },
   {
@@ -7067,17 +7065,6 @@
     ]
   },
   {
-    "stopId": 6305,
-    "name": {
-      "original": "O Castro"
-    },
-    "latitude": 42.230800582,
-    "longitude": -8.725954962,
-    "lines": [
-      "TUR"
-    ]
-  },
-  {
     "stopId": 6360,
     "name": {
       "original": "Rúa de Pablo Iglesias (Colexio)"
@@ -7119,17 +7106,6 @@
     "longitude": -8.74559126,
     "lines": [
       "16"
-    ]
-  },
-  {
-    "stopId": 6415,
-    "name": {
-      "original": "Parque de Castrelos (Museo)"
-    },
-    "latitude": 42.213852214,
-    "longitude": -8.727322863,
-    "lines": [
-      "TUR"
     ]
   },
   {
@@ -14948,17 +14924,6 @@
     "lines": [
       "5B",
       "12A"
-    ]
-  },
-  {
-    "stopId": 20202,
-    "name": {
-      "original": "Estación Marítima"
-    },
-    "latitude": 42.2404374,
-    "longitude": -8.726048008,
-    "lines": [
-      "TUR"
     ]
   },
   {
