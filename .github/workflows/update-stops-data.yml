@@ -14,10 +14,10 @@ jobs:
 
       - name: Install uv
         uses: astral-sh/setup-uv@v5
-      
+
       - name: Run download script
         run: uv run data/download-stops.py
-        
+
       - name: Commit changes if any
         id: commit
         run: |
@@ -36,7 +36,7 @@ jobs:
             echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
             echo "changes_made=true" >> $GITHUB_OUTPUT
           fi
-          
+
       - name: Create Pull Request
         if: steps.commit.outputs.changes_made == 'true'
         env:
@@ -45,16 +45,17 @@ jobs:
         run: |
           # Close any existing PRs created by this action
           existing_prs=$(gh pr list --json number,title,headRefName --search "Update stops data in:title head:update-stops-data- author:app/github-actions is:open")
-          
+
           if [[ $(echo "$existing_prs" | jq length) -gt 0 ]]; then
             echo "Found existing PRs to close"
             echo "$existing_prs" | jq -c '.[]' | while read pr; do
               pr_number=$(echo "$pr" | jq -r '.number')
               echo "Closing PR #$pr_number"
               gh pr close $pr_number --comment "Superseded by a new PR with updated data"
+              gh branch delete $(echo "$pr" | jq -r '.headRefName') --force
             done
           fi
-          
+
           # Create new PR
           gh pr create \
             --title "Update stops data" \

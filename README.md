@@ -1,66 +1,60 @@
-# UrbanoVigo Web
+# Busurbano
 
-UrbanoVigo Web is a web application designed to help users find bus stops and arrival times for urban buses in Vigo, Spain.
+Busurbano is a web application designed to help users find bus stops and arrival times for urban buses in Vigo, Spain.
 
 ## Features
 
+- **Bus Stop List**: View a list of all bus stops, search for specific stops, and mark your favourite stops.
 - **Real-time Bus Arrival Estimates**: Get real-time estimates for bus arrivals at various stops.
-- **Bus Stop List**: View a list of all bus stops, search for specific stops, and mark your favorite stops.
 - **Interactive Map**: View bus stops on an interactive map.
 - **Settings**: Customize the theme (light/dark mode) and table style (regular/grouped).
 
 ## Technologies Used
 
 - **Frontend**: React 19, react-router, TypeScript, Vite
-- **Backend** (.NET): 
-    - Azure Functions
-    - [Costasdev.VigoTransitApi](https://github.com/arielcostas/urbanovigo)
+- **Backend**: 
+    - ASP.NET Core 9 Web API
+    - [Costasdev.VigoTransitApi](https://github.com/arielcostas/VigoTransitApi)
 - **Mapping**: 
     - [Leaflet](https://leafletjs.com/) via [React-Leaflet](https://react-leaflet.js.org/)
     - [Leaflet Locate Control](https://github.com/domoritz/leaflet-locatecontrol)
     - [Leaflet Marker Cluster](https://github.com/Leaflet/Leaflet.markercluster)
-- **Styling**: CSS, Fontsource Variable
+- **Styling**: Good old CSS
+- **Fonts**: [Outfit Variable](https://fonts.google.com/specimen/Outfit) from Google Fonts via [@fontsource](https://fontsource.org/fonts/outfit)
 
 ## Getting Started
 
 ### Prerequisites
 
 - Node 22 and npm
-- .NET 8 SDK
-- Azure Static Web Apps CLI (swa) `npm install -g @azure/static-web-apps-cli`
+- .NET 9 SDK
 
 ### Installation
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/arielcostas/urbanovigo-web.git
-   cd urbanovigo-web
+   git clone https://github.com/arielcostas/busurbano.git
+   cd busurbano
    ```
 
-2. Install frontend dependencies:
+2. Install dependencies:
    ```sh
-   npm install
-   ```
-
-3. Install backend dependencies:
-   ```sh
-   cd Backend
+   npm i
    dotnet restore
-   cd ..
    ```
 
 ### Running the Application
 
-1. Start the application with the Static Web Apps CLI:
+1. Start the entire application:
     ```sh
-    swa start
+    npm run dev
     ```
 
-3. Open your browser and navigate to `http://localhost:5173`.
+2. Open your browser and navigate to `http://localhost:5173`.
 
 ### Deployment
 
-The application is configured to be deployed to Azure Static Web Apps via GitHub Actions. To deploy the application to Azure by yourself, remove it in your fork and create a new "Static Web App" resource in the Azure Portal with the repository and branch you want to deploy.
+The application is (or will soon be) deployed to [busurbano.costas.dev](https://busurbano.costas.dev) via GitHub Actions, on a normal Ubuntu server with Nginx and a reverse proxy.
 
 ## Contributing
 

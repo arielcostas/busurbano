@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Costasdev.Busurbano.Backend</RootNamespace>
+    <UserSecretsId>0eff397c-f98e-4c3a-95ec-9d900f1b938c</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Costasdev.VigoTransitApi" Version="0.1.0" />
+  </ItemGroup>
+</Project>
