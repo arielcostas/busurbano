@@ -52,7 +52,7 @@ jobs:
               pr_number=$(echo "$pr" | jq -r '.number')
               echo "Closing PR #$pr_number"
               gh pr close $pr_number --comment "Superseded by a new PR with updated data"
-              gh branch delete $(echo "$pr" | jq -r '.headRefName') --force
+              git push origin --delete $(echo "$pr" | jq -r '.headRefName')
             done
           fi
 
