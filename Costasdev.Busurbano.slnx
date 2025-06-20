@@ -1,4 +1,4 @@
 <Solution>
-  <Project Path="src\frontend\frontend.esproj" />
   <Project Path="src\Costasdev.Busurbano.Backend\Costasdev.Busurbano.Backend.csproj" />
+  <Project Path="src\frontend\frontend.esproj" />
 </Solution>

@@ -9,7 +9,7 @@
   --star-color: #ffcc00;
   --message-background-color: #f8f9fa;
 
-  font-family: 'Outfit Variable', Roboto, Arial, sans-serif;
+  font-family: 'Roboto Variable', Roboto, Arial, Inter, sans-serif;
 }
 
 [data-theme='dark'] {
@@ -318,33 +318,33 @@ body {
     max-width: 768px;
     margin: 0 auto;
   }
-  
+
   .page-title {
     font-size: 2.2rem;
   }
-  
+
   .search-form {
     display: flex;
     align-items: flex-end;
     gap: 1rem;
   }
-  
+
   .form-group {
     flex: 1;
     margin-bottom: 0;
   }
-  
+
   .form-button {
     width: auto;
     margin-top: 0;
   }
-  
+
   .list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1rem;
   }
-  
+
   .list-item {
     border: 1px solid var(--border-color);
     border-radius: 8px;
@@ -357,7 +357,7 @@ body {
   .page-container {
     max-width: 1024px;
   }
-  
+
   .list {
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   }

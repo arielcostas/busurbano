@@ -33,23 +33,25 @@ export function Layout({ children }: LayoutProps) {
       <main className="main-content">
         {children}
       </main>
-      <nav className="nav-bar">
-        {navItems.map(item => {
-          const Icon = item.icon;
-          const isActive = location.pathname.startsWith(item.path);
+      <footer>
+        <nav className="navigation-bar">
+          {navItems.map(item => {
+            const Icon = item.icon;
+            const isActive = location.pathname.startsWith(item.path);
 
-          return (
-            <Link
-              key={item.name}
-              to={item.path}
-              className={`nav-item ${isActive ? 'active' : ''}`}
-            >
-              <Icon size={24} />
-              <span>{item.name}</span>
-            </Link>
-          );
-        })}
-      </nav>
+            return (
+              <Link
+                key={item.name}
+                to={item.path}
+                className={`navigation-bar__link ${isActive ? 'active' : ''}`}
+              >
+                <Icon size={24} />
+                <span>{item.name}</span>
+              </Link>
+            );
+          })}
+        </nav>
+      </footer>
     </>
   );
 }

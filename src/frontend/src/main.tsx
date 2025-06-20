@@ -1,4 +1,4 @@
-import '@fontsource-variable/outfit'
+import '@fontsource-variable/roboto'
 import './styles/Pages.css'
 
 import { createRoot } from 'react-dom/client'

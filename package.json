@@ -18,5 +18,8 @@
     },
     "workspaces": [
         "src/frontend"
-    ]
+    ],
+    "dependencies": {
+        "@fontsource-variable/roboto": "^5.2.6"
+    }
 }

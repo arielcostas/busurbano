@@ -12,15 +12,15 @@ Busurbano is a web application designed to help users find bus stops and arrival
 ## Technologies Used
 
 - **Frontend**: React 19, react-router, TypeScript, Vite
-- **Backend**: 
-    - ASP.NET Core 9 Web API
-    - [Costasdev.VigoTransitApi](https://github.com/arielcostas/VigoTransitApi)
-- **Mapping**: 
-    - [Leaflet](https://leafletjs.com/) via [React-Leaflet](https://react-leaflet.js.org/)
-    - [Leaflet Locate Control](https://github.com/domoritz/leaflet-locatecontrol)
-    - [Leaflet Marker Cluster](https://github.com/Leaflet/Leaflet.markercluster)
+- **Backend**:
+  - ASP.NET Core 9 Web API
+  - [Costasdev.VigoTransitApi](https://github.com/arielcostas/VigoTransitApi)
+- **Mapping**:
+  - [Leaflet](https://leafletjs.com/) via [React-Leaflet](https://react-leaflet.js.org/)
+  - [Leaflet Locate Control](https://github.com/domoritz/leaflet-locatecontrol)
+  - [Leaflet Marker Cluster](https://github.com/Leaflet/Leaflet.markercluster)
 - **Styling**: Good old CSS
-- **Fonts**: [Outfit Variable](https://fonts.google.com/specimen/Outfit) from Google Fonts via [@fontsource](https://fontsource.org/fonts/outfit)
+- **Fonts**: [Roboto Variable](https://fonts.google.com/specimen/Roboto) via [@fontsource](https://fontsource.org/fonts/outfit)
 
 ## Getting Started
 
@@ -32,12 +32,14 @@ Busurbano is a web application designed to help users find bus stops and arrival
 ### Installation
 
 1. Clone the repository:
+
    ```sh
    git clone https://github.com/arielcostas/busurbano.git
    cd busurbano
    ```
 
 2. Install dependencies:
+
    ```sh
    npm i
    dotnet restore
@@ -46,6 +48,7 @@ Busurbano is a web application designed to help users find bus stops and arrival
 ### Running the Application
 
 1. Start the entire application:
+
     ```sh
     npm run dev
     ```
@@ -62,6 +65,6 @@ Contributions are welcome! Please open an issue or submit a pull request.
 
 ## License
 
-This project is licensed under the BSD 3-Clause licence, meaning you can do whatever you want with it as long as you include the original copyright and license notice.
+This project is licenced under the BSD 3-Clause licence, meaning you can do whatever you want with it as long as you include the original copyright and license notice.
 
 Note that the data served by the application is obtained from [datos.vigo.org](https://datos.vigo.org) under the [Open Data Commons Attribution License](https://opendefinition.org/licenses/odc-by/), so you must comply with the terms of that license if you use the data in your own projects.
