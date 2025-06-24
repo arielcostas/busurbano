@@ -58,7 +58,7 @@ export default function StopList() {
 		return stopsList.reverse();
 	}, [data]);
 
-	if (data === null) return <h1 className="page-title">Loading...</h1>
+	if (data === null) return <h1 className="page-title">{t('common.loading')}</h1>
 
 	return (
 		<div className="page-container">
@@ -67,7 +67,7 @@ export default function StopList() {
 			<form className="search-form">
 				<div className="form-group">
 					<label className="form-label" htmlFor="stopName">
-						Buscar paradas
+						{t('stoplist.search_label', 'Buscar paradas')}
 					</label>
 					<input className="form-input" type="text" placeholder={randomPlaceholder} id="stopName" onChange={handleStopSearch} />
 				</div>
@@ -75,7 +75,7 @@ export default function StopList() {
 
 			{searchResults && searchResults.length > 0 && (
 				<div className="list-container">
-					<h2 className="page-subtitle">Resultados de la búsqueda</h2>
+					<h2 className="page-subtitle">{t('stoplist.search_results', 'Resultados de la búsqueda')}</h2>
 					<ul className="list">
 						{searchResults.map((stop: Stop) => (
 							<StopItem key={stop.stopId} stop={stop} />
@@ -85,11 +85,11 @@ export default function StopList() {
 			)}
 
 			<div className="list-container">
-				<h2 className="page-subtitle">Paradas favoritas</h2>
+				<h2 className="page-subtitle">{t('stoplist.favourites')}</h2>
 
 				{favouritedStops?.length === 0 && (
 					<p className="message">
-						Accede a una parada y márcala como favorita para verla aquí.
+						{t('stoplist.no_favourites', 'Accede a una parada y márcala como favorita para verla aquí.')}
 					</p>
 				)}
 
@@ -102,7 +102,7 @@ export default function StopList() {
 
 			{recentStops && recentStops.length > 0 && (
 				<div className="list-container">
-					<h2 className="page-subtitle">Recientes</h2>
+					<h2 className="page-subtitle">{t('stoplist.recents')}</h2>
 
 					<ul className="list">
 						{recentStops.map((stop: Stop) => (
@@ -113,7 +113,7 @@ export default function StopList() {
 			)}
 
 			<div className="list-container">
-				<h2 className="page-subtitle">Paradas</h2>
+				<h2 className="page-subtitle">{t('stoplist.all_stops', 'Paradas')}</h2>
 
 				<ul className="list">
 					{data?.sort((a, b) => a.stopId - b.stopId).map((stop: Stop) => (

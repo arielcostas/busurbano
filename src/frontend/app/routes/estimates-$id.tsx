@@ -83,7 +83,7 @@ export default function Estimates() {
 		}
 	};
 
-	if (data === null) return <h1 className="page-title">Cargando datos en tiempo real...</h1>
+	if (data === null) return <h1 className="page-title">{t('common.loading')}</h1>
 
 	return (
 		<div className="page-container">

@@ -24,15 +24,26 @@
   },
   "stoplist": {
     "search_placeholder": "Search stop...",
-    "favourites": "Favourites",
-    "recents": "Recent"
+    "search_label": "Search stops",
+    "search_results": "Search results",
+    "favourites": "Favourite stops",
+    "no_favourites": "Go to a stop and mark it as favourite to see it here.",
+    "recents": "Recent",
+    "all_stops": "Stops"
   },
   "estimates": {
     "minutes": "min",
     "meters": "m",
     "edit": "Edit name",
     "favourite": "Favourite",
-    "not_found": "Stop not found"
+    "not_found": "Stop not found",
+    "caption": "Arrival estimates at {{time}}",
+    "line": "Line",
+    "route": "Route",
+    "arrival": "Arrival",
+    "distance": "Distance",
+    "not_available": "Not available",
+    "none": "No estimates available"
   },
   "map": {
     "popup_title": "Stop",
@@ -42,5 +53,10 @@
     "loading": "Loading...",
     "error": "An unexpected error occurred.",
     "404": "The requested page could not be found."
+  },
+  "navbar": {
+    "stops": "Stops",
+    "map": "Map",
+    "settings": "Settings"
   }
 }

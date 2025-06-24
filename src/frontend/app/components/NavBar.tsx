@@ -2,6 +2,7 @@ import { Link } from "react-router";
 import { Map, MapPin, Settings } from "lucide-react";
 import { useApp } from "../AppContext";
 import type { LngLatLike } from "maplibre-gl";
+import { useTranslation } from "react-i18next";
 
 // Helper: check if coordinates are within Vigo bounds
 function isWithinVigo(lngLat: LngLatLike): boolean {
@@ -19,16 +20,17 @@ function isWithinVigo(lngLat: LngLatLike): boolean {
 }
 
 export default function NavBar() {
+  const { t } = useTranslation();
   const { mapState, updateMapState, mapPositionMode } = useApp();
 
   const navItems = [
     {
-      name: 'Paradas',
+      name: t('navbar.stops', 'Paradas'),
       icon: MapPin,
       path: '/stops'
     },
     {
-      name: 'Mapa',
+      name: t('navbar.map', 'Mapa'),
       icon: Map,
       path: '/map',
       callback: () => {
@@ -53,7 +55,7 @@ export default function NavBar() {
       }
     },
     {
-      name: 'Ajustes',
+      name: t('navbar.settings', 'Ajustes'),
       icon: Settings,
       path: '/settings'
     }

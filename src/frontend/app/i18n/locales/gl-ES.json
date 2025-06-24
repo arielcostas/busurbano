@@ -24,15 +24,26 @@
   },
   "stoplist": {
     "search_placeholder": "Buscar parada...",
-    "favourites": "Favoritas",
-    "recents": "Recentes"
+    "search_label": "Buscar paradas",
+    "search_results": "Resultados da busca",
+    "favourites": "Paradas favoritas",
+    "no_favourites": "Accede a unha parada e márcaa como favorita para vela aquí.",
+    "recents": "Recentes",
+    "all_stops": "Paradas"
   },
   "estimates": {
     "minutes": "min",
     "meters": "m",
     "edit": "Editar nome",
     "favourite": "Favorita",
-    "not_found": "Non se atopou a parada"
+    "not_found": "Non se atopou a parada",
+    "caption": "Estimacións de chegadas ás {{time}}",
+    "line": "Liña",
+    "route": "Ruta",
+    "arrival": "Chegada",
+    "distance": "Distancia",
+    "not_available": "Non dispoñible",
+    "none": "Non hai estimacións dispoñibles"
   },
   "map": {
     "popup_title": "Parada",
@@ -42,5 +53,10 @@
     "loading": "Cargando...",
     "error": "Produciuse un erro inesperado.",
     "404": "Non se puido atopar a páxina solicitada."
+  },
+  "navbar": {
+    "stops": "Paradas",
+    "map": "Mapa",
+    "settings": "Axustes"
   }
 }

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { type StopDetails } from "../routes/estimates-$id";
 import LineIcon from "./LineIcon";
 
@@ -7,6 +8,7 @@ interface RegularTableProps {
 }
 
 export const RegularTable: React.FC<RegularTableProps> = ({ data, dataDate }) => {
+    const { t } = useTranslation();
 
     const absoluteArrivalTime = (minutes: number) => {
         const now = new Date()
@@ -21,19 +23,19 @@ export const RegularTable: React.FC<RegularTableProps> = ({ data, dataDate }) =>
         if (meters > 1024) {
             return `${(meters / 1000).toFixed(1)} km`;
         } else {
-            return `${meters} m`;
+            return `${meters} ${t('estimates.meters', 'm')}`;
         }
     }
 
     return <table className="table">
-        <caption>Estimaciones de llegadas a las {dataDate?.toLocaleTimeString()}</caption>
+        <caption>{t('estimates.caption', 'Estimaciones de llegadas a las {{time}}', { time: dataDate?.toLocaleTimeString() })}</caption>
 
         <thead>
             <tr>
-                <th>Línea</th>
-                <th>Ruta</th>
-                <th>Llegada</th>
-                <th>Distancia</th>
+                <th>{t('estimates.line', 'Línea')}</th>
+                <th>{t('estimates.route', 'Ruta')}</th>
+                <th>{t('estimates.arrival', 'Llegada')}</th>
+                <th>{t('estimates.distance', 'Distancia')}</th>
             </tr>
         </thead>
 
@@ -47,12 +49,12 @@ export const RegularTable: React.FC<RegularTableProps> = ({ data, dataDate }) =>
                         <td>
                             {estimate.minutes > 15
                                 ? absoluteArrivalTime(estimate.minutes)
-                                : `${estimate.minutes} min`}
+                                : `${estimate.minutes} ${t('estimates.minutes', 'min')}`}
                         </td>
                         <td>
                             {estimate.meters > -1
                                 ? formatDistance(estimate.meters)
-                                : "No disponible"
+                                : t('estimates.not_available', 'No disponible')
                             }
                         </td>
                     </tr>
@@ -62,7 +64,7 @@ export const RegularTable: React.FC<RegularTableProps> = ({ data, dataDate }) =>
         {data?.estimates.length === 0 && (
             <tfoot>
                 <tr>
-                    <td colSpan={4}>No hay estimaciones disponibles</td>
+                    <td colSpan={4}>{t('estimates.none', 'No hay estimaciones disponibles')}</td>
                 </tr>
             </tfoot>
         )}

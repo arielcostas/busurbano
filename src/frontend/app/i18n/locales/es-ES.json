@@ -24,15 +24,26 @@
   },
   "stoplist": {
     "search_placeholder": "Buscar parada...",
-    "favourites": "Favoritas",
-    "recents": "Recientes"
+    "search_label": "Buscar paradas",
+    "search_results": "Resultados de la búsqueda",
+    "favourites": "Paradas favoritas",
+    "no_favourites": "Accede a una parada y márcala como favorita para verla aquí.",
+    "recents": "Recientes",
+    "all_stops": "Paradas"
   },
   "estimates": {
     "minutes": "min",
     "meters": "m",
     "edit": "Editar nombre",
     "favourite": "Favorito",
-    "not_found": "No se encontró la parada"
+    "not_found": "No se encontró la parada",
+    "caption": "Estimaciones de llegadas a las {{time}}",
+    "line": "Línea",
+    "route": "Ruta",
+    "arrival": "Llegada",
+    "distance": "Distancia",
+    "not_available": "No disponible",
+    "none": "No hay estimaciones disponibles"
   },
   "map": {
     "popup_title": "Parada",
@@ -42,5 +53,10 @@
     "loading": "Cargando...",
     "error": "Ha ocurrido un error inesperado.",
     "404": "La página solicitada no se pudo encontrar."
+  },
+  "navbar": {
+    "stops": "Paradas",
+    "map": "Mapa",
+    "settings": "Ajustes"
   }
 }
