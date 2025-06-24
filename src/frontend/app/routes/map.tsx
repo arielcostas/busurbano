@@ -8,6 +8,7 @@ import { loadStyle } from "app/maps/styleloader";
 import type { Feature as GeoJsonFeature, Point } from 'geojson';
 import LineIcon from "~/components/LineIcon";
 import { Link } from "react-router";
+import { useTranslation } from "react-i18next";
 
 // Default minimal fallback style before dynamic loading
 const defaultStyle: StyleSpecification = {
@@ -20,6 +21,7 @@ const defaultStyle: StyleSpecification = {
 
 // Componente principal del mapa
 export default function StopMap() {
+   const { t } = useTranslation();
    const [stops, setStops] = useState<GeoJsonFeature<Point, { stopId: number; name: string; lines: string[] }>[]>([]);
     const [popupInfo, setPopupInfo] = useState<any>(null);
     const { mapState, updateMapState, theme } = useApp();

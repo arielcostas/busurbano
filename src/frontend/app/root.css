@@ -45,6 +45,7 @@ body {
 .main-content {
   flex: 1;
   overflow: auto;
+  overflow-x: hidden;
 }
 
 .navigation-bar {

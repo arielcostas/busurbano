@@ -1,0 +1,46 @@
+{
+  "about": {
+    "title": "About UrbanoVigo Web",
+    "description": "Web app to find stops and arrival times for Vigo's urban buses, Spain.",
+    "credits": "Credits",
+    "github": "Code on GitHub",
+    "developed_by": "Developed by",
+    "data_source_prefix": "Data from",
+    "data_source_middle": "under license",
+    "settings": "Settings",
+    "theme": "Mode:",
+    "theme_light": "Light",
+    "theme_dark": "Dark",
+    "table_style": "Table style:",
+    "table_style_regular": "Show in order",
+    "table_style_grouped": "Group by line",
+    "map_position_mode": "Map position:",
+    "map_position_gps": "GPS position",
+    "map_position_last": "Where I left it",
+    "details_summary": "What does this mean?",
+    "details_table": "The timetable can be shown in two ways:",
+    "details_regular": "Stops are shown in the order they are visited. Apps like Infobus (Vitrasa) use this style.",
+    "details_grouped": "Stops are grouped by bus line. Apps like iTranvias (A Coruña) or Moovit (more or less) use this style."
+  },
+  "stoplist": {
+    "search_placeholder": "Search stop...",
+    "favourites": "Favourites",
+    "recents": "Recent"
+  },
+  "estimates": {
+    "minutes": "min",
+    "meters": "m",
+    "edit": "Edit name",
+    "favourite": "Favourite",
+    "not_found": "Stop not found"
+  },
+  "map": {
+    "popup_title": "Stop",
+    "lines": "Lines"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An unexpected error occurred.",
+    "404": "The requested page could not be found."
+  }
+}

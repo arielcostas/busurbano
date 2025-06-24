@@ -22,6 +22,8 @@ const pmtiles = new Protocol();
 maplibregl.addProtocol("pmtiles", pmtiles.tile);
 //#endregion
 
+import "./i18n";
+
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js')
     .then((registration) => {

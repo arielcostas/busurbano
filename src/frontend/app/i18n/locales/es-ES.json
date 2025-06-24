@@ -1,0 +1,46 @@
+{
+  "about": {
+    "title": "Sobre UrbanoVigo Web",
+    "description": "Aplicación web para encontrar paradas y tiempos de llegada de los autobuses urbanos de Vigo, España.",
+    "credits": "Créditos",
+    "github": "Código en GitHub",
+    "developed_by": "Desarrollado por",
+    "data_source_prefix": "Datos obtenidos de",
+    "data_source_middle": "bajo licencia",
+    "settings": "Ajustes",
+    "theme": "Modo:",
+    "theme_light": "Claro",
+    "theme_dark": "Oscuro",
+    "table_style": "Estilo de tabla:",
+    "table_style_regular": "Mostrar por orden",
+    "table_style_grouped": "Agrupar por línea",
+    "map_position_mode": "Posición del mapa:",
+    "map_position_gps": "Posición GPS",
+    "map_position_last": "Donde lo dejé",
+    "details_summary": "¿Qué significa esto?",
+    "details_table": "La tabla de horarios puede mostrarse de dos formas:",
+    "details_regular": "Las paradas se muestran en el orden en que se visitan. Aplicaciones como Infobus (Vitrasa) usan este estilo.",
+    "details_grouped": "Las paradas se agrupan por la línea de autobús. Aplicaciones como iTranvias (A Coruña) o Moovit (más o menos) usan este estilo."
+  },
+  "stoplist": {
+    "search_placeholder": "Buscar parada...",
+    "favourites": "Favoritas",
+    "recents": "Recientes"
+  },
+  "estimates": {
+    "minutes": "min",
+    "meters": "m",
+    "edit": "Editar nombre",
+    "favourite": "Favorito",
+    "not_found": "No se encontró la parada"
+  },
+  "map": {
+    "popup_title": "Parada",
+    "lines": "Líneas"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Ha ocurrido un error inesperado.",
+    "404": "La página solicitada no se pudo encontrar."
+  }
+}

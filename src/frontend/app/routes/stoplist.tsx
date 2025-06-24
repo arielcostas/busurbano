@@ -3,25 +3,15 @@ import StopDataProvider, { type Stop } from "../data/StopDataProvider";
 import StopItem from "../components/StopItem";
 import Fuse from "fuse.js";
 import './stoplist.css';
-
-const placeholders = [
-	"Urzaiz",
-	"Gran Vía",
-	"Castelao",
-	"García Barbón",
-	"Valladares",
-	"Florida",
-	"Pizarro",
-	"Estrada Madrid",
-	"Sanjurjo Badía"
-];
+import { useTranslation } from "react-i18next";
 
 export default function StopList() {
+	const { t } = useTranslation();
 	const [data, setData] = useState<Stop[] | null>(null)
 	const [searchResults, setSearchResults] = useState<Stop[] | null>(null);
 	const searchTimeout = useRef<NodeJS.Timeout | null>(null);
 
-	const randomPlaceholder = useMemo(() => placeholders[Math.floor(Math.random() * placeholders.length)], []);
+	const randomPlaceholder = useMemo(() => t('stoplist.search_placeholder'), [t]);
 	const fuse = useMemo(() => new Fuse(data || [], { threshold: 0.3, keys: ['name.original'] }), [data]);
 
 	useEffect(() => {

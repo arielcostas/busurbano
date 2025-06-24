@@ -6,6 +6,7 @@ import "./estimates-$id.css";
 import { RegularTable } from "../components/RegularTable";
 import { useApp } from "../AppContext";
 import { GroupedTable } from "../components/GroupedTable";
+import { useTranslation } from "react-i18next";
 
 export interface StopDetails {
 	stop: {
@@ -32,6 +33,7 @@ const loadData = async (stopId: string) => {
 };
 
 export default function Estimates() {
+	const { t } = useTranslation();
 	const params = useParams();
 	const stopIdNum = parseInt(params.id ?? "");
 	const [customName, setCustomName] = useState<string | undefined>(undefined);
