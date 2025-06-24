@@ -2,15 +2,14 @@
   "name": "frontend",
   "private": true,
   "version": "0.0.0",
-  "engines": {
-    "node": ">=20.0.0"
-  },
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "build": "react-router build",
+    "dev": "react-router dev --host",
+    "start": "react-router-serve ./build/server/index.js",
+    "typecheck": "react-router typegen && tsc",
+    "format": "prettier --write .",
+    "checkformat": "prettier --check ."
   },
   "dependencies": {
     "@fontsource-variable/roboto": "^5.2.6",
@@ -45,7 +44,8 @@
     "react-map-gl": "^8.0.4",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.32.0",
-    "vite": "^6.3.5"
+    "vite": "^6.3.5",
+    "vite-tsconfig-paths": "5.1.4"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "*"
