@@ -16,9 +16,8 @@ import "./root.css";
 import "maplibre-theme/icons.default.css";
 import "maplibre-theme/modern.css";
 import { Protocol } from "pmtiles";
-import maplibregl from "maplibre-gl";
+import maplibregl, { type LngLatLike } from "maplibre-gl";
 import { AppProvider } from "./AppContext";
-import { Map, MapPin, Settings } from "lucide-react";
 const pmtiles = new Protocol();
 maplibregl.addProtocol("pmtiles", pmtiles.tile);
 //#endregion
@@ -81,48 +80,31 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function App() {
-  const navItems = [
-    {
-      name: 'Paradas',
-      icon: MapPin,
-      path: '/stops'
-    },
-    {
-      name: 'Mapa',
-      icon: Map,
-      path: '/map'
-    },
-    {
-      name: 'Ajustes',
-      icon: Settings,
-      path: '/settings'
+  // Helper: check if coordinates are within Vigo bounds
+  function isWithinVigo(lngLat: LngLatLike): boolean {
+    let lng: number, lat: number;
+    if (Array.isArray(lngLat)) {
+      [lng, lat] = lngLat;
+    } else if ('lng' in lngLat && 'lat' in lngLat) {
+      lng = lngLat.lng;
+      lat = lngLat.lat;
+    } else {
+      return false;
     }
-  ];
+    // Rough bounding box for Vigo
+    return lat >= 42.18 && lat <= 42.30 && lng >= -8.78 && lng <= -8.65;
+  }
 
+import NavBar from "./components/NavBar";
+
+export default function App() {
   return (
     <AppProvider>
       <main className="main-content">
         <Outlet />
       </main>
       <footer>
-        <nav className="navigation-bar">
-          {navItems.map(item => {
-            const Icon = item.icon;
-            const isActive = location.pathname.startsWith(item.path);
-
-            return (
-              <Link
-                key={item.name}
-                to={item.path}
-                className={`navigation-bar__link ${isActive ? 'active' : ''}`}
-              >
-                <Icon size={24} />
-                <span>{item.name}</span>
-              </Link>
-            );
-          })}
-        </nav>
+        <NavBar />
       </footer>
     </AppProvider>
 

@@ -113,46 +113,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     };
   });
 
-  // Helper: check if coordinates are within Vigo bounds
-  function isWithinVigo(lngLat: LngLatLike): boolean {
-    let lng: number, lat: number;
-    if (Array.isArray(lngLat)) {
-      [lng, lat] = lngLat;
-    } else if ('lng' in lngLat && 'lat' in lngLat) {
-      lng = lngLat.lng;
-      lat = lngLat.lat;
-    } else {
-      return false;
-    }
-    // Rough bounding box for Vigo
-    return lat >= 42.18 && lat <= 42.30 && lng >= -8.78 && lng <= -8.65;
-  }
-
-  // On app load, if mapPositionMode is 'gps', try to get GPS and set map center
-  useEffect(() => {
-    if (mapPositionMode === 'gps') {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const { latitude, longitude } = position.coords;
-            const coords: LngLatLike = [latitude, longitude];
-            if (isWithinVigo(coords)) {
-              setMapState(prev => {
-                const newState = { ...prev, center: coords, zoom: 16, userLocation: coords };
-                localStorage.setItem('mapState', JSON.stringify(newState));
-                return newState;
-              });
-            }
-          },
-          () => {
-            // Ignore error, fallback to last
-          }
-        );
-      }
-    }
-    // If 'last', do nothing (already loaded from localStorage)
-  }, [mapPositionMode]);
-
   const setMapCenter = (center: LngLatLike) => {
     setMapState(prev => {
       const newState = { ...prev, center };
