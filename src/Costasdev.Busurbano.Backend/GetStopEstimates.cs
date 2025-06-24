@@ -20,13 +20,13 @@ public class ApiController : ControllerBase
         var argumentAvailable = Request.Query.TryGetValue("id", out var requestedStopIdString);
         if (!argumentAvailable)
         {
-            return new BadRequestObjectResult("Please provide a stop id");
+            return BadRequest("Please provide a stop id as a query parameter with the name 'id'.");
         }
 
         var argumentNumber = int.TryParse(requestedStopIdString, out var requestedStopId);
         if (!argumentNumber)
         {
-            return new BadRequestObjectResult("Please provide a valid stop id");
+            return BadRequest("The provided stop id is not a valid number.");
         }
 
         try

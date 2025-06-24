@@ -1,0 +1,33 @@
+{
+    "version": 8,
+    "name": "Light",
+    "sources": {
+        "carto": {
+            "type": "raster",
+            "tiles": ["https://d.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"],
+            "attribution": "&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors, &copy; <a href=\"https://carto.com/attributions\">CARTO</a>",
+            "tileSize": 256,
+            "maxzoom": 22,
+            "minzoom": 0
+        }
+    },
+    "layers": [
+        {
+            "id": "background",
+            "type": "background",
+            "paint": {
+                "background-color": "#f0f0f0"
+            }
+        },
+        {
+            "id": "raster",
+            "type": "raster",
+            "source": "carto",
+            "minzoom": 0,
+            "maxzoom": 22
+        }
+
+    ],
+    "sprite": "/maps/spritesheet/sprite",
+    "glyphs": "/maps/fonts/{fontstack}/{range}.pbf"
+}

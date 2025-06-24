@@ -14,12 +14,18 @@
     "license": "BSD-3-Clause",
     "devDependencies": {
         "concurrently": "^9.1.2",
-        "prettier": "^3.5.3"
+        "prettier": "^3.5.3",
+        "vite-tsconfig-paths": "^5.1.4"
     },
     "workspaces": [
         "src/frontend"
     ],
     "dependencies": {
-        "@fontsource-variable/roboto": "^5.2.6"
+        "@fontsource-variable/roboto": "^5.2.6",
+        "@react-router/node": "^7.6.2",
+        "@react-router/serve": "^7.6.2",
+        "maplibre-gl": "^5.6.0",
+        "pmtiles": "^4.3.0",
+        "react-map-gl": "^8.0.4"
     }
 }
