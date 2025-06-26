@@ -1,5 +1,5 @@
-import React from 'react';
-import './LineIcon.css';
+import React from "react";
+import "./LineIcon.css";
 
 interface LineIconProps {
   line: string;

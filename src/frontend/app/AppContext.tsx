@@ -1,10 +1,16 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import { type LngLatLike } from 'maplibre-gl';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react";
+import { type LngLatLike } from "maplibre-gl";
 
-type Theme = 'light' | 'dark';
-type TableStyle = 'regular'|'grouped';
-type MapPositionMode = 'gps' | 'last';
+type Theme = "light" | "dark";
+type TableStyle = "regular" | "grouped";
+type MapPositionMode = "gps" | "last";
 
 interface MapState {
   center: LngLatLike;
@@ -42,56 +48,62 @@ const AppContext = createContext<AppContextProps | undefined>(undefined);
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   //#region Theme
   const [theme, setTheme] = useState<Theme>(() => {
-    const savedTheme = localStorage.getItem('theme');
+    const savedTheme = localStorage.getItem("theme");
     if (savedTheme) {
       return savedTheme as Theme;
     }
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    return prefersDark ? 'dark' : 'light';
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    return prefersDark ? "dark" : "light";
   });
 
   const toggleTheme = () => {
-    setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
+    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
   };
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
   }, [theme]);
   //#endregion
 
   //#region Table Style
   const [tableStyle, setTableStyle] = useState<TableStyle>(() => {
-    const savedTableStyle = localStorage.getItem('tableStyle');
+    const savedTableStyle = localStorage.getItem("tableStyle");
     if (savedTableStyle) {
       return savedTableStyle as TableStyle;
     }
-    return 'regular';
+    return "regular";
   });
 
   const toggleTableStyle = () => {
-    setTableStyle((prevTableStyle) => (prevTableStyle === 'regular' ? 'grouped' : 'regular'));
-  }
+    setTableStyle((prevTableStyle) =>
+      prevTableStyle === "regular" ? "grouped" : "regular",
+    );
+  };
 
   useEffect(() => {
-    localStorage.setItem('tableStyle', tableStyle);
+    localStorage.setItem("tableStyle", tableStyle);
   }, [tableStyle]);
   //#endregion
 
   //#region Map Position Mode
-  const [mapPositionMode, setMapPositionMode] = useState<MapPositionMode>(() => {
-    const saved = localStorage.getItem('mapPositionMode');
-    return saved === 'last' ? 'last' : 'gps';
-  });
+  const [mapPositionMode, setMapPositionMode] = useState<MapPositionMode>(
+    () => {
+      const saved = localStorage.getItem("mapPositionMode");
+      return saved === "last" ? "last" : "gps";
+    },
+  );
 
   useEffect(() => {
-    localStorage.setItem('mapPositionMode', mapPositionMode);
+    localStorage.setItem("mapPositionMode", mapPositionMode);
   }, [mapPositionMode]);
   //#endregion
 
   //#region Map State
   const [mapState, setMapState] = useState<MapState>(() => {
-    const savedMapState = localStorage.getItem('mapState');
+    const savedMapState = localStorage.getItem("mapState");
     if (savedMapState) {
       try {
         const parsed = JSON.parse(savedMapState);
@@ -99,56 +111,56 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
           center: parsed.center || DEFAULT_CENTER,
           zoom: parsed.zoom || DEFAULT_ZOOM,
           userLocation: parsed.userLocation || null,
-          hasLocationPermission: parsed.hasLocationPermission || false
+          hasLocationPermission: parsed.hasLocationPermission || false,
         };
       } catch (e) {
-        console.error('Error parsing saved map state', e);
+        console.error("Error parsing saved map state", e);
       }
     }
     return {
       center: DEFAULT_CENTER,
       zoom: DEFAULT_ZOOM,
       userLocation: null,
-      hasLocationPermission: false
+      hasLocationPermission: false,
     };
   });
 
   const setMapCenter = (center: LngLatLike) => {
-    setMapState(prev => {
+    setMapState((prev) => {
       const newState = { ...prev, center };
-      localStorage.setItem('mapState', JSON.stringify(newState));
+      localStorage.setItem("mapState", JSON.stringify(newState));
       return newState;
     });
   };
 
   const setMapZoom = (zoom: number) => {
-    setMapState(prev => {
+    setMapState((prev) => {
       const newState = { ...prev, zoom };
-      localStorage.setItem('mapState', JSON.stringify(newState));
+      localStorage.setItem("mapState", JSON.stringify(newState));
       return newState;
     });
   };
 
   const setUserLocation = (userLocation: LngLatLike | null) => {
-    setMapState(prev => {
+    setMapState((prev) => {
       const newState = { ...prev, userLocation };
-      localStorage.setItem('mapState', JSON.stringify(newState));
+      localStorage.setItem("mapState", JSON.stringify(newState));
       return newState;
     });
   };
 
   const setLocationPermission = (hasLocationPermission: boolean) => {
-    setMapState(prev => {
+    setMapState((prev) => {
       const newState = { ...prev, hasLocationPermission };
-      localStorage.setItem('mapState', JSON.stringify(newState));
+      localStorage.setItem("mapState", JSON.stringify(newState));
       return newState;
     });
   };
 
   const updateMapState = (center: LngLatLike, zoom: number) => {
-    setMapState(prev => {
+    setMapState((prev) => {
       const newState = { ...prev, center, zoom };
-      localStorage.setItem('mapState', JSON.stringify(newState));
+      localStorage.setItem("mapState", JSON.stringify(newState));
       return newState;
     });
   };
@@ -164,31 +176,33 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             setUserLocation([latitude, longitude]);
           },
           (error) => {
-            console.error('Error getting location:', error);
+            console.error("Error getting location:", error);
             setLocationPermission(false);
-          }
+          },
         );
       }
     }
   }, [mapState.hasLocationPermission, mapState.userLocation]);
 
   return (
-    <AppContext.Provider value={{
-      theme,
-      setTheme,
-      toggleTheme,
-      tableStyle,
-      setTableStyle,
-      toggleTableStyle,
-      mapState,
-      setMapCenter,
-      setMapZoom,
-      setUserLocation,
-      setLocationPermission,
-      updateMapState,
-      mapPositionMode,
-      setMapPositionMode
-    }}>
+    <AppContext.Provider
+      value={{
+        theme,
+        setTheme,
+        toggleTheme,
+        tableStyle,
+        setTableStyle,
+        toggleTableStyle,
+        mapState,
+        setMapCenter,
+        setMapZoom,
+        setUserLocation,
+        setLocationPermission,
+        updateMapState,
+        mapPositionMode,
+        setMapPositionMode,
+      }}
+    >
       {children}
     </AppContext.Provider>
   );
@@ -197,7 +211,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 export const useApp = () => {
   const context = useContext(AppContext);
   if (!context) {
-    throw new Error('useApp must be used within a AppProvider');
+    throw new Error("useApp must be used within a AppProvider");
   }
   return context;
 };

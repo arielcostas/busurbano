@@ -23,6 +23,7 @@
     "react-dom": "^19.1.0",
     "react-leaflet": "^5.0.0",
     "react-leaflet-markercluster": "^5.0.0-rc.0",
+    "react-modal-sheet": "^4.4.0",
     "react-router": "^7.6.0"
   },
   "devDependencies": {

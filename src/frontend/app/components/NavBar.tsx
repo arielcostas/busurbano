@@ -9,14 +9,14 @@ function isWithinVigo(lngLat: LngLatLike): boolean {
   let lng: number, lat: number;
   if (Array.isArray(lngLat)) {
     [lng, lat] = lngLat;
-  } else if ('lng' in lngLat && 'lat' in lngLat) {
+  } else if ("lng" in lngLat && "lat" in lngLat) {
     lng = lngLat.lng;
     lat = lngLat.lat;
   } else {
     return false;
   }
   // Rough bounding box for Vigo
-  return lat >= 42.18 && lat <= 42.30 && lng >= -8.78 && lng <= -8.65;
+  return lat >= 42.18 && lat <= 42.3 && lng >= -8.78 && lng <= -8.65;
 }
 
 export default function NavBar() {
@@ -25,20 +25,20 @@ export default function NavBar() {
 
   const navItems = [
     {
-      name: t('navbar.stops', 'Paradas'),
+      name: t("navbar.stops", "Paradas"),
       icon: MapPin,
-      path: '/stops'
+      path: "/stops",
     },
     {
-      name: t('navbar.map', 'Mapa'),
+      name: t("navbar.map", "Mapa"),
       icon: Map,
-      path: '/map',
+      path: "/map",
       callback: () => {
-        if (mapPositionMode !== 'gps') {
+        if (mapPositionMode !== "gps") {
           return;
         }
 
-        if (!('geolocation' in navigator)) {
+        if (!("geolocation" in navigator)) {
           return;
         }
 
@@ -50,20 +50,20 @@ export default function NavBar() {
               updateMapState(coords, 16);
             }
           },
-          () => { }
+          () => {},
         );
-      }
+      },
     },
     {
-      name: t('navbar.settings', 'Ajustes'),
+      name: t("navbar.settings", "Ajustes"),
       icon: Settings,
-      path: '/settings'
-    }
+      path: "/settings",
+    },
   ];
 
   return (
     <nav className="navigation-bar">
-      {navItems.map(item => {
+      {navItems.map((item) => {
         const Icon = item.icon;
         const isActive = location.pathname.startsWith(item.path);
 
@@ -71,7 +71,7 @@ export default function NavBar() {
           <Link
             key={item.name}
             to={item.path}
-            className={`navigation-bar__link ${isActive ? 'active' : ''}`}
+            className={`navigation-bar__link ${isActive ? "active" : ""}`}
             onClick={item.callback ? item.callback : undefined}
             title={item.name}
             aria-label={item.name}

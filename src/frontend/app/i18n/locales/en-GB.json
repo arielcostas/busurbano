@@ -43,11 +43,13 @@
     "arrival": "Arrival",
     "distance": "Distance",
     "not_available": "Not available",
-    "none": "No estimates available"
+    "none": "No estimates available",
+    "next_arrivals": "Next arrivals"
   },
   "map": {
     "popup_title": "Stop",
-    "lines": "Lines"
+    "lines": "Lines",
+    "view_all_estimates": "View all estimates"
   },
   "common": {
     "loading": "Loading...",

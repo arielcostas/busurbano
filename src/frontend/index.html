@@ -1,55 +1,65 @@
 <!doctype html>
 <html lang="es">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8" />
 
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta charset="UTF-8" />
+    <title>UrbanoVigo Web</title>
 
-  <title>UrbanoVigo Web</title>
+    <link rel="icon" type="image/jpg" href="/logo-512.jpg" />
+    <link rel="icon" href="/favicon.ico" sizes="64x64" />
+    <link rel="apple-touch-icon" href="/logo-512.jpg" sizes="512x512" />
+    <meta name="theme-color" content="#007bff" />
 
-  <link rel="icon" type="image/jpg" href="/logo-512.jpg" />
-  <link rel="icon" href="/favicon.ico" sizes="64x64" />
-  <link rel="apple-touch-icon" href="/logo-512.jpg" sizes="512x512" />
-  <meta name="theme-color" content="#007bff" />
+    <link rel="canonical" href="https://urbanovigo.costas.dev/" />
 
-  <link rel="canonical" href="https://urbanovigo.costas.dev/" />
+    <meta
+      name="description"
+      content="Aplicación web para encontrar paradas y tiempos de llegada de los autobuses urbanos de Vigo, España."
+    />
+    <meta
+      name="keywords"
+      content="Vigo, autobús, urbano, parada, tiempo, llegada, transporte, público, España"
+    />
+    <meta name="author" content="Ariel Costas Guerrero" />
 
-  <meta name="description" content="Aplicación web para encontrar paradas y tiempos de llegada de los autobuses urbanos de Vigo, España." />
-  <meta name="keywords" content="Vigo, autobús, urbano, parada, tiempo, llegada, transporte, público, España" />
-  <meta name="author" content="Ariel Costas Guerrero" />
+    <meta property="og:title" content="UrbanoVigo Web" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://urbanovigo.costas.dev/" />
+    <meta
+      property="og:image"
+      content="https://urbanovigo.costas.dev/logo-512.jpg"
+    />
+    <meta
+      property="og:description"
+      content="Aplicación web para encontrar paradas y tiempos de llegada de los autobuses urbanos de Vigo, España."
+    />
 
-  <meta property="og:title" content="UrbanoVigo Web" />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://urbanovigo.costas.dev/" />
-  <meta property="og:image" content="https://urbanovigo.costas.dev/logo-512.jpg" />
-  <meta property="og:description" content="Aplicación web para encontrar paradas y tiempos de llegada de los autobuses urbanos de Vigo, España." />
+    <link rel="manifest" href="/manifest.webmanifest" />
 
-  <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="googlebot" content="noindex, nofollow" />
 
-  <meta name="robots" content="noindex, nofollow" />
-  <meta name="googlebot" content="noindex, nofollow" />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+    </style>
+  </head>
 
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-  </style>
-</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
 
-<body>
-  <div id="root"></div>
-  <script type="module" src="/src/main.tsx"></script>
-
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js');
-      navigator.serviceWorker.ready.then(registration => {
-        registration.update();
-      });
-    }
-  </script>
-</body>
-
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("/sw.js");
+        navigator.serviceWorker.ready.then((registration) => {
+          registration.update();
+        });
+      }
+    </script>
+  </body>
 </html>
