@@ -81,8 +81,7 @@ export const StopSheet: React.FC<StopSheetProps> = ({
     <Sheet
       isOpen={isOpen}
       onClose={onClose}
-      snapPoints={[0.5, 0.8, 0.95]}
-      initialSnap={1}
+      detent="content-height"
     >
       <Sheet.Container>
         <Sheet.Header />
@@ -137,15 +136,13 @@ export const StopSheet: React.FC<StopSheetProps> = ({
                   )}
                 </div>
 
-                <div className="stop-sheet-actions">
-                  <Link
-                    to={`/estimates/${stopId}`}
-                    className="stop-sheet-view-all"
-                    onClick={onClose}
-                  >
-                    {t("map.view_all_estimates", "Ver todas las estimaciones")}
-                  </Link>
-                </div>
+                <Link
+                  to={`/estimates/${stopId}`}
+                  className="stop-sheet-view-all"
+                  onClick={onClose}
+                >
+                  {t("map.view_all_estimates", "Ver todas las estimaciones")}
+                </Link>
               </>
             )}
           </div>

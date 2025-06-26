@@ -55,7 +55,8 @@
   font-weight: 600;
   text-transform: uppercase;
   color: inherit;
-  /* Prevent color change on hover */
+  background-color: white;
+  border-radius: 0.25rem 0.25rem 0 0;
 }
 
 .line-c1 {
