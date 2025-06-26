@@ -43,11 +43,13 @@
     "arrival": "Chegada",
     "distance": "Distancia",
     "not_available": "Non dispoñible",
-    "none": "Non hai estimacións dispoñibles"
+    "none": "Non hai estimacións dispoñibles",
+    "next_arrivals": "Próximas chegadas"
   },
   "map": {
     "popup_title": "Parada",
-    "lines": "Liñas"
+    "lines": "Liñas",
+    "view_all_estimates": "Ver todas as estimacións"
   },
   "common": {
     "loading": "Cargando...",

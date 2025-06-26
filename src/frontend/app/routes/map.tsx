@@ -3,11 +3,10 @@ import './map.css';
 
 import { useEffect, useRef, useState } from 'react';
 import { useApp } from "../AppContext";
-import Map, { AttributionControl, GeolocateControl, Layer, NavigationControl, Popup, Source, type MapRef, type MapLayerMouseEvent, type StyleSpecification } from "react-map-gl/maplibre";
+import Map, { AttributionControl, GeolocateControl, Layer, NavigationControl, Source, type MapRef, type MapLayerMouseEvent, type StyleSpecification } from "react-map-gl/maplibre";
 import { loadStyle } from "app/maps/styleloader";
 import type { Feature as GeoJsonFeature, Point } from 'geojson';
-import LineIcon from "~/components/LineIcon";
-import { Link } from "react-router";
+import { StopSheet } from "~/components/StopSheet";
 import { useTranslation } from "react-i18next";
 
 // Default minimal fallback style before dynamic loading
@@ -23,10 +22,11 @@ const defaultStyle: StyleSpecification = {
 export default function StopMap() {
    const { t } = useTranslation();
    const [stops, setStops] = useState<GeoJsonFeature<Point, { stopId: number; name: string; lines: string[] }>[]>([]);
-    const [popupInfo, setPopupInfo] = useState<any>(null);
-    const { mapState, updateMapState, theme } = useApp();
-    const mapRef = useRef<MapRef>(null);
-    const [mapStyleKey, setMapStyleKey] = useState<string>("light");
+   const [selectedStop, setSelectedStop] = useState<{ stopId: number; name: string } | null>(null);
+   const [isSheetOpen, setIsSheetOpen] = useState(false);
+   const { mapState, updateMapState, theme } = useApp();
+   const mapRef = useRef<MapRef>(null);
+   const [mapStyleKey, setMapStyleKey] = useState<string>("light");
 
 	// Style state for Map component
 	const [mapStyle, setMapStyle] = useState<StyleSpecification>(defaultStyle);
@@ -94,14 +94,11 @@ export default function StopMap() {
 		// fetch full stop to get lines array
 		StopDataProvider.getStopById(props.stopId).then(stop => {
 			if (!stop) return;
-			setPopupInfo({
-				geometry: feature.geometry,
-				properties: {
-					stopId: stop.stopId,
-					name: stop.name.original,
-					lines: stop.lines
-				}
+			setSelectedStop({
+				stopId: stop.stopId,
+				name: stop.name.original
 			});
+			setIsSheetOpen(true);
 		});
 	};
 
@@ -145,24 +142,13 @@ export default function StopMap() {
 				}}
 			/>
 
-			{popupInfo && (
-				<Popup
-					latitude={popupInfo.geometry.coordinates[1]}
-					longitude={popupInfo.geometry.coordinates[0]}
-					onClose={() => setPopupInfo(null)}
-				>
-					<div>
-						<h3>{popupInfo.properties.name}</h3>
-						<div>
-							{popupInfo.properties.lines.map((line: string) => (
-								<LineIcon line={line} key={line} />
-							))}
-						</div>
-						<Link to={`/estimates/${popupInfo.properties.stopId}`} className="popup-link">
-							Ver parada
-						</Link>
-					</div>
-				</Popup>
+			{selectedStop && (
+				<StopSheet
+					isOpen={isSheetOpen}
+					onClose={() => setIsSheetOpen(false)}
+					stopId={selectedStop.stopId}
+					stopName={selectedStop.name}
+				/>
 			)}
 		</Map>
 	);

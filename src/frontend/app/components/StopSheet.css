@@ -1,0 +1,147 @@
+/* Stop Sheet Styles */
+.stop-sheet-content {
+  padding: 16px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.stop-sheet-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.stop-sheet-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.stop-sheet-id {
+  font-size: 1rem;
+  color: var(--subtitle-color);
+}
+
+.stop-sheet-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 32px;
+  color: var(--subtitle-color);
+  font-size: 1rem;
+}
+
+.stop-sheet-estimates {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.stop-sheet-subtitle {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--text-color);
+  margin: 0 0 12px 0;
+}
+
+.stop-sheet-no-estimates {
+  text-align: center;
+  padding: 32px 16px;
+  color: var(--subtitle-color);
+  font-size: 0.95rem;
+}
+
+.stop-sheet-estimates-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stop-sheet-estimate-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background-color: var(--message-background-color);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.stop-sheet-estimate-line {
+  flex-shrink: 0;
+}
+
+.stop-sheet-estimate-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.stop-sheet-estimate-route {
+  font-weight: 500;
+  color: var(--text-color);
+  font-size: 0.95rem;
+  margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stop-sheet-estimate-time {
+  font-size: 0.85rem;
+  color: var(--subtitle-color);
+}
+
+.stop-sheet-estimate-distance {
+  color: var(--subtitle-color);
+}
+
+.stop-sheet-actions {
+  margin-top: 16px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 16px;
+}
+
+.stop-sheet-view-all {
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
+  background-color: var(--button-background-color);
+  color: white;
+  text-decoration: none;
+  text-align: center;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.stop-sheet-view-all:hover {
+  background-color: var(--button-hover-background-color);
+  text-decoration: none;
+}
+
+/* Override react-modal-sheet styles for better integration */
+[data-rsbs-overlay] {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+[data-rsbs-header] {
+  background-color: var(--background-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+[data-rsbs-header]:before {
+  background-color: var(--subtitle-color);
+}
+
+[data-rsbs-root] [data-rsbs-overlay] {
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+
+[data-rsbs-root] [data-rsbs-content] {
+  background-color: var(--background-color);
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
