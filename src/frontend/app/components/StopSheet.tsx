@@ -53,10 +53,13 @@ export const StopSheet: React.FC<StopSheetProps> = ({
     if (minutes > 15) {
       const now = new Date();
       const arrival = new Date(now.getTime() + minutes * 60000);
-      return Intl.DateTimeFormat(navigator.language, {
-        hour: "2-digit",
-        minute: "2-digit",
-      }).format(arrival);
+      return Intl.DateTimeFormat(
+        typeof navigator !== "undefined" ? navigator.language : "en",
+        {
+          hour: "2-digit",
+          minute: "2-digit",
+        }
+      ).format(arrival);
     } else {
       return `${minutes} ${t("estimates.minutes", "min")}`;
     }
@@ -78,8 +81,8 @@ export const StopSheet: React.FC<StopSheetProps> = ({
     <Sheet
       isOpen={isOpen}
       onClose={onClose}
-      snapPoints={[0.4, 0.6]}
-      initialSnap={0}
+      snapPoints={[0.5, 0.8, 0.95]}
+      initialSnap={1}
     >
       <Sheet.Container>
         <Sheet.Header />

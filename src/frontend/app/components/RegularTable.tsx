@@ -16,10 +16,13 @@ export const RegularTable: React.FC<RegularTableProps> = ({
   const absoluteArrivalTime = (minutes: number) => {
     const now = new Date();
     const arrival = new Date(now.getTime() + minutes * 60000);
-    return Intl.DateTimeFormat(navigator.language, {
-      hour: "2-digit",
-      minute: "2-digit",
-    }).format(arrival);
+    return Intl.DateTimeFormat(
+      typeof navigator !== "undefined" ? navigator.language : "en",
+      {
+        hour: "2-digit",
+        minute: "2-digit",
+      }
+    ).format(arrival);
   };
 
   const formatDistance = (meters: number) => {
