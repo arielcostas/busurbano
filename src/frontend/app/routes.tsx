@@ -5,5 +5,5 @@ export default [
   route("/stops", "routes/stoplist.tsx"),
   route("/map", "routes/map.tsx"),
   route("/estimates/:id", "routes/estimates-$id.tsx"),
-  route("/settings", "routes/settings.tsx")
+  route("/settings", "routes/settings.tsx"),
 ] satisfies RouteConfig;

@@ -1,51 +1,52 @@
-const API_CACHE_NAME = 'api-cache-v1'
+const API_CACHE_NAME = "api-cache-v1";
 const API_URL_PATTERN = /\/api\/(GetStopList)/;
 const API_MAX_AGE = 24 * 60 * 60 * 1000; // 24 hours
 
-self.addEventListener('install', (event) => {
-    event.waitUntil(self.skipWaiting());
+self.addEventListener("install", (event) => {
+  event.waitUntil(self.skipWaiting());
 });
 
-self.addEventListener('activate', (event) => {
-    event.waitUntil(self.clients.claim());
+self.addEventListener("activate", (event) => {
+  event.waitUntil(self.clients.claim());
 });
 
-self.addEventListener('fetch', async (event) => {
-    const url = new URL(event.request.url);
+self.addEventListener("fetch", async (event) => {
+  const url = new URL(event.request.url);
 
-    if (event.request.method !== "GET" || !API_URL_PATTERN.test(url.pathname)) {
-        return;
-    }
+  if (event.request.method !== "GET" || !API_URL_PATTERN.test(url.pathname)) {
+    return;
+  }
 
-    event.respondWith(apiCacheFirst(event.request));
+  event.respondWith(apiCacheFirst(event.request));
 });
 
 async function apiCacheFirst(request) {
-    const cache = await caches.open(API_CACHE_NAME);
-    const cachedResponse = await cache.match(request);
+  const cache = await caches.open(API_CACHE_NAME);
+  const cachedResponse = await cache.match(request);
 
-    if (cachedResponse) {
-        const age = Date.now() - new Date(cachedResponse.headers.get('date')).getTime();
-        if (age < API_MAX_AGE) {
-            console.debug(`SW: Cache HIT for ${request.url}`);
-            return cachedResponse;
-        }
-
-        // Cache is too old, fetch a fresh copy
-        cache.delete(request);
+  if (cachedResponse) {
+    const age =
+      Date.now() - new Date(cachedResponse.headers.get("date")).getTime();
+    if (age < API_MAX_AGE) {
+      console.debug(`SW: Cache HIT for ${request.url}`);
+      return cachedResponse;
     }
 
-    try {
-        const netResponse = await fetch(request);
+    // Cache is too old, fetch a fresh copy
+    cache.delete(request);
+  }
 
-        const responseToCache = netResponse.clone();
+  try {
+    const netResponse = await fetch(request);
 
-        cache.put(request, responseToCache);
+    const responseToCache = netResponse.clone();
 
-        console.debug(`SW: Cache MISS for ${request.url}`);
+    cache.put(request, responseToCache);
 
-        return netResponse;
-    } catch (error) {
-        throw error;
-    }
+    console.debug(`SW: Cache MISS for ${request.url}`);
+
+    return netResponse;
+  } catch (error) {
+    throw error;
+  }
 }

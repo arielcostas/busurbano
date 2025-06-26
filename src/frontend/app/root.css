@@ -10,10 +10,10 @@
   --star-color: #ffcc00;
   --message-background-color: #f8f9fa;
 
-  font-family: 'Roboto Variable', Roboto, Arial, sans-serif;
+  font-family: "Roboto Variable", Roboto, Arial, sans-serif;
 }
 
-[data-theme='dark'] {
+[data-theme="dark"] {
   --colour-scheme: dark;
   --background-color: #121212;
   --text-color: #ffffff;
@@ -65,8 +65,8 @@ body {
   align-items: center;
   text-decoration: none;
   color: var(--text-color);
-  padding: .25rem 0;
-  border-radius: .5rem;
+  padding: 0.25rem 0;
+  border-radius: 0.5rem;
 }
 
 .navigation-bar__link svg {

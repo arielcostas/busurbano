@@ -5,7 +5,7 @@ import {
   Meta,
   Outlet,
   Scripts,
-  ScrollRestoration
+  ScrollRestoration,
 } from "react-router";
 
 import type { Route } from "./+types/root";
@@ -24,13 +24,14 @@ maplibregl.addProtocol("pmtiles", pmtiles.tile);
 
 import "./i18n";
 
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js')
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker
+    .register("/sw.js")
     .then((registration) => {
-      console.log('Service Worker registered with scope:', registration.scope);
+      console.log("Service Worker registered with scope:", registration.scope);
     })
     .catch((error) => {
-      console.error('Service Worker registration failed:', error);
+      console.error("Service Worker registration failed:", error);
     });
 }
 
@@ -54,15 +55,27 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
         <link rel="canonical" href="https://urbanovigo.costas.dev/" />
 
-        <meta name="description" content="Aplicación web para encontrar paradas y tiempos de llegada de los autobuses urbanos de Vigo, España." />
-        <meta name="keywords" content="Vigo, autobús, urbano, parada, tiempo, llegada, transporte, público, España" />
+        <meta
+          name="description"
+          content="Aplicación web para encontrar paradas y tiempos de llegada de los autobuses urbanos de Vigo, España."
+        />
+        <meta
+          name="keywords"
+          content="Vigo, autobús, urbano, parada, tiempo, llegada, transporte, público, España"
+        />
         <meta name="author" content="Ariel Costas Guerrero" />
 
         <meta property="og:title" content="UrbanoVigo Web" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://urbanovigo.costas.dev/" />
-        <meta property="og:image" content="https://urbanovigo.costas.dev/logo-512.jpg" />
-        <meta property="og:description" content="Aplicación web para encontrar paradas y tiempos de llegada de los autobuses urbanos de Vigo, España." />
+        <meta
+          property="og:image"
+          content="https://urbanovigo.costas.dev/logo-512.jpg"
+        />
+        <meta
+          property="og:description"
+          content="Aplicación web para encontrar paradas y tiempos de llegada de los autobuses urbanos de Vigo, España."
+        />
 
         <link rel="manifest" href="/manifest.webmanifest" />
 
@@ -82,20 +95,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-  // Helper: check if coordinates are within Vigo bounds
-  function isWithinVigo(lngLat: LngLatLike): boolean {
-    let lng: number, lat: number;
-    if (Array.isArray(lngLat)) {
-      [lng, lat] = lngLat;
-    } else if ('lng' in lngLat && 'lat' in lngLat) {
-      lng = lngLat.lng;
-      lat = lngLat.lat;
-    } else {
-      return false;
-    }
-    // Rough bounding box for Vigo
-    return lat >= 42.18 && lat <= 42.30 && lng >= -8.78 && lng <= -8.65;
+// Helper: check if coordinates are within Vigo bounds
+function isWithinVigo(lngLat: LngLatLike): boolean {
+  let lng: number, lat: number;
+  if (Array.isArray(lngLat)) {
+    [lng, lat] = lngLat;
+  } else if ("lng" in lngLat && "lat" in lngLat) {
+    lng = lngLat.lng;
+    lat = lngLat.lat;
+  } else {
+    return false;
   }
+  // Rough bounding box for Vigo
+  return lat >= 42.18 && lat <= 42.3 && lng >= -8.78 && lng <= -8.65;
+}
 
 import NavBar from "./components/NavBar";
 
@@ -109,9 +122,6 @@ export default function App() {
         <NavBar />
       </footer>
     </AppProvider>
-
-
-
   );
 }
 

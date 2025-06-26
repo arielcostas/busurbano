@@ -1,10 +1,10 @@
 {
-    "stop": {
-        "id": "stop",
-        "x": 0,
-        "y": 0,
-        "width": 64,
-        "height": 64,
-        "pixelRatio": 2
-    }
+  "stop": {
+    "id": "stop",
+    "x": 0,
+    "y": 0,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  }
 }
