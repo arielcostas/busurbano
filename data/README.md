@@ -15,7 +15,7 @@ stopId:            # Numeric ID of the stop to override
     hide:            # Hide the stop from the map and list (boolean)
     amenities:       # List of amenities available at this stop (list)
         - shelter
-        - real-time display
+        - display
 ```
 
 ## Field Descriptions
@@ -27,7 +27,7 @@ stopId:            # Numeric ID of the stop to override
     - **latitude** (float): Override latitude coordinate.  
     - **longitude** (float): Override longitude coordinate.  
 - **hide** (boolean): Set to `true` to exclude the stop from maps and listings.  
-- **amenities** (array of strings): Amenities available at this stop, such as `shelter` or `real-time display`. For now, only those two will be supported in the app.
+- **amenities** (array of strings): Amenities available at this stop, such as `shelter` or `display`. For now, only those two will be supported in the app.
 
 ## Example
 

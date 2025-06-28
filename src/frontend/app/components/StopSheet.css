@@ -1,4 +1,8 @@
 /* Stop Sheet Styles */
+.react-modal-sheet-container {
+  background-color: var(--background-color) !important;
+}
+
 .stop-sheet-content {
   padding: 16px;
   display: flex;
@@ -118,7 +122,6 @@
   text-decoration: none;
 }
 
-/* Override react-modal-sheet styles for better integration */
 [data-rsbs-overlay] {
   background-color: rgba(0, 0, 0, 0.3);
 }
