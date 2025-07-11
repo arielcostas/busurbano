@@ -11661,17 +11661,6 @@
     ]
   },
   {
-    "stopId": 14253,
-    "name": {
-      "original": "Estrada Clara Campoamor (cruce Rúa do Padrón do Couto)"
-    },
-    "latitude": 42.164455564,
-    "longitude": -8.707223843,
-    "lines": [
-      "A"
-    ]
-  },
-  {
     "stopId": 14255,
     "name": {
       "original": "Rúa do Pintor Colmeiro (Parque do Pintor Colmeiro)"
@@ -12654,17 +12643,6 @@
     "longitude": -8.728974153,
     "lines": [
       "17"
-    ]
-  },
-  {
-    "stopId": 14383,
-    "name": {
-      "original": "Estrada Clara Campoamor (cruce Estrada do Portal)"
-    },
-    "latitude": 42.174718265,
-    "longitude": -8.713684656,
-    "lines": [
-      "A"
     ]
   },
   {
