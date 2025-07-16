@@ -3079,7 +3079,9 @@
     "lines": [
       "4A",
       "4C",
+      "5B",
       "7",
+      "12A",
       "12B",
       "17",
       "27",
@@ -3096,7 +3098,9 @@
     "lines": [
       "4A",
       "4C",
+      "5B",
       "7",
+      "12A",
       "12B",
       "17",
       "27",
@@ -6575,18 +6579,6 @@
     ]
   },
   {
-    "stopId": 5870,
-    "name": {
-      "original": "Rúa de López Mora  10"
-    },
-    "latitude": 42.226432697,
-    "longitude": -8.731262013,
-    "lines": [
-      "5B",
-      "12A"
-    ]
-  },
-  {
     "stopId": 5880,
     "name": {
       "original": "Rúa de López Mora  19"
@@ -6595,18 +6587,6 @@
     "longitude": -8.731799623,
     "lines": [
       "5A",
-      "5B",
-      "12A"
-    ]
-  },
-  {
-    "stopId": 5890,
-    "name": {
-      "original": "Rúa de López Mora  84"
-    },
-    "latitude": 42.222420533,
-    "longitude": -8.731996938,
-    "lines": [
       "5B",
       "12A"
     ]
@@ -7176,18 +7156,6 @@
     ]
   },
   {
-    "stopId": 6470,
-    "name": {
-      "original": "Rúa de Pi i Margall  108"
-    },
-    "latitude": 42.228458938,
-    "longitude": -8.732202674,
-    "lines": [
-      "5B",
-      "12A"
-    ]
-  },
-  {
     "stopId": 6480,
     "name": {
       "original": "Rúa de Pi i Margall  137"
@@ -7200,36 +7168,12 @@
     ]
   },
   {
-    "stopId": 6490,
-    "name": {
-      "original": "Rúa de Pi i Margall  32"
-    },
-    "latitude": 42.233972514,
-    "longitude": -8.729963004,
-    "lines": [
-      "5B",
-      "12A"
-    ]
-  },
-  {
     "stopId": 6500,
     "name": {
       "original": "Rúa de Pi i Margall  51"
     },
     "latitude": 42.233690068,
     "longitude": -8.730100174,
-    "lines": [
-      "5B",
-      "12A"
-    ]
-  },
-  {
-    "stopId": 6510,
-    "name": {
-      "original": "Rúa de Pi i Margall  86"
-    },
-    "latitude": 42.230584487,
-    "longitude": -8.731459155,
     "lines": [
       "5B",
       "12A"
@@ -7695,7 +7639,9 @@
     "lines": [
       "4A",
       "4C",
+      "5B",
       "7",
+      "12A",
       "12B",
       "16",
       "17",
@@ -10609,18 +10555,6 @@
     ]
   },
   {
-    "stopId": 14161,
-    "name": {
-      "original": "Rúa de López Mora  62"
-    },
-    "latitude": 42.224130699,
-    "longitude": -8.732568248,
-    "lines": [
-      "5B",
-      "12A"
-    ]
-  },
-  {
     "stopId": 14162,
     "name": {
       "original": "Avda. da Florida  82"
@@ -10686,7 +10620,9 @@
     "lines": [
       "4A",
       "4C",
+      "5B",
       "7",
+      "12A",
       "12B",
       "17",
       "27",
@@ -10734,7 +10670,9 @@
       "C1",
       "4A",
       "4C",
+      "5B",
       "7",
+      "12A",
       "12B",
       "16",
       "17",
@@ -13191,18 +13129,6 @@
     ]
   },
   {
-    "stopId": 14903,
-    "name": {
-      "original": "Rúa de Pi i Margall  66"
-    },
-    "latitude": 42.23174719,
-    "longitude": -8.731081308,
-    "lines": [
-      "5B",
-      "12A"
-    ]
-  },
-  {
     "stopId": 14905,
     "name": {
       "original": "Camiño da Devesa (Cemiterio)"
@@ -13894,7 +13820,9 @@
     "lines": [
       "4A",
       "4C",
+      "5B",
       "7",
+      "12A",
       "12B",
       "17",
       "27",
@@ -14886,30 +14814,6 @@
     "longitude": -8.718136653,
     "lines": [
       "H2"
-    ]
-  },
-  {
-    "stopId": 20200,
-    "name": {
-      "original": "Rúa de Pi i Margall (fronte 5)"
-    },
-    "latitude": 42.235482452,
-    "longitude": -8.728981431,
-    "lines": [
-      "5B",
-      "12A"
-    ]
-  },
-  {
-    "stopId": 20201,
-    "name": {
-      "original": "Paseo de Granada S/N"
-    },
-    "latitude": 42.235701104,
-    "longitude": -8.726054911,
-    "lines": [
-      "5B",
-      "12A"
     ]
   },
   {
