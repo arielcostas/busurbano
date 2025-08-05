@@ -103,3 +103,49 @@
 .edit-icon:hover {
   color: var(--star-color);
 }
+
+/* Timetable section styles */
+.timetable-section {
+  padding-top: 1.5rem;
+  padding-bottom: 3rem; /* Add bottom padding before footer */
+}
+
+/* Timetable cards should be single column */
+.timetable-section .timetable-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.timetable-section .timetable-card {
+  padding: 0.875rem;
+}
+
+.timetable-actions {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.view-all-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--link-color, #007bff);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--link-color, #007bff);
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.view-all-link:hover {
+  background-color: var(--link-color, #007bff);
+  color: white;
+  text-decoration: none;
+}
+
+.external-icon {
+  width: 1rem;
+  height: 1rem;
+}

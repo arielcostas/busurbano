@@ -1,12 +1,13 @@
 import { type JSX, useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useParams, Link } from "react-router";
 import StopDataProvider from "../data/StopDataProvider";
-import { Star, Edit2 } from "lucide-react";
+import { Star, Edit2, ExternalLink } from "lucide-react";
 import "./estimates-$id.css";
 import { RegularTable } from "../components/RegularTable";
 import { useApp } from "../AppContext";
 import { GroupedTable } from "../components/GroupedTable";
 import { useTranslation } from "react-i18next";
+import { TimetableTable, type TimetableEntry } from "../components/TimetableTable";
 
 export interface StopDetails {
   stop: {
@@ -32,6 +33,24 @@ const loadData = async (stopId: string) => {
   return await resp.json();
 };
 
+const loadTimetableData = async (stopId: string) => {
+  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+  try {
+    const resp = await fetch(`/api/GetStopTimetable?date=${today}&stopId=${stopId}`, {
+      headers: {
+        Accept: "application/json",
+      },
+    });
+    if (!resp.ok) {
+      throw new Error(`HTTP error! status: ${resp.status}`);
+    }
+    return await resp.json();
+  } catch (error) {
+    console.error('Error loading timetable data:', error);
+    return [];
+  }
+};
+
 export default function Estimates() {
   const { t } = useTranslation();
   const params = useParams();
@@ -40,13 +59,20 @@ export default function Estimates() {
   const [data, setData] = useState<StopDetails | null>(null);
   const [dataDate, setDataDate] = useState<Date | null>(null);
   const [favourited, setFavourited] = useState(false);
+  const [timetableData, setTimetableData] = useState<TimetableEntry[]>([]);
   const { tableStyle } = useApp();
 
   useEffect(() => {
+    // Load real-time estimates
     loadData(params.id!).then((body: StopDetails) => {
       setData(body);
       setDataDate(new Date());
       setCustomName(StopDataProvider.getCustomName(stopIdNum));
+    });
+
+    // Load timetable data
+    loadTimetableData(params.id!).then((timetableBody: TimetableEntry[]) => {
+      setTimetableData(timetableBody);
     });
 
     StopDataProvider.pushRecent(parseInt(params.id ?? ""));
@@ -100,6 +126,25 @@ export default function Estimates() {
           <GroupedTable data={data} dataDate={dataDate} />
         ) : (
           <RegularTable data={data} dataDate={dataDate} />
+        )}
+      </div>
+
+      <div className="timetable-section">
+        <TimetableTable 
+          data={timetableData}
+          currentTime={new Date().toTimeString().slice(0, 8)} // HH:MM:SS
+        />
+        
+        {timetableData.length > 0 && (
+          <div className="timetable-actions">
+            <Link 
+              to={`/timetable/${params.id}`} 
+              className="view-all-link"
+            >
+              <ExternalLink className="external-icon" />
+              {t("timetable.viewAll", "Ver todos los horarios")}
+            </Link>
+          </div>
         )}
       </div>
     </div>

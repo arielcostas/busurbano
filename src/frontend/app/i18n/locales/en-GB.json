@@ -46,6 +46,24 @@
     "none": "No estimates available",
     "next_arrivals": "Next arrivals"
   },
+  "timetable": {
+    "fullCaption": "Theoretical timetables for this stop",
+    "nearbyCaption": "Upcoming theoretical timetables",
+    "line": "Line",
+    "service": "Service",
+    "time": "Time",
+    "nextStreets": "Next streets",
+    "noData": "No timetable data available",
+    "noDestination": "Line",
+    "viewAll": "View all timetables",
+    "fullTitle": "Theoretical timetables",
+    "backToEstimates": "Back to estimates",
+    "noDataAvailable": "No timetable data available for today",
+    "loadError": "Error loading timetables",
+    "errorDetail": "Theoretical timetables are updated daily. Please try again later.",
+    "showPast": "Show all",
+    "hidePast": "Hide past"
+  },
   "map": {
     "popup_title": "Stop",
     "lines": "Lines",

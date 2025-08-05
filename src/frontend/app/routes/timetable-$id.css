@@ -1,0 +1,139 @@
+.timetable-full-header {
+  margin-bottom: 2rem;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--link-color, #007bff);
+  text-decoration: none;
+  margin-bottom: 1rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.back-link:hover {
+  color: var(--link-hover-color, #0056b3);
+  text-decoration: underline;
+}
+
+.back-icon {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.page-title .stop-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary, #333);
+}
+
+.page-title .stop-id {
+  font-size: 1rem;
+  color: var(--text-secondary, #666);
+  font-weight: normal;
+  margin-left: 0.5rem;
+}
+
+.timetable-full-content {
+  margin-top: 1rem;
+}
+
+.error-message {
+  text-align: center;
+  padding: 3rem 2rem;
+  background-color: var(--error-background, #f8f9fa);
+  border: 1px solid var(--error-border, #dee2e6);
+  border-radius: 8px;
+  margin: 2rem 0;
+}
+
+.error-message p {
+  margin-bottom: 1rem;
+  color: var(--error-color, #dc3545);
+  font-weight: 500;
+}
+
+.error-detail {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #666) !important;
+  font-weight: normal !important;
+}
+
+.timetable-controls {
+  margin-bottom: 1.5rem;  
+  display: flex;
+  justify-content: center;
+}
+
+.past-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--button-background, #f8f9fa);
+  color: var(--text-primary, #333);
+  border: 1px solid var(--button-border, #dee2e6);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.past-toggle:hover {
+  background-color: var(--button-hover-background, #e9ecef);
+}
+
+.past-toggle.active {
+  background-color: var(--link-color, #007bff);
+  color: white;
+  border-color: var(--link-color, #007bff);
+}
+
+.toggle-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Next entry highlight */
+.timetable-card.timetable-next {
+  border: 2px solid var(--accent-color, #28a745);
+  background: var(--surface-next, #e8f5e8) !important;
+}
+
+/* Override timetable cards styles for full page */
+.timetable-full-content .timetable-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.timetable-full-content .timetable-caption {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.timetable-full-content .timetable-card {
+  padding: 1.25rem;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 1.5rem;
+  }
+  
+  .page-title .stop-name {
+    font-size: 1.1rem;
+  }
+  
+  .timetable-full-content .timetable-cards {
+    gap: 0.75rem;
+  }
+  
+  .timetable-full-content .timetable-card {
+    padding: 1rem;
+  }
+}

@@ -46,6 +46,24 @@
     "none": "Non hai estimacións dispoñibles",
     "next_arrivals": "Próximas chegadas"
   },
+  "timetable": {
+    "fullCaption": "Horarios teóricos da parada",
+    "nearbyCaption": "Próximos horarios teóricos",
+    "line": "Liña",
+    "service": "Servizo",
+    "time": "Hora",
+    "nextStreets": "Próximas rúas",
+    "noData": "Non hai datos de horarios dispoñibles",
+    "noDestination": "Liña",
+    "viewAll": "Ver todos os horarios",
+    "fullTitle": "Horarios teóricos",
+    "backToEstimates": "Volver a estimacións",
+    "noDataAvailable": "Non hai datos de horarios dispoñibles para hoxe",
+    "loadError": "Erro ao cargar os horarios",
+    "errorDetail": "Os horarios teóricos actualízanse diariamente. Inténtao máis tarde.",
+    "showPast": "Mostrar todos",
+    "hidePast": "Ocultar pasados"
+  },
   "map": {
     "popup_title": "Parada",
     "lines": "Liñas",
