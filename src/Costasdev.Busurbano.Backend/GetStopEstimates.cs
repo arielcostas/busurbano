@@ -50,8 +50,8 @@ public class ApiController : ControllerBase
     public async Task<IActionResult> GetStopTimetable()
     {
         // Get date parameter (default to today if not provided)
-        var dateString = Request.Query.TryGetValue("date", out var requestedDate) 
-            ? requestedDate.ToString() 
+        var dateString = Request.Query.TryGetValue("date", out var requestedDate)
+            ? requestedDate.ToString()
             : DateTime.Today.ToString("yyyy-MM-dd");
 
         // Validate date format

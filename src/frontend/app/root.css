@@ -40,6 +40,9 @@ body {
   height: 100dvh;
   width: 100%;
   overflow: hidden;
+  
+  /* Disable browser's native pull-to-refresh on mobile */
+  overscroll-behavior-y: contain;
 }
 
 .main-content {

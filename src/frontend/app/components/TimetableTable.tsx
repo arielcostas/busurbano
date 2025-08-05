@@ -31,21 +31,21 @@ interface TimetableTableProps {
 const parseServiceId = (serviceId: string): string => {
   const parts = serviceId.split('_');
   if (parts.length === 0) return '';
-  
+
   const lastPart = parts[parts.length - 1];
   if (lastPart.length < 6) return '';
-  
+
   const last6 = lastPart.slice(-6);
   const lineCode = last6.slice(0, 3);
   const turnCode = last6.slice(-3);
-  
+
   // Remove leading zeros from turn
   const turnNumber = parseInt(turnCode, 10).toString();
-  
+
   // Parse line number with special cases
   const lineNumber = parseInt(lineCode, 10);
   let displayLine: string;
-  
+
   switch (lineNumber) {
     case 1: displayLine = "C1"; break;
     case 3: displayLine = "C3"; break;
@@ -57,7 +57,7 @@ const parseServiceId = (serviceId: string): string => {
     case 500: displayLine = "TUR"; break;
     default: displayLine = `L${lineNumber}`;
   }
-  
+
   return `${displayLine}-${turnNumber}`;
 };
 
@@ -70,24 +70,24 @@ const timeToMinutes = (time: string): number => {
 // Utility function to find nearby entries
 const findNearbyEntries = (entries: TimetableEntry[], currentTime: string, before: number = 4, after: number = 4): TimetableEntry[] => {
   if (!currentTime) return entries.slice(0, before + after);
-  
+
   const currentMinutes = timeToMinutes(currentTime);
-  const sortedEntries = [...entries].sort((a, b) => 
+  const sortedEntries = [...entries].sort((a, b) =>
     timeToMinutes(a.departure_time) - timeToMinutes(b.departure_time)
   );
-  
-  let currentIndex = sortedEntries.findIndex(entry => 
+
+  let currentIndex = sortedEntries.findIndex(entry =>
     timeToMinutes(entry.departure_time) >= currentMinutes
   );
-  
+
   if (currentIndex === -1) {
     // All entries are before current time, show last ones
     return sortedEntries.slice(-before - after);
   }
-  
+
   const startIndex = Math.max(0, currentIndex - before);
   const endIndex = Math.min(sortedEntries.length, currentIndex + after);
-  
+
   return sortedEntries.slice(startIndex, endIndex);
 };
 
@@ -128,7 +128,7 @@ export const TimetableTable: React.FC<TimetableTableProps> = ({
                 <div className="line-info">
                   <LineIcon line={entry.line.name} />
                 </div>
-                
+
                 <div className="destination-info">
                   {entry.trip.headsign && entry.trip.headsign.trim() ? (
                     <strong>{entry.trip.headsign}</strong>
@@ -136,7 +136,7 @@ export const TimetableTable: React.FC<TimetableTableProps> = ({
                     <strong>{t("timetable.noDestination", "Línea")} {entry.line.name}</strong>
                   )}
                 </div>
-                
+
                 <div className="time-info">
                   <span className="departure-time">
                     {entry.departure_time.slice(0, 5)}

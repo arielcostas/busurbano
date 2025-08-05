@@ -18,22 +18,14 @@ import "maplibre-theme/modern.css";
 import { Protocol } from "pmtiles";
 import maplibregl, { type LngLatLike } from "maplibre-gl";
 import { AppProvider } from "./AppContext";
+import { swManager } from "./utils/serviceWorkerManager";
+import { UpdateNotification } from "./components/UpdateNotification";
+import { useEffect } from "react";
 const pmtiles = new Protocol();
 maplibregl.addProtocol("pmtiles", pmtiles.tile);
 //#endregion
 
 import "./i18n";
-
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker
-    .register("/sw.js")
-    .then((registration) => {
-      console.log("Service Worker registered with scope:", registration.scope);
-    })
-    .catch((error) => {
-      console.error("Service Worker registration failed:", error);
-    });
-}
 
 export const links: Route.LinksFunction = () => [];
 
@@ -47,6 +39,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 
         <link rel="icon" type="image/jpg" href="/logo-512.jpg" />
         <link rel="icon" href="/favicon.ico" sizes="64x64" />
@@ -113,8 +108,14 @@ function isWithinVigo(lngLat: LngLatLike): boolean {
 import NavBar from "./components/NavBar";
 
 export default function App() {
+  useEffect(() => {
+    // Initialize service worker
+    swManager.initialize();
+  }, []);
+
   return (
     <AppProvider>
+      <UpdateNotification />
       <main className="main-content">
         <Outlet />
       </main>

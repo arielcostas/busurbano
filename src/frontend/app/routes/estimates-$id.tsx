@@ -1,4 +1,4 @@
-import { type JSX, useEffect, useState } from "react";
+import { type JSX, useEffect, useState, useCallback } from "react";
 import { useParams, Link } from "react-router";
 import StopDataProvider from "../data/StopDataProvider";
 import { Star, Edit2, ExternalLink } from "lucide-react";
@@ -8,6 +8,9 @@ import { useApp } from "../AppContext";
 import { GroupedTable } from "../components/GroupedTable";
 import { useTranslation } from "react-i18next";
 import { TimetableTable, type TimetableEntry } from "../components/TimetableTable";
+import { usePullToRefresh } from "../hooks/usePullToRefresh";
+import { PullToRefreshIndicator } from "../components/PullToRefresh";
+import { useAutoRefresh } from "../hooks/useAutoRefresh";
 
 export interface StopDetails {
   stop: {
@@ -62,23 +65,51 @@ export default function Estimates() {
   const [timetableData, setTimetableData] = useState<TimetableEntry[]>([]);
   const { tableStyle } = useApp();
 
-  useEffect(() => {
-    // Load real-time estimates
-    loadData(params.id!).then((body: StopDetails) => {
-      setData(body);
-      setDataDate(new Date());
-      setCustomName(StopDataProvider.getCustomName(stopIdNum));
-    });
+  const loadEstimatesData = useCallback(async () => {
+    const body: StopDetails = await loadData(params.id!);
+    setData(body);
+    setDataDate(new Date());
+    setCustomName(StopDataProvider.getCustomName(stopIdNum));
+  }, [params.id, stopIdNum]);
 
-    // Load timetable data
-    loadTimetableData(params.id!).then((timetableBody: TimetableEntry[]) => {
-      setTimetableData(timetableBody);
-    });
+  const loadTimetableDataAsync = useCallback(async () => {
+    const timetableBody: TimetableEntry[] = await loadTimetableData(params.id!);
+    setTimetableData(timetableBody);
+  }, [params.id]);
+
+  const refreshData = useCallback(async () => {
+    await Promise.all([
+      loadEstimatesData(),
+      loadTimetableDataAsync()
+    ]);
+  }, [loadEstimatesData, loadTimetableDataAsync]);
+
+  const {
+    containerRef,
+    isRefreshing,
+    pullDistance,
+    canRefresh,
+  } = usePullToRefresh({
+    onRefresh: refreshData,
+    threshold: 80,
+    enabled: true,
+  });
+
+  // Auto-refresh estimates data every 30 seconds
+  useAutoRefresh({
+    onRefresh: loadEstimatesData,
+    interval: 30000,
+    enabled: true,
+  });
+
+  useEffect(() => {
+    // Initial load
+    loadEstimatesData();
+    loadTimetableDataAsync();
 
     StopDataProvider.pushRecent(parseInt(params.id ?? ""));
-
     setFavourited(StopDataProvider.isFavourite(parseInt(params.id ?? "")));
-  }, [params.id]);
+  }, [params.id, loadEstimatesData, loadTimetableDataAsync]);
 
   const toggleFavourite = () => {
     if (favourited) {
@@ -108,45 +139,51 @@ export default function Estimates() {
     return <h1 className="page-title">{t("common.loading")}</h1>;
 
   return (
-    <div className="page-container">
-      <div className="estimates-header">
-        <h1 className="page-title">
-          <Star
-            className={`star-icon ${favourited ? "active" : ""}`}
-            onClick={toggleFavourite}
+    <div ref={containerRef} className="page-container estimates-page">
+      <PullToRefreshIndicator
+        pullDistance={pullDistance}
+        isRefreshing={isRefreshing}
+        canRefresh={canRefresh}
+      >
+        <div className="estimates-header">
+          <h1 className="page-title">
+            <Star
+              className={`star-icon ${favourited ? "active" : ""}`}
+              onClick={toggleFavourite}
+            />
+            <Edit2 className="edit-icon" onClick={handleRename} />
+            {customName ?? data.stop.name}{" "}
+            <span className="estimates-stop-id">({data.stop.id})</span>
+          </h1>
+        </div>
+
+        <div className="table-responsive">
+          {tableStyle === "grouped" ? (
+            <GroupedTable data={data} dataDate={dataDate} />
+          ) : (
+            <RegularTable data={data} dataDate={dataDate} />
+          )}
+        </div>
+
+        <div className="timetable-section">
+          <TimetableTable
+            data={timetableData}
+            currentTime={new Date().toTimeString().slice(0, 8)} // HH:MM:SS
           />
-          <Edit2 className="edit-icon" onClick={handleRename} />
-          {customName ?? data.stop.name}{" "}
-          <span className="estimates-stop-id">({data.stop.id})</span>
-        </h1>
-      </div>
 
-      <div className="table-responsive">
-        {tableStyle === "grouped" ? (
-          <GroupedTable data={data} dataDate={dataDate} />
-        ) : (
-          <RegularTable data={data} dataDate={dataDate} />
-        )}
-      </div>
-
-      <div className="timetable-section">
-        <TimetableTable 
-          data={timetableData}
-          currentTime={new Date().toTimeString().slice(0, 8)} // HH:MM:SS
-        />
-        
-        {timetableData.length > 0 && (
-          <div className="timetable-actions">
-            <Link 
-              to={`/timetable/${params.id}`} 
-              className="view-all-link"
-            >
-              <ExternalLink className="external-icon" />
-              {t("timetable.viewAll", "Ver todos los horarios")}
-            </Link>
-          </div>
-        )}
-      </div>
+          {timetableData.length > 0 && (
+            <div className="timetable-actions">
+              <Link
+                to={`/timetable/${params.id}`}
+                className="view-all-link"
+              >
+                <ExternalLink className="external-icon" />
+                {t("timetable.viewAll", "Ver todos los horarios")}
+              </Link>
+            </div>
+          )}
+        </div>
+      </PullToRefreshIndicator>
     </div>
   );
 }
