@@ -1,6 +1,9 @@
 import { useApp } from "../AppContext";
 import "./settings.css";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
+import { swManager } from "../utils/serviceWorkerManager";
+import { RotateCcw, Download } from "lucide-react";
 
 export default function Settings() {
   const { t, i18n } = useTranslation();
@@ -12,6 +15,66 @@ export default function Settings() {
     mapPositionMode,
     setMapPositionMode,
   } = useApp();
+
+  const [isCheckingUpdates, setIsCheckingUpdates] = useState(false);
+  const [updateMessage, setUpdateMessage] = useState<string | null>(null);
+
+  const handleCheckForUpdates = async () => {
+    setIsCheckingUpdates(true);
+    setUpdateMessage(null);
+
+    try {
+      // Check if service worker is supported
+      if (!("serviceWorker" in navigator)) {
+        setUpdateMessage(t("about.sw_not_supported", "Service Workers no son compatibles en este navegador"));
+        return;
+      }
+
+      // Force check for updates
+      await swManager.checkForUpdates();
+
+      // Wait a moment for the update check to complete
+      setTimeout(() => {
+        if (swManager.isUpdateAvailable()) {
+          setUpdateMessage(t("about.update_available", "¡Nueva versión disponible! Aparecerá una notificación para actualizar."));
+        } else {
+          setUpdateMessage(t("about.up_to_date", "Ya tienes la versión más reciente."));
+        }
+      }, 2000);
+
+    } catch (error) {
+      console.error("Error checking for updates:", error);
+      setUpdateMessage(t("about.update_error", "Error al comprobar actualizaciones. Intenta recargar la página."));
+    } finally {
+      setIsCheckingUpdates(false);
+    }
+  };
+
+  const handleClearCache = async () => {
+    if (confirm(t("about.clear_cache_confirm", "¿Estás seguro de que quieres limpiar la caché? Esto eliminará todos los datos guardados localmente."))) {
+      try {
+        await swManager.clearCache();
+        setUpdateMessage(t("about.cache_cleared", "Caché limpiada. La página se recargará para aplicar los cambios."));
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      } catch (error) {
+        console.error("Error clearing cache:", error);
+        setUpdateMessage(t("about.cache_error", "Error al limpiar la caché."));
+      }
+    }
+  };
+
+  const handleResetPWA = async () => {
+    if (confirm(t("about.reset_pwa_confirm", "¿Estás seguro? Esto eliminará TODOS los datos de la aplicación y la reiniciará completamente. Úsalo solo si hay problemas graves de caché."))) {
+      try {
+        await swManager.resetPWA();
+      } catch (error) {
+        console.error("Error resetting PWA:", error);
+        setUpdateMessage(t("about.reset_pwa_error", "Error al reiniciar la PWA."));
+      }
+    }
+  };
 
   return (
     <div className="page-container">
@@ -67,7 +130,7 @@ export default function Settings() {
         </div>
         <div className="settings-content-inline">
           <label htmlFor="language" className="form-label-inline">
-            Idioma:
+            {t("about.language", "Idioma")}:
           </label>
           <select
             id="language"
@@ -90,6 +153,55 @@ export default function Settings() {
             <dd>{t("about.details_grouped")}</dd>
           </dl>
         </details>
+
+        <div className="settings-section">
+          <h3>{t("about.app_updates", "Actualizaciones de la aplicación")}</h3>
+          <div className="update-controls">
+            <button
+              className="update-button"
+              onClick={handleCheckForUpdates}
+              disabled={isCheckingUpdates}
+            >
+              {isCheckingUpdates ? (
+                <>
+                  <RotateCcw className="spinning" size={18} />
+                  {t("about.checking_updates", "Comprobando...")}
+                </>
+              ) : (
+                <>
+                  <Download size={18} />
+                  {t("about.check_updates", "Comprobar actualizaciones")}
+                </>
+              )}
+            </button>
+
+            <button
+              className="clear-cache-button"
+              onClick={handleClearCache}
+            >
+              <RotateCcw size={18} />
+              {t("about.clear_cache", "Limpiar caché")}
+            </button>
+
+            <button
+              className="reset-pwa-button"
+              onClick={handleResetPWA}
+            >
+              <RotateCcw size={18} />
+              {t("about.reset_pwa", "Reiniciar PWA (Nuclear)")}
+            </button>
+          </div>
+
+          {updateMessage && (
+            <div className={`update-message ${updateMessage.includes("Error") || updateMessage.includes("error") ? 'error' : 'success'}`}>
+              {updateMessage}
+            </div>
+          )}
+
+          <p className="update-help-text">
+            {t("about.update_help", "Si tienes problemas con la aplicación o no ves las últimas funciones, usa estos botones para forzar una actualización o limpiar los datos guardados.")}
+          </p>
+        </div>
       </section>
       <h2>{t("about.credits")}</h2>
       <p>

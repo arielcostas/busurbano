@@ -4,8 +4,6 @@ import StopItem from "../components/StopItem";
 import Fuse from "fuse.js";
 import "./stoplist.css";
 import { useTranslation } from "react-i18next";
-import { usePullToRefresh } from "../hooks/usePullToRefresh";
-import { PullToRefreshIndicator } from "../components/PullToRefresh";
 
 export default function StopList() {
   const { t } = useTranslation();
@@ -26,17 +24,6 @@ export default function StopList() {
     const stops = await StopDataProvider.getStops();
     setData(stops);
   }, []);
-
-  const {
-    containerRef,
-    isRefreshing,
-    pullDistance,
-    canRefresh,
-  } = usePullToRefresh({
-    onRefresh: loadStops,
-    threshold: 80,
-    enabled: true,
-  });
 
   useEffect(() => {
     loadStops();
@@ -86,21 +73,16 @@ export default function StopList() {
     return <h1 className="page-title">{t("common.loading")}</h1>;
 
   return (
-    <div ref={containerRef} className="page-container stoplist-page">
-      <PullToRefreshIndicator
-        pullDistance={pullDistance}
-        isRefreshing={isRefreshing}
-        canRefresh={canRefresh}
-      >
-        <h1 className="page-title">UrbanoVigo Web</h1>
+    <div className="page-container stoplist-page">
+      <h1 className="page-title">UrbanoVigo Web</h1>
 
-        <form className="search-form">
-          <div className="form-group">
-            <label className="form-label" htmlFor="stopName">
-              {t("stoplist.search_label", "Buscar paradas")}
-            </label>
-            <input
-              className="form-input"
+      <form className="search-form">
+        <div className="form-group">
+          <label className="form-label" htmlFor="stopName">
+            {t("stoplist.search_label", "Buscar paradas")}
+          </label>
+          <input
+            className="form-input"
               type="text"
               placeholder={randomPlaceholder}
               id="stopName"
@@ -156,13 +138,12 @@ export default function StopList() {
         <div className="list-container">
           <h2 className="page-subtitle">{t("stoplist.all_stops", "Paradas")}</h2>
 
-          <ul className="list">
-            {data
-              ?.sort((a, b) => a.stopId - b.stopId)
-              .map((stop: Stop) => <StopItem key={stop.stopId} stop={stop} />)}
-          </ul>
-        </div>
-      </PullToRefreshIndicator>
+        <ul className="list">
+          {data
+            ?.sort((a, b) => a.stopId - b.stopId)
+            .map((stop: Stop) => <StopItem key={stop.stopId} stop={stop} />)}
+        </ul>
+      </div>
     </div>
   );
 }

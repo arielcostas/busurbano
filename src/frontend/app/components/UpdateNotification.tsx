@@ -16,7 +16,7 @@ export function UpdateNotification() {
   const handleUpdate = async () => {
     setIsUpdating(true);
     swManager.activateUpdate();
-    
+
     // Wait for the page to reload
     setTimeout(() => {
       window.location.reload();

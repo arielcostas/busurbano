@@ -8,8 +8,6 @@ import { useApp } from "../AppContext";
 import { GroupedTable } from "../components/GroupedTable";
 import { useTranslation } from "react-i18next";
 import { TimetableTable, type TimetableEntry } from "../components/TimetableTable";
-import { usePullToRefresh } from "../hooks/usePullToRefresh";
-import { PullToRefreshIndicator } from "../components/PullToRefresh";
 import { useAutoRefresh } from "../hooks/useAutoRefresh";
 
 export interface StopDetails {
@@ -84,17 +82,6 @@ export default function Estimates() {
     ]);
   }, [loadEstimatesData, loadTimetableDataAsync]);
 
-  const {
-    containerRef,
-    isRefreshing,
-    pullDistance,
-    canRefresh,
-  } = usePullToRefresh({
-    onRefresh: refreshData,
-    threshold: 80,
-    enabled: true,
-  });
-
   // Auto-refresh estimates data every 30 seconds
   useAutoRefresh({
     onRefresh: loadEstimatesData,
@@ -139,23 +126,18 @@ export default function Estimates() {
     return <h1 className="page-title">{t("common.loading")}</h1>;
 
   return (
-    <div ref={containerRef} className="page-container estimates-page">
-      <PullToRefreshIndicator
-        pullDistance={pullDistance}
-        isRefreshing={isRefreshing}
-        canRefresh={canRefresh}
-      >
-        <div className="estimates-header">
-          <h1 className="page-title">
-            <Star
-              className={`star-icon ${favourited ? "active" : ""}`}
-              onClick={toggleFavourite}
-            />
-            <Edit2 className="edit-icon" onClick={handleRename} />
-            {customName ?? data.stop.name}{" "}
-            <span className="estimates-stop-id">({data.stop.id})</span>
-          </h1>
-        </div>
+    <div className="page-container estimates-page">
+      <div className="estimates-header">
+        <h1 className="page-title">
+          <Star
+            className={`star-icon ${favourited ? "active" : ""}`}
+            onClick={toggleFavourite}
+          />
+          <Edit2 className="edit-icon" onClick={handleRename} />
+          {customName ?? data.stop.name}{" "}
+          <span className="estimates-stop-id">({data.stop.id})</span>
+        </h1>
+      </div>
 
         <div className="table-responsive">
           {tableStyle === "grouped" ? (
@@ -175,15 +157,14 @@ export default function Estimates() {
             <div className="timetable-actions">
               <Link
                 to={`/timetable/${params.id}`}
-                className="view-all-link"
-              >
-                <ExternalLink className="external-icon" />
-                {t("timetable.viewAll", "Ver todos los horarios")}
-              </Link>
-            </div>
-          )}
-        </div>
-      </PullToRefreshIndicator>
+              className="view-all-link"
+            >
+              <ExternalLink className="external-icon" />
+              {t("timetable.viewAll", "Ver todos los horarios")}
+            </Link>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

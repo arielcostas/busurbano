@@ -29,11 +29,6 @@
 }
 
 /* Estimates page specific styles */
-.estimates-page {
-  height: 100%;
-  overflow: hidden;
-}
-
 .estimates-header {
   display: flex;
   align-items: center;

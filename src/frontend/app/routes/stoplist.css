@@ -1,9 +1,4 @@
 /* Common page styles */
-.stoplist-page {
-  height: 100%;
-  overflow: hidden;
-}
-
 .page-title {
   font-size: 1.8rem;
   margin-bottom: 1rem;
