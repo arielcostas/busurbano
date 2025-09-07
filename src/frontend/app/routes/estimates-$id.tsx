@@ -36,9 +36,6 @@ interface ErrorInfo {
 }
 
 const loadData = async (stopId: string): Promise<StopDetails> => {
-  // Add delay to see skeletons in action (remove in production)
-  await new Promise(resolve => setTimeout(resolve, 1000));
-
   const resp = await fetch(`/api/GetStopEstimates?id=${stopId}`, {
     headers: {
       Accept: "application/json",
@@ -53,9 +50,6 @@ const loadData = async (stopId: string): Promise<StopDetails> => {
 };
 
 const loadTimetableData = async (stopId: string): Promise<TimetableEntry[]> => {
-  // Add delay to see skeletons in action (remove in production)
-  await new Promise(resolve => setTimeout(resolve, 1500));
-
   const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
   const resp = await fetch(`/api/GetStopTimetable?date=${today}&stopId=${stopId}`, {
     headers: {

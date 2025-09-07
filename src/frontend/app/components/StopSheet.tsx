@@ -23,19 +23,16 @@ interface ErrorInfo {
 }
 
 const loadStopData = async (stopId: number): Promise<StopDetails> => {
-  // Add delay to see skeletons in action (remove in production)
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
   const resp = await fetch(`/api/GetStopEstimates?id=${stopId}`, {
     headers: {
       Accept: "application/json",
     },
   });
-  
+
   if (!resp.ok) {
     throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
   }
-  
+
   return await resp.json();
 };
 
@@ -55,17 +52,17 @@ export const StopSheet: React.FC<StopSheetProps> = ({
     if (!navigator.onLine) {
       return { type: 'network', message: 'No internet connection' };
     }
-    
+
     if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError')) {
       return { type: 'network' };
     }
-    
+
     if (error.message?.includes('HTTP')) {
       const statusMatch = error.message.match(/HTTP (\d+):/);
       const status = statusMatch ? parseInt(statusMatch[1]) : undefined;
       return { type: 'server', status };
     }
-    
+
     return { type: 'unknown', message: error.message };
   };
 
@@ -74,7 +71,7 @@ export const StopSheet: React.FC<StopSheetProps> = ({
       setLoading(true);
       setError(null);
       setData(null);
-      
+
       const stopData = await loadStopData(stopId);
       setData(stopData);
       setLastUpdated(new Date());
@@ -138,8 +135,8 @@ export const StopSheet: React.FC<StopSheetProps> = ({
             {loading ? (
               <StopSheetSkeleton />
             ) : error ? (
-              <ErrorDisplay 
-                error={error} 
+              <ErrorDisplay
+                error={error}
                 onRetry={loadData}
                 title={t("errors.estimates_title", "Error al cargar estimaciones")}
                 className="compact"
@@ -193,9 +190,9 @@ export const StopSheet: React.FC<StopSheetProps> = ({
                       })}
                     </div>
                   )}
-                  
+
                   <div className="stop-sheet-actions">
-                    <button 
+                    <button
                       className="stop-sheet-reload"
                       onClick={loadData}
                       disabled={loading}
@@ -204,7 +201,7 @@ export const StopSheet: React.FC<StopSheetProps> = ({
                       <RefreshCw className={`reload-icon ${loading ? 'spinning' : ''}`} />
                       {t("estimates.reload", "Recargar")}
                     </button>
-                    
+
                     <Link
                       to={`/estimates/${stopId}`}
                       className="stop-sheet-view-all"
