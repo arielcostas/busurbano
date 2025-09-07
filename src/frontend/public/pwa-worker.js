@@ -1,49 +1,45 @@
-const CACHE_VERSION = "2025-0806a";
-const API_CACHE_NAME = `api-cache-${CACHE_VERSION}`;
+const CACHE_VERSION = "2025-0907a";
 const STATIC_CACHE_NAME = `static-cache-${CACHE_VERSION}`;
+const STATIC_CACHE_ASSETS = [
+  "/favicon.ico",
+  "/logo-256.png",
+  "/logo-512.jpg",
+  "/stops.json"
+];
 
-const API_URL_PATTERN = /\/api\/(GetStopList|GetStopEstimates|GetStopTimetable)/;
-const API_MAX_AGE = 24 * 60 * 60 * 1000; // 24h
+const EXPR_CACHE_AFTER_FIRST_VIEW = /(\/assets\/.*)|(\/api\/GetStopTimetable.*)/;
+
 const ESTIMATES_MIN_AGE = 15 * 1000;
 const ESTIMATES_MAX_AGE = 30 * 1000;
 
 self.addEventListener("install", (event) => {
-  console.log("SW: Installing new version");
+  console.log("SW: Install event in progress. Cache version: ", CACHE_VERSION);
   event.waitUntil(
     caches.open(STATIC_CACHE_NAME).then((cache) =>
-      cache.addAll([
-        "/favicon.ico",
-        "/logo-256.png",
-        "/logo-512.jpg",
-        "/stops.json"
-      ])
+      cache.addAll(STATIC_CACHE_ASSETS)
     ).then(() => self.skipWaiting())
   );
 });
 
 self.addEventListener("activate", (event) => {
-  console.log("SW: Activating new version");
-  event.waitUntil(
-    (async () => {
-      const cacheNames = await caches.keys();
-      await Promise.all(
-        cacheNames.map((name) => {
-          if (name !== API_CACHE_NAME && name !== STATIC_CACHE_NAME) {
-            console.log("SW: Deleting old cache:", name);
-            return caches.delete(name);
-          }
-        })
-      );
-      await self.clients.claim();
-      const clients = await self.clients.matchAll();
-      clients.forEach((client) =>
-        client.postMessage({ type: "SW_UPDATED" })
-      );
-    })()
-  );
+  const doCleanup = async () => {
+    // Cleans the old caches
+    const cacheNames = await caches.keys();
+    await Promise.all(
+      cacheNames.map((name) => {
+        if (name !== STATIC_CACHE_NAME) {
+          return caches.delete(name);
+        }
+      })
+    );
+
+    await self.clients.claim();
+  }
+
+  event.waitUntil(doCleanup());
 });
 
-self.addEventListener("fetch", (event) => {
+self.addEventListener("fetch", async (event) => {
   const request = event.request;
   const url = new URL(request.url);
 
@@ -52,94 +48,37 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // API
-  if (request.method === "GET" && API_URL_PATTERN.test(url.pathname)) {
-    event.respondWith(handleApiRequest(request));
-    return;
-  }
-
-  // Navegación -> network first
+  // Navigating => we don't intercept anything, if it fails, good luck
   if (request.mode === "navigate") {
-    event.respondWith(handleNavigationRequest(request));
     return;
   }
 
-  // Estáticos -> cache first
-  if (request.method === "GET") {
-    event.respondWith(handleStaticRequest(request));
+  // Static => cache first, if not, network; if not, fallback
+  const isAssetCacheable = STATIC_CACHE_ASSETS.includes(url.pathname) || EXPR_CACHE_AFTER_FIRST_VIEW.test(url.pathname);
+  if (request.method === "GET" && isAssetCacheable) {
+    const response = handleStaticRequest(request);
+    if (response !== null) {
+      event.respondWith(response);
+    }
+    return;
   }
 });
-
-async function handleApiRequest(request) {
-  const url = new URL(request.url);
-  const isEstimates = url.pathname.includes("GetStopEstimates");
-  const maxAge = isEstimates
-    ? ESTIMATES_MIN_AGE + Math.random() * (ESTIMATES_MAX_AGE - ESTIMATES_MIN_AGE)
-    : API_MAX_AGE;
-
-  const cache = await caches.open(API_CACHE_NAME);
-  const cachedResponse = await cache.match(request);
-
-  if (cachedResponse) {
-    const dateHeader = cachedResponse.headers.get("date");
-    const age = dateHeader ? Date.now() - new Date(dateHeader).getTime() : 0;
-    if (age && age < maxAge) {
-      console.debug("SW: Cache HIT", request.url);
-      return cachedResponse;
-    }
-    cache.delete(request);
-  }
-
-  try {
-    const netResponse = await fetch(request);
-    if (netResponse.ok) cache.put(request, netResponse.clone());
-    return netResponse;
-  } catch (error) {
-    if (cachedResponse) return cachedResponse;
-    throw error;
-  }
-}
 
 async function handleStaticRequest(request) {
   const cache = await caches.open(STATIC_CACHE_NAME);
   const cachedResponse = await cache.match(request);
-  if (cachedResponse) return cachedResponse;
+  if (cachedResponse){
+    console.log("SW handleStaticRequest: HIT for ", request.url);
+    return cachedResponse;
+  }
 
   try {
     const netResponse = await fetch(request);
     if (netResponse.ok) cache.put(request, netResponse.clone());
+    console.log("SW handleStaticRequest: MISS for ", request.url);
     return netResponse;
   } catch (err) {
-    return new Response("Offline asset not available", {
-      status: 503,
-      headers: { "Content-Type": "text/plain" }
-    });
+    console.error("SW handleStaticRequest: FAIL for ", request.url, err);
+    return null;
   }
 }
-
-async function handleNavigationRequest(request) {
-  try {
-    const netResponse = await fetch(request);
-    return netResponse;
-  } catch (err) {
-    // Si no hay red, intenta fallback con caché estática
-    const cache = await caches.open(STATIC_CACHE_NAME);
-    const offline = await cache.match("/stops.json");
-    return (
-      offline ||
-      new Response("App offline", {
-        status: 503,
-        headers: { "Content-Type": "text/plain" }
-      })
-    );
-  }
-}
-
-self.addEventListener("message", (event) => {
-  if (event.data?.type === "SKIP_WAITING") self.skipWaiting();
-  if (event.data?.type === "CLEAR_CACHE") {
-    event.waitUntil(
-      caches.keys().then((names) => Promise.all(names.map((n) => caches.delete(n))))
-    );
-  }
-});

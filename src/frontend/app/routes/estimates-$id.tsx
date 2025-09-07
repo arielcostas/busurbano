@@ -122,8 +122,9 @@ export default function Estimates() {
     }
   };
 
-  if (data === null)
+  if (data === null) {
     return <h1 className="page-title">{t("common.loading")}</h1>;
+  }
 
   return (
     <div className="page-container estimates-page">
@@ -139,24 +140,24 @@ export default function Estimates() {
         </h1>
       </div>
 
-        <div className="table-responsive">
-          {tableStyle === "grouped" ? (
-            <GroupedTable data={data} dataDate={dataDate} />
-          ) : (
-            <RegularTable data={data} dataDate={dataDate} />
-          )}
-        </div>
+      <div className="table-responsive">
+        {tableStyle === "grouped" ? (
+          <GroupedTable data={data} dataDate={dataDate} />
+        ) : (
+          <RegularTable data={data} dataDate={dataDate} />
+        )}
+      </div>
 
-        <div className="timetable-section">
-          <TimetableTable
-            data={timetableData}
-            currentTime={new Date().toTimeString().slice(0, 8)} // HH:MM:SS
-          />
+      <div className="timetable-section">
+        <TimetableTable
+          data={timetableData}
+          currentTime={new Date().toTimeString().slice(0, 8)} // HH:MM:SS
+        />
 
-          {timetableData.length > 0 && (
-            <div className="timetable-actions">
-              <Link
-                to={`/timetable/${params.id}`}
+        {timetableData.length > 0 && (
+          <div className="timetable-actions">
+            <Link
+              to={`/timetable/${params.id}`}
               className="view-all-link"
             >
               <ExternalLink className="external-icon" />

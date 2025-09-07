@@ -4,10 +4,14 @@
     "scripts": {
         "dev:backend": "dotnet watch --project src/Costasdev.Busurbano.Backend/Costasdev.Busurbano.Backend.csproj",
         "dev:frontend": "npm run dev --prefix src/frontend",
+        "dev:angular": "npm run start --prefix src/angular-frontend",
         "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+        "dev:angular-stack": "concurrently \"npm run dev:backend\" \"npm run dev:angular\"",
         "format:backend": "dotnet format --verbosity diagnostic",
         "format:frontend": "prettier --write src/frontend/**/*.{ts,tsx,css}",
-        "format": "npm run format:backend && npm run format:frontend"
+        "format:angular": "npm run lint --prefix src/angular-frontend -- --fix",
+        "format": "npm run format:backend && npm run format:frontend",
+        "format:angular-stack": "npm run format:backend && npm run format:angular"
     },
     "keywords": [],
     "author": "",
@@ -17,7 +21,8 @@
         "prettier": "^3.5.3"
     },
     "workspaces": [
-        "src/frontend"
+        "src/frontend",
+        "src/angular-frontend"
     ],
     "dependencies": {
         "i18next": "^25.2.1",

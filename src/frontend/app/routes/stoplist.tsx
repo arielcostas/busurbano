@@ -69,8 +69,9 @@ export default function StopList() {
     return stopsList.reverse();
   }, [data]);
 
-  if (data === null)
+  if (data === null) {
     return <h1 className="page-title">{t("common.loading")}</h1>;
+  }
 
   return (
     <div className="page-container stoplist-page">
@@ -83,60 +84,60 @@ export default function StopList() {
           </label>
           <input
             className="form-input"
-              type="text"
-              placeholder={randomPlaceholder}
-              id="stopName"
-              onChange={handleStopSearch}
-            />
-          </div>
-        </form>
+            type="text"
+            placeholder={randomPlaceholder}
+            id="stopName"
+            onChange={handleStopSearch}
+          />
+        </div>
+      </form>
 
-        {searchResults && searchResults.length > 0 && (
-          <div className="list-container">
-            <h2 className="page-subtitle">
-              {t("stoplist.search_results", "Resultados de la búsqueda")}
-            </h2>
-            <ul className="list">
-              {searchResults.map((stop: Stop) => (
-                <StopItem key={stop.stopId} stop={stop} />
-              ))}
-            </ul>
-          </div>
-        )}
-
+      {searchResults && searchResults.length > 0 && (
         <div className="list-container">
-          <h2 className="page-subtitle">{t("stoplist.favourites")}</h2>
-
-          {favouritedStops?.length === 0 && (
-            <p className="message">
-              {t(
-                "stoplist.no_favourites",
-                "Accede a una parada y márcala como favorita para verla aquí.",
-              )}
-            </p>
-          )}
-
+          <h2 className="page-subtitle">
+            {t("stoplist.search_results", "Resultados de la búsqueda")}
+          </h2>
           <ul className="list">
-            {favouritedStops
-              ?.sort((a, b) => a.stopId - b.stopId)
-              .map((stop: Stop) => <StopItem key={stop.stopId} stop={stop} />)}
+            {searchResults.map((stop: Stop) => (
+              <StopItem key={stop.stopId} stop={stop} />
+            ))}
           </ul>
         </div>
+      )}
 
-        {recentStops && recentStops.length > 0 && (
-          <div className="list-container">
-            <h2 className="page-subtitle">{t("stoplist.recents")}</h2>
+      <div className="list-container">
+        <h2 className="page-subtitle">{t("stoplist.favourites")}</h2>
 
-            <ul className="list">
-              {recentStops.map((stop: Stop) => (
-                <StopItem key={stop.stopId} stop={stop} />
-              ))}
-            </ul>
-          </div>
+        {favouritedStops?.length === 0 && (
+          <p className="message">
+            {t(
+              "stoplist.no_favourites",
+              "Accede a una parada y márcala como favorita para verla aquí.",
+            )}
+          </p>
         )}
 
+        <ul className="list">
+          {favouritedStops
+            ?.sort((a, b) => a.stopId - b.stopId)
+            .map((stop: Stop) => <StopItem key={stop.stopId} stop={stop} />)}
+        </ul>
+      </div>
+
+      {recentStops && recentStops.length > 0 && (
         <div className="list-container">
-          <h2 className="page-subtitle">{t("stoplist.all_stops", "Paradas")}</h2>
+          <h2 className="page-subtitle">{t("stoplist.recents")}</h2>
+
+          <ul className="list">
+            {recentStops.map((stop: Stop) => (
+              <StopItem key={stop.stopId} stop={stop} />
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div className="list-container">
+        <h2 className="page-subtitle">{t("stoplist.all_stops", "Paradas")}</h2>
 
         <ul className="list">
           {data

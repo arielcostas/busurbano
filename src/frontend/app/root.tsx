@@ -18,9 +18,6 @@ import "maplibre-theme/modern.css";
 import { Protocol } from "pmtiles";
 import maplibregl, { type LngLatLike } from "maplibre-gl";
 import { AppProvider } from "./AppContext";
-import { swManager } from "./utils/serviceWorkerManager";
-import { UpdateNotification } from "./components/UpdateNotification";
-import { useEffect } from "react";
 const pmtiles = new Protocol();
 maplibregl.addProtocol("pmtiles", pmtiles.tile);
 //#endregion
@@ -30,7 +27,7 @@ import "./i18n";
 export const links: Route.LinksFunction = () => [];
 
 export function HydrateFallback() {
-  return "Loading...";
+  return "Cargando...";
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -90,32 +87,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-// Helper: check if coordinates are within Vigo bounds
-function isWithinVigo(lngLat: LngLatLike): boolean {
-  let lng: number, lat: number;
-  if (Array.isArray(lngLat)) {
-    [lng, lat] = lngLat;
-  } else if ("lng" in lngLat && "lat" in lngLat) {
-    lng = lngLat.lng;
-    lat = lngLat.lat;
-  } else {
-    return false;
-  }
-  // Rough bounding box for Vigo
-  return lat >= 42.18 && lat <= 42.3 && lng >= -8.78 && lng <= -8.65;
-}
-
 import NavBar from "./components/NavBar";
 
 export default function App() {
-  useEffect(() => {
-    // Initialize service worker
-    swManager.initialize();
-  }, []);
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker
+      .register('/pwa-worker.js')
+      .catch((error) => {
+        console.error('Error registering SW:', error);
+      });
+  }
 
   return (
     <AppProvider>
-      <UpdateNotification />
       <main className="main-content">
         <Outlet />
       </main>

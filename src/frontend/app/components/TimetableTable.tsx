@@ -144,16 +144,14 @@ export const TimetableTable: React.FC<TimetableTableProps> = ({
                 </div>
               </div>
               <div className="card-body">
-                {!isPast && (
-                  <div className="route-streets">
-                    <span className="service-id">
-                      {parseServiceId(entry.trip.service_id)}
-                    </span>
-                    {entry.next_streets.length > 0 && (
-                      <span> — {entry.next_streets.join(' — ')}</span>
-                    )}
-                  </div>
-                )}
+                <div className="route-streets">
+                  <span className="service-id">
+                    {parseServiceId(entry.trip.service_id)}
+                  </span>
+                  {entry.next_streets.length > 0 && (
+                    <span> — {entry.next_streets.join(' — ')}</span>
+                  )}
+                </div>
               </div>
             </div>
           );
