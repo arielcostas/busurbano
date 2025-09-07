@@ -3,26 +3,34 @@ import { useParams, Link } from "react-router";
 import StopDataProvider from "../data/StopDataProvider";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { TimetableTable, type TimetableEntry } from "../components/TimetableTable";
+import { TimetableSkeleton } from "../components/TimetableSkeleton";
+import { ErrorDisplay } from "../components/ErrorDisplay";
 import LineIcon from "../components/LineIcon";
 import { useTranslation } from "react-i18next";
 import "./timetable-$id.css";
 
-const loadTimetableData = async (stopId: string) => {
+interface ErrorInfo {
+  type: 'network' | 'server' | 'unknown';
+  status?: number;
+  message?: string;
+}
+
+const loadTimetableData = async (stopId: string): Promise<TimetableEntry[]> => {
+  // Add delay to see skeletons in action (remove in production)
+  await new Promise(resolve => setTimeout(resolve, 1000));
+
   const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
-  try {
-    const resp = await fetch(`/api/GetStopTimetable?date=${today}&stopId=${stopId}`, {
-      headers: {
-        Accept: "application/json",
-      },
-    });
-    if (!resp.ok) {
-      throw new Error(`HTTP error! status: ${resp.status}`);
-    }
-    return await resp.json();
-  } catch (error) {
-    console.error('Error loading timetable data:', error);
-    return [];
+  const resp = await fetch(`/api/GetStopTimetable?date=${today}&stopId=${stopId}`, {
+    headers: {
+      Accept: "application/json",
+    },
+  });
+
+  if (!resp.ok) {
+    throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
   }
+
+  return await resp.json();
 };
 
 // Utility function to compare times
@@ -96,20 +104,40 @@ export default function Timetable() {
   const [timetableData, setTimetableData] = useState<TimetableEntry[]>([]);
   const [customName, setCustomName] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<ErrorInfo | null>(null);
   const [showPastEntries, setShowPastEntries] = useState(false);
   const nextEntryRef = useRef<HTMLDivElement>(null);
 
   const currentTime = new Date().toTimeString().slice(0, 8); // HH:MM:SS
   const filteredData = filterTimetableData(timetableData, currentTime, showPastEntries);
 
-  useEffect(() => {
-    loadTimetableData(params.id!).then((timetableBody: TimetableEntry[]) => {
+  const parseError = (error: any): ErrorInfo => {
+    if (!navigator.onLine) {
+      return { type: 'network', message: 'No internet connection' };
+    }
+
+    if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError')) {
+      return { type: 'network' };
+    }
+
+    if (error.message?.includes('HTTP')) {
+      const statusMatch = error.message.match(/HTTP (\d+):/);
+      const status = statusMatch ? parseInt(statusMatch[1]) : undefined;
+      return { type: 'server', status };
+    }
+
+    return { type: 'unknown', message: error.message };
+  };
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const timetableBody = await loadTimetableData(params.id!);
       setTimetableData(timetableBody);
-      setLoading(false);
-      if (timetableBody.length === 0) {
-        setError(t("timetable.noDataAvailable", "No hay datos de horarios disponibles para hoy"));
-      } else {
+
+      if (timetableBody.length > 0) {
         // Scroll to next entry after a short delay to allow rendering
         setTimeout(() => {
           const currentMinutes = timeToMinutes(currentTime);
@@ -129,26 +157,50 @@ export default function Timetable() {
           }
         }, 500);
       }
-    }).catch((err) => {
-      setError(t("timetable.loadError", "Error al cargar los horarios"));
+    } catch (err) {
+      console.error('Error loading timetable data:', err);
+      setError(parseError(err));
+      setTimetableData([]);
+    } finally {
       setLoading(false);
-    });
+    }
+  };
 
+  useEffect(() => {
+    loadData();
     setCustomName(StopDataProvider.getCustomName(stopIdNum));
-  }, [params.id, stopIdNum, t, currentTime]);
+  }, [params.id]);
 
   if (loading) {
-    return <h1 className="page-title">{t("common.loading")}</h1>;
-  }
+    return (
+      <div className="page-container">
+        <div className="timetable-full-header">
+          <h1 className="page-title">
+            {t("timetable.fullTitle", "Horarios teóricos")} ({params.id})
+          </h1>
+          <Link to={`/estimates/${params.id}`} className="back-link">
+            <ArrowLeft className="back-icon" />
+            {t("timetable.backToEstimates", "Volver a estimaciones")}
+          </Link>
+        </div>
 
-  // Get stop name from timetable data or use stop ID
-  const stopName = customName ||
-    (timetableData.length > 0 ? `Parada ${params.id}` : `Parada ${params.id}`);
+        <div className="timetable-full-content">
+          <div className="timetable-controls">
+            <button className="past-toggle" disabled>
+              <Eye className="toggle-icon" />
+              {t("timetable.showPast", "Mostrar todos")}
+            </button>
+          </div>
+
+          <TimetableSkeleton rows={8} />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="page-container">
       <div className="timetable-full-header">
-
         <h1 className="page-title">
           {t("timetable.fullTitle", "Horarios teóricos")} ({params.id})
         </h1>
@@ -159,8 +211,16 @@ export default function Timetable() {
       </div>
 
       {error ? (
+        <div className="timetable-full-content">
+          <ErrorDisplay
+            error={error}
+            onRetry={loadData}
+            title={t("errors.timetable_title", "Error al cargar horarios")}
+          />
+        </div>
+      ) : timetableData.length === 0 ? (
         <div className="error-message">
-          <p>{error}</p>
+          <p>{t("timetable.noDataAvailable", "No hay datos de horarios disponibles para hoy")}</p>
           <p className="error-detail">
             {t("timetable.errorDetail", "Los horarios teóricos se actualizan diariamente. Inténtalo más tarde.")}
           </p>

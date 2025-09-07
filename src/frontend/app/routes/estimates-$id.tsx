@@ -1,13 +1,17 @@
 import { type JSX, useEffect, useState, useCallback } from "react";
 import { useParams, Link } from "react-router";
 import StopDataProvider from "../data/StopDataProvider";
-import { Star, Edit2, ExternalLink } from "lucide-react";
+import { Star, Edit2, ExternalLink, RefreshCw } from "lucide-react";
 import "./estimates-$id.css";
 import { RegularTable } from "../components/RegularTable";
 import { useApp } from "../AppContext";
 import { GroupedTable } from "../components/GroupedTable";
 import { useTranslation } from "react-i18next";
 import { TimetableTable, type TimetableEntry } from "../components/TimetableTable";
+import { EstimatesTableSkeleton, EstimatesGroupedSkeleton } from "../components/EstimatesTableSkeleton";
+import { TimetableSkeleton } from "../components/TimetableSkeleton";
+import { ErrorDisplay } from "../components/ErrorDisplay";
+import { PullToRefresh } from "../components/PullToRefresh";
 import { useAutoRefresh } from "../hooks/useAutoRefresh";
 
 export interface StopDetails {
@@ -25,31 +29,45 @@ export interface StopDetails {
   }[];
 }
 
-const loadData = async (stopId: string) => {
+interface ErrorInfo {
+  type: 'network' | 'server' | 'unknown';
+  status?: number;
+  message?: string;
+}
+
+const loadData = async (stopId: string): Promise<StopDetails> => {
+  // Add delay to see skeletons in action (remove in production)
+  await new Promise(resolve => setTimeout(resolve, 1000));
+
   const resp = await fetch(`/api/GetStopEstimates?id=${stopId}`, {
     headers: {
       Accept: "application/json",
     },
   });
+
+  if (!resp.ok) {
+    throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
+  }
+
   return await resp.json();
 };
 
-const loadTimetableData = async (stopId: string) => {
+const loadTimetableData = async (stopId: string): Promise<TimetableEntry[]> => {
+  // Add delay to see skeletons in action (remove in production)
+  await new Promise(resolve => setTimeout(resolve, 1500));
+
   const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
-  try {
-    const resp = await fetch(`/api/GetStopTimetable?date=${today}&stopId=${stopId}`, {
-      headers: {
-        Accept: "application/json",
-      },
-    });
-    if (!resp.ok) {
-      throw new Error(`HTTP error! status: ${resp.status}`);
-    }
-    return await resp.json();
-  } catch (error) {
-    console.error('Error loading timetable data:', error);
-    return [];
+  const resp = await fetch(`/api/GetStopTimetable?date=${today}&stopId=${stopId}`, {
+    headers: {
+      Accept: "application/json",
+    },
+  });
+
+  if (!resp.ok) {
+    throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
   }
+
+  return await resp.json();
 };
 
 export default function Estimates() {
@@ -57,22 +75,73 @@ export default function Estimates() {
   const params = useParams();
   const stopIdNum = parseInt(params.id ?? "");
   const [customName, setCustomName] = useState<string | undefined>(undefined);
+
+  // Estimates data state
   const [data, setData] = useState<StopDetails | null>(null);
   const [dataDate, setDataDate] = useState<Date | null>(null);
-  const [favourited, setFavourited] = useState(false);
+  const [estimatesLoading, setEstimatesLoading] = useState(true);
+  const [estimatesError, setEstimatesError] = useState<ErrorInfo | null>(null);
+
+  // Timetable data state
   const [timetableData, setTimetableData] = useState<TimetableEntry[]>([]);
+  const [timetableLoading, setTimetableLoading] = useState(true);
+  const [timetableError, setTimetableError] = useState<ErrorInfo | null>(null);
+
+  const [favourited, setFavourited] = useState(false);
+  const [isManualRefreshing, setIsManualRefreshing] = useState(false);
   const { tableStyle } = useApp();
 
+  const parseError = (error: any): ErrorInfo => {
+    if (!navigator.onLine) {
+      return { type: 'network', message: 'No internet connection' };
+    }
+
+    if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError')) {
+      return { type: 'network' };
+    }
+
+    if (error.message?.includes('HTTP')) {
+      const statusMatch = error.message.match(/HTTP (\d+):/);
+      const status = statusMatch ? parseInt(statusMatch[1]) : undefined;
+      return { type: 'server', status };
+    }
+
+    return { type: 'unknown', message: error.message };
+  };
+
   const loadEstimatesData = useCallback(async () => {
-    const body: StopDetails = await loadData(params.id!);
-    setData(body);
-    setDataDate(new Date());
-    setCustomName(StopDataProvider.getCustomName(stopIdNum));
+    try {
+      setEstimatesLoading(true);
+      setEstimatesError(null);
+
+      const body = await loadData(params.id!);
+      setData(body);
+      setDataDate(new Date());
+      setCustomName(StopDataProvider.getCustomName(stopIdNum));
+    } catch (error) {
+      console.error('Error loading estimates data:', error);
+      setEstimatesError(parseError(error));
+      setData(null);
+      setDataDate(null);
+    } finally {
+      setEstimatesLoading(false);
+    }
   }, [params.id, stopIdNum]);
 
   const loadTimetableDataAsync = useCallback(async () => {
-    const timetableBody: TimetableEntry[] = await loadTimetableData(params.id!);
-    setTimetableData(timetableBody);
+    try {
+      setTimetableLoading(true);
+      setTimetableError(null);
+
+      const timetableBody = await loadTimetableData(params.id!);
+      setTimetableData(timetableBody);
+    } catch (error) {
+      console.error('Error loading timetable data:', error);
+      setTimetableError(parseError(error));
+      setTimetableData([]);
+    } finally {
+      setTimetableLoading(false);
+    }
   }, [params.id]);
 
   const refreshData = useCallback(async () => {
@@ -82,11 +151,22 @@ export default function Estimates() {
     ]);
   }, [loadEstimatesData, loadTimetableDataAsync]);
 
-  // Auto-refresh estimates data every 30 seconds
+  // Manual refresh function for pull-to-refresh and button
+  const handleManualRefresh = useCallback(async () => {
+    try {
+      setIsManualRefreshing(true);
+      // Only reload real-time estimates data, not timetable
+      await loadEstimatesData();
+    } finally {
+      setIsManualRefreshing(false);
+    }
+  }, [loadEstimatesData]);
+
+  // Auto-refresh estimates data every 30 seconds (only if not in error state)
   useAutoRefresh({
     onRefresh: loadEstimatesData,
     interval: 30000,
-    enabled: true,
+    enabled: !estimatesError,
   });
 
   useEffect(() => {
@@ -122,50 +202,116 @@ export default function Estimates() {
     }
   };
 
-  if (data === null) {
-    return <h1 className="page-title">{t("common.loading")}</h1>;
+  // Show loading skeleton while initial data is loading
+  if (estimatesLoading && !data) {
+    return (
+      <PullToRefresh
+        onRefresh={handleManualRefresh}
+        isRefreshing={isManualRefreshing}
+      >
+        <div className="page-container estimates-page">
+          <div className="estimates-header">
+            <h1 className="page-title">
+              <Star className="star-icon" />
+              <Edit2 className="edit-icon" />
+              {t("common.loading")}...
+            </h1>
+          </div>
+
+          <div className="table-responsive">
+            {tableStyle === "grouped" ? (
+              <EstimatesGroupedSkeleton />
+            ) : (
+              <EstimatesTableSkeleton />
+            )}
+          </div>
+
+          <div className="timetable-section">
+            <TimetableSkeleton />
+          </div>
+        </div>
+      </PullToRefresh>
+    );
   }
 
   return (
-    <div className="page-container estimates-page">
-      <div className="estimates-header">
-        <h1 className="page-title">
-          <Star
-            className={`star-icon ${favourited ? "active" : ""}`}
-            onClick={toggleFavourite}
-          />
-          <Edit2 className="edit-icon" onClick={handleRename} />
-          {customName ?? data.stop.name}{" "}
-          <span className="estimates-stop-id">({data.stop.id})</span>
-        </h1>
-      </div>
+    <PullToRefresh
+      onRefresh={handleManualRefresh}
+      isRefreshing={isManualRefreshing}
+    >
+      <div className="page-container estimates-page">
+        <div className="estimates-header">
+          <h1 className="page-title">
+            <Star
+              className={`star-icon ${favourited ? "active" : ""}`}
+              onClick={toggleFavourite}
+            />
+            <Edit2 className="edit-icon" onClick={handleRename} />
+            {customName ?? data?.stop.name ?? `Parada ${stopIdNum}`}{" "}
+            <span className="estimates-stop-id">({data?.stop.id ?? stopIdNum})</span>
+          </h1>
 
-      <div className="table-responsive">
-        {tableStyle === "grouped" ? (
-          <GroupedTable data={data} dataDate={dataDate} />
-        ) : (
-          <RegularTable data={data} dataDate={dataDate} />
-        )}
-      </div>
+          <button
+            className="manual-refresh-button"
+            onClick={handleManualRefresh}
+            disabled={isManualRefreshing || estimatesLoading}
+            title={t("estimates.reload", "Recargar estimaciones")}
+          >
+            <RefreshCw className={`refresh-icon ${isManualRefreshing ? 'spinning' : ''}`} />
+          </button>
+        </div>
 
-      <div className="timetable-section">
-        <TimetableTable
-          data={timetableData}
-          currentTime={new Date().toTimeString().slice(0, 8)} // HH:MM:SS
-        />
+        <div className="table-responsive">
+          {estimatesLoading ? (
+            tableStyle === "grouped" ? (
+              <EstimatesGroupedSkeleton />
+            ) : (
+              <EstimatesTableSkeleton />
+            )
+          ) : estimatesError ? (
+            <ErrorDisplay
+              error={estimatesError}
+              onRetry={loadEstimatesData}
+              title={t("errors.estimates_title", "Error al cargar estimaciones")}
+            />
+          ) : data ? (
+            tableStyle === "grouped" ? (
+              <GroupedTable data={data} dataDate={dataDate} />
+            ) : (
+              <RegularTable data={data} dataDate={dataDate} />
+            )
+          ) : null}
+        </div>
 
-        {timetableData.length > 0 && (
-          <div className="timetable-actions">
-            <Link
-              to={`/timetable/${params.id}`}
-              className="view-all-link"
-            >
-              <ExternalLink className="external-icon" />
-              {t("timetable.viewAll", "Ver todos los horarios")}
-            </Link>
-          </div>
-        )}
+        <div className="timetable-section">
+          {timetableLoading ? (
+            <TimetableSkeleton />
+          ) : timetableError ? (
+            <ErrorDisplay
+              error={timetableError}
+              onRetry={loadTimetableDataAsync}
+              title={t("errors.timetable_title", "Error al cargar horarios")}
+              className="compact"
+            />
+          ) : timetableData.length > 0 ? (
+            <>
+              <TimetableTable
+                data={timetableData}
+                currentTime={new Date().toTimeString().slice(0, 8)} // HH:MM:SS
+              />
+              <div className="timetable-actions">
+                <Link
+                  to={`/timetable/${params.id}`}
+                  className="view-all-link"
+                >
+                  <ExternalLink className="external-icon" />
+                  {t("timetable.viewAll", "Ver todos los horarios")}
+                </Link>
+              </div>
+            </>
+          ) : null}
+        </div>
       </div>
-    </div>
+    </PullToRefresh>
   );
 }

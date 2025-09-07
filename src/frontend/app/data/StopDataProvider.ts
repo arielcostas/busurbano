@@ -148,6 +148,21 @@ function getRecent(): number[] {
   return [];
 }
 
+function getFavouriteIds(): number[] {
+  const rawFavouriteStops = localStorage.getItem("favouriteStops");
+  if (rawFavouriteStops) {
+    return JSON.parse(rawFavouriteStops) as number[];
+  }
+  return [];
+}
+
+// New function to load stops from network
+async function loadStopsFromNetwork(): Promise<Stop[]> {
+  const response = await fetch("/stops.json");
+  const stops = (await response.json()) as Stop[];
+  return stops.map((stop) => ({ ...stop, favourite: false } as Stop));
+}
+
 export default {
   getStops,
   getStopById,
@@ -160,4 +175,6 @@ export default {
   isFavourite,
   pushRecent,
   getRecent,
+  getFavouriteIds,
+  loadStopsFromNetwork,
 };

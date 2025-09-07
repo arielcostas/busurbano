@@ -32,7 +32,64 @@
 .estimates-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.manual-refresh-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--primary-color);
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: max-content;
+}
+
+.manual-refresh-button:hover:not(:disabled) {
+  background: var(--primary-color-hover);
+  transform: translateY(-1px);
+}
+
+.manual-refresh-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.refresh-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  transition: transform 0.2s ease;
+}
+
+.refresh-icon.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 640px) {
+  .estimates-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .manual-refresh-button {
+    align-self: flex-end;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
+  }
 }
 
 .estimates-stop-id {
@@ -106,8 +163,7 @@
 
 /* Timetable section styles */
 .timetable-section {
-  padding-top: 1.5rem;
-  padding-bottom: 3rem; /* Add bottom padding before footer */
+  padding-bottom: 3rem;
 }
 
 /* Timetable cards should be single column */

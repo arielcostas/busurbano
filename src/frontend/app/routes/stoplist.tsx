@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import StopDataProvider, { type Stop } from "../data/StopDataProvider";
 import StopItem from "../components/StopItem";
+import StopItemSkeleton from "../components/StopItemSkeleton";
 import Fuse from "fuse.js";
 import "./stoplist.css";
 import { useTranslation } from "react-i18next";
@@ -8,21 +9,63 @@ import { useTranslation } from "react-i18next";
 export default function StopList() {
   const { t } = useTranslation();
   const [data, setData] = useState<Stop[] | null>(null);
+  const [loading, setLoading] = useState(true);
   const [searchResults, setSearchResults] = useState<Stop[] | null>(null);
+  const [favouriteIds, setFavouriteIds] = useState<number[]>([]);
+  const [recentIds, setRecentIds] = useState<number[]>([]);
+  const [favouriteStops, setFavouriteStops] = useState<Stop[]>([]);
+  const [recentStops, setRecentStops] = useState<Stop[]>([]);
   const searchTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const randomPlaceholder = useMemo(
     () => t("stoplist.search_placeholder"),
     [t],
   );
+
   const fuse = useMemo(
     () => new Fuse(data || [], { threshold: 0.3, keys: ["name.original"] }),
     [data],
   );
 
+  // Load favourite and recent IDs immediately from localStorage
+  useEffect(() => {
+    setFavouriteIds(StopDataProvider.getFavouriteIds());
+    setRecentIds(StopDataProvider.getRecent());
+  }, []);
+
+  // Load stops from network
   const loadStops = useCallback(async () => {
-    const stops = await StopDataProvider.getStops();
-    setData(stops);
+    try {
+      setLoading(true);
+
+      const stops = await StopDataProvider.loadStopsFromNetwork();
+
+      // Add favourite flags to stops
+      const favouriteStopsIds = StopDataProvider.getFavouriteIds();
+      const stopsWithFavourites = stops.map(stop => ({
+        ...stop,
+        favourite: favouriteStopsIds.includes(stop.stopId)
+      }));
+
+      setData(stopsWithFavourites);
+
+      // Update favourite and recent stops with full data
+      const favStops = stopsWithFavourites.filter(stop =>
+        favouriteStopsIds.includes(stop.stopId)
+      );
+      setFavouriteStops(favStops);
+
+      const recIds = StopDataProvider.getRecent();
+      const recStops = recIds
+        .map(id => stopsWithFavourites.find(stop => stop.stopId === id))
+        .filter(Boolean) as Stop[];
+      setRecentStops(recStops.reverse());
+
+    } catch (error) {
+      console.error("Failed to load stops:", error);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -52,26 +95,6 @@ export default function StopList() {
       setSearchResults(items);
     }, 300);
   };
-
-  const favouritedStops = useMemo(() => {
-    return data?.filter((stop) => stop.favourite) ?? [];
-  }, [data]);
-
-  const recentStops = useMemo(() => {
-    // no recent items if data not loaded
-    if (!data) return null;
-    const recentIds = StopDataProvider.getRecent();
-    if (recentIds.length === 0) return null;
-    // map and filter out missing entries
-    const stopsList = recentIds
-      .map((id) => data.find((stop) => stop.stopId === id))
-      .filter((s): s is Stop => Boolean(s));
-    return stopsList.reverse();
-  }, [data]);
-
-  if (data === null) {
-    return <h1 className="page-title">{t("common.loading")}</h1>;
-  }
 
   return (
     <div className="page-container stoplist-page">
@@ -108,7 +131,7 @@ export default function StopList() {
       <div className="list-container">
         <h2 className="page-subtitle">{t("stoplist.favourites")}</h2>
 
-        {favouritedStops?.length === 0 && (
+        {favouriteIds.length === 0 && (
           <p className="message">
             {t(
               "stoplist.no_favourites",
@@ -118,18 +141,28 @@ export default function StopList() {
         )}
 
         <ul className="list">
-          {favouritedStops
-            ?.sort((a, b) => a.stopId - b.stopId)
-            .map((stop: Stop) => <StopItem key={stop.stopId} stop={stop} />)}
+          {loading && favouriteIds.length > 0 &&
+            favouriteIds.map((id) => (
+              <StopItemSkeleton key={id} showId={true} stopId={id} />
+            ))
+          }
+          {!loading && favouriteStops
+            .sort((a, b) => a.stopId - b.stopId)
+            .map((stop) => <StopItem key={stop.stopId} stop={stop} />)}
         </ul>
       </div>
 
-      {recentStops && recentStops.length > 0 && (
+      {(recentIds.length > 0 || (!loading && recentStops.length > 0)) && (
         <div className="list-container">
           <h2 className="page-subtitle">{t("stoplist.recents")}</h2>
 
           <ul className="list">
-            {recentStops.map((stop: Stop) => (
+            {loading && recentIds.length > 0 &&
+              recentIds.map((id) => (
+                <StopItemSkeleton key={id} showId={true} stopId={id} />
+              ))
+            }
+            {!loading && recentStops.map((stop) => (
               <StopItem key={stop.stopId} stop={stop} />
             ))}
           </ul>
@@ -140,9 +173,16 @@ export default function StopList() {
         <h2 className="page-subtitle">{t("stoplist.all_stops", "Paradas")}</h2>
 
         <ul className="list">
-          {data
+          {loading && (
+            <>
+              {Array.from({ length: 8 }, (_, index) => (
+                <StopItemSkeleton key={`skeleton-${index}`} />
+              ))}
+            </>
+          )}
+          {!loading && data
             ?.sort((a, b) => a.stopId - b.stopId)
-            .map((stop: Stop) => <StopItem key={stop.stopId} stop={stop} />)}
+            .map((stop) => <StopItem key={stop.stopId} stop={stop} />)}
         </ul>
       </div>
     </div>

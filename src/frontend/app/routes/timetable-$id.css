@@ -71,19 +71,31 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background-color: var(--button-background, #f8f9fa);
-  color: var(--text-primary, #333);
-  border: 1px solid var(--button-border, #dee2e6);
-  border-radius: 6px;
-  font-size: 0.9rem;
+  color: var(--link-color, #007bff);
+  text-decoration: none;
   font-weight: 500;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--link-color, #007bff);
+  border-radius: 6px;
+  background: transparent;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .past-toggle:hover {
-  background-color: var(--button-hover-background, #e9ecef);
+  background-color: var(--link-color, #007bff);
+  color: white;
+  text-decoration: none;
+}
+
+.past-toggle:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.past-toggle:disabled:hover {
+  background: transparent;
+  color: var(--link-color, #007bff);
 }
 
 .past-toggle.active {
