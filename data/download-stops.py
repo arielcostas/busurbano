@@ -75,10 +75,14 @@ def main():
         # Process the data
         processed_stops = []
         for stop in data:
+            name = stop.get("nombre", "").strip()
+            # Fix double space equals comma-space: "Castrelos  202" -> "Castrelos, 202"; and remove quotes
+            name = name.replace("  ", ", ").replace('"', '').replace("'", "")
+
             processed_stop = {
                 "stopId": stop.get("id"),
                 "name": {
-                    "original": stop.get("nombre", "")
+                    "original": name
                 },
                 "latitude": stop.get("lat"),
                 "longitude": stop.get("lon"),

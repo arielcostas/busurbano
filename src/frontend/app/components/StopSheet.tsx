@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Sheet } from "react-modal-sheet";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
+import { RefreshCw } from "lucide-react";
 import LineIcon from "./LineIcon";
+import { StopSheetSkeleton } from "./StopSheetSkeleton";
+import { ErrorDisplay } from "./ErrorDisplay";
 import { type StopDetails } from "../routes/estimates-$id";
 import "./StopSheet.css";
 
@@ -13,12 +16,23 @@ interface StopSheetProps {
   stopName: string;
 }
 
+interface ErrorInfo {
+  type: 'network' | 'server' | 'unknown';
+  status?: number;
+  message?: string;
+}
+
 const loadStopData = async (stopId: number): Promise<StopDetails> => {
   const resp = await fetch(`/api/GetStopEstimates?id=${stopId}`, {
     headers: {
       Accept: "application/json",
     },
   });
+
+  if (!resp.ok) {
+    throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
+  }
+
   return await resp.json();
 };
 
@@ -31,21 +45,47 @@ export const StopSheet: React.FC<StopSheetProps> = ({
   const { t } = useTranslation();
   const [data, setData] = useState<StopDetails | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<ErrorInfo | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+
+  const parseError = (error: any): ErrorInfo => {
+    if (!navigator.onLine) {
+      return { type: 'network', message: 'No internet connection' };
+    }
+
+    if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError')) {
+      return { type: 'network' };
+    }
+
+    if (error.message?.includes('HTTP')) {
+      const statusMatch = error.message.match(/HTTP (\d+):/);
+      const status = statusMatch ? parseInt(statusMatch[1]) : undefined;
+      return { type: 'server', status };
+    }
+
+    return { type: 'unknown', message: error.message };
+  };
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      setData(null);
+
+      const stopData = await loadStopData(stopId);
+      setData(stopData);
+      setLastUpdated(new Date());
+    } catch (err) {
+      console.error("Failed to load stop data:", err);
+      setError(parseError(err));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (isOpen && stopId) {
-      setLoading(true);
-      setData(null);
-      loadStopData(stopId)
-        .then((stopData) => {
-          setData(stopData);
-        })
-        .catch((error) => {
-          console.error("Failed to load stop data:", error);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
+      loadData();
     }
   }, [isOpen, stopId]);
 
@@ -81,7 +121,7 @@ export const StopSheet: React.FC<StopSheetProps> = ({
     <Sheet
       isOpen={isOpen}
       onClose={onClose}
-      detent="content-height"
+      detent={"content-height" as any}
     >
       <Sheet.Container>
         <Sheet.Header />
@@ -92,13 +132,16 @@ export const StopSheet: React.FC<StopSheetProps> = ({
               <span className="stop-sheet-id">({stopId})</span>
             </div>
 
-            {loading && (
-              <div className="stop-sheet-loading">
-                {t("common.loading", "Loading...")}
-              </div>
-            )}
-
-            {data && !loading && (
+            {loading ? (
+              <StopSheetSkeleton />
+            ) : error ? (
+              <ErrorDisplay
+                error={error}
+                onRetry={loadData}
+                title={t("errors.estimates_title", "Error al cargar estimaciones")}
+                className="compact"
+              />
+            ) : data ? (
               <>
                 <div className="stop-sheet-estimates">
                   <h3 className="stop-sheet-subtitle">
@@ -136,15 +179,40 @@ export const StopSheet: React.FC<StopSheetProps> = ({
                   )}
                 </div>
 
-                <Link
-                  to={`/estimates/${stopId}`}
-                  className="stop-sheet-view-all"
-                  onClick={onClose}
-                >
-                  {t("map.view_all_estimates", "Ver todas las estimaciones")}
-                </Link>
+                <div className="stop-sheet-footer">
+                  {lastUpdated && (
+                    <div className="stop-sheet-timestamp">
+                      {t("estimates.last_updated", "Actualizado a las")}{" "}
+                      {lastUpdated.toLocaleTimeString(undefined, {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit"
+                      })}
+                    </div>
+                  )}
+
+                  <div className="stop-sheet-actions">
+                    <button
+                      className="stop-sheet-reload"
+                      onClick={loadData}
+                      disabled={loading}
+                      title={t("estimates.reload", "Recargar estimaciones")}
+                    >
+                      <RefreshCw className={`reload-icon ${loading ? 'spinning' : ''}`} />
+                      {t("estimates.reload", "Recargar")}
+                    </button>
+
+                    <Link
+                      to={`/estimates/${stopId}`}
+                      className="stop-sheet-view-all"
+                      onClick={onClose}
+                    >
+                      {t("map.view_all_estimates", "Ver todas las estimaciones")}
+                    </Link>
+                  </div>
+                </div>
               </>
-            )}
+            ) : null}
           </div>
         </Sheet.Content>
       </Sheet.Container>

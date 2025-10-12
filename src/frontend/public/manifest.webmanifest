@@ -4,12 +4,14 @@
   "name": "UrbanoVigo Web",
   "description": "Aplicación web para encontrar paradas y tiempos de llegada de los autobuses urbanos de Vigo, España.",
   "short_name": "UrbanoVigo",
-  "start_url": "/",
+  "start_url": "/stops",
   "display": "standalone",
   "orientation": "portrait-primary",
   "lang": "es",
   "background_color": "#ffffff",
   "theme_color": "#007bff",
+  "categories": ["travel", "utilities", "productivity"],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/logo-512.jpg",

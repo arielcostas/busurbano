@@ -1,6 +1,7 @@
 import { useApp } from "../AppContext";
 import "./settings.css";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
 
 export default function Settings() {
   const { t, i18n } = useTranslation();
@@ -12,6 +13,9 @@ export default function Settings() {
     mapPositionMode,
     setMapPositionMode,
   } = useApp();
+
+  const [isCheckingUpdates, setIsCheckingUpdates] = useState(false);
+  const [updateMessage, setUpdateMessage] = useState<string | null>(null);
 
   return (
     <div className="page-container">
@@ -67,7 +71,7 @@ export default function Settings() {
         </div>
         <div className="settings-content-inline">
           <label htmlFor="language" className="form-label-inline">
-            Idioma:
+            {t("about.language", "Idioma")}:
           </label>
           <select
             id="language"

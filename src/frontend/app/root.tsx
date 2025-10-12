@@ -24,21 +24,10 @@ maplibregl.addProtocol("pmtiles", pmtiles.tile);
 
 import "./i18n";
 
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker
-    .register("/sw.js")
-    .then((registration) => {
-      console.log("Service Worker registered with scope:", registration.scope);
-    })
-    .catch((error) => {
-      console.error("Service Worker registration failed:", error);
-    });
-}
-
 export const links: Route.LinksFunction = () => [];
 
 export function HydrateFallback() {
-  return "Loading...";
+  return "Cargando...";
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -47,6 +36,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 
         <link rel="icon" type="image/jpg" href="/logo-512.jpg" />
         <link rel="icon" href="/favicon.ico" sizes="64x64" />
@@ -95,24 +87,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-// Helper: check if coordinates are within Vigo bounds
-function isWithinVigo(lngLat: LngLatLike): boolean {
-  let lng: number, lat: number;
-  if (Array.isArray(lngLat)) {
-    [lng, lat] = lngLat;
-  } else if ("lng" in lngLat && "lat" in lngLat) {
-    lng = lngLat.lng;
-    lat = lngLat.lat;
-  } else {
-    return false;
-  }
-  // Rough bounding box for Vigo
-  return lat >= 42.18 && lat <= 42.3 && lng >= -8.78 && lng <= -8.65;
-}
-
 import NavBar from "./components/NavBar";
 
 export default function App() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker
+      .register('/pwa-worker.js')
+      .catch((error) => {
+        console.error('Error registering SW:', error);
+      });
+  }
+
   return (
     <AppProvider>
       <main className="main-content">
