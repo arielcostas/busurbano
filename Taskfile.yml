@@ -1,0 +1,34 @@
+version: '3'
+
+tasks:
+  dev-backend:
+    desc: Run backend in watch mode.
+    cmds:
+      - dotnet watch --project src/Costasdev.Busurbano.Backend/Costasdev.Busurbano.Backend.csproj
+
+  dev-frontend:
+    desc: Run frontend development server.
+    cmds:
+      - npm run dev --prefix src/frontend
+
+  format-backend:
+    desc: Format backend solution.
+    cmds:
+      - dotnet format --verbosity diagnostic
+
+  format-frontend:
+    desc: Format frontend sources.
+    cmds:
+      - 'prettier --write src/frontend/**/*.{ts,tsx,css}'
+
+  build-backend:
+    desc: Publish backend in Release mode.
+    cmds:
+      - dotnet publish -c Release -o ./dist/backend src/Costasdev.Busurbano.Backend/Costasdev.Busurbano.Backend.csproj
+
+  build-frontend:
+    desc: Build frontend bundle.
+    cmds:
+      - npm run build --prefix src/frontend
+      - mkdir dist/frontend
+      - mv src/frontend/build/client/ dist/frontend/
