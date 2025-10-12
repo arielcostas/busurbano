@@ -99,9 +99,9 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({
 
   const handleTouchEnd = useCallback(async () => {
     if (!isPulling) return;
-    
+
     setIsPulling(false);
-    
+
     if (isActive && y.get() >= threshold && !isRefreshing) {
       try {
         await onRefresh();
@@ -109,7 +109,7 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({
         console.error('Refresh failed:', error);
       }
     }
-    
+
     // Always reset state
     setIsActive(false);
     y.set(0);
@@ -144,8 +144,8 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({
             className={`refresh-icon-container ${isActive ? 'active' : ''}`}
             style={{ scale, rotate: isRefreshing ? 0 : rotate }}
           >
-            <RefreshCw 
-              className={`refresh-icon ${isRefreshing ? 'spinning' : ''}`} 
+            <RefreshCw
+              className={`refresh-icon ${isRefreshing ? 'spinning' : ''}`}
             />
           </motion.div>
         </motion.div>
