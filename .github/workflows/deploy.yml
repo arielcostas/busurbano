@@ -1,0 +1,72 @@
+name: Deploy to production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build production artifact
+    environment: Production
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: true
+          lfs: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: lts/*
+          cache: "npm"
+          cache-dependency-path: src/frontend/package-lock.json
+      - name: Install frontend dependencies
+        working-directory: src/frontend
+        run: npm ci
+      - name: Build frontend
+        working-directory: src/frontend
+        run: npm run build
+      - name: Prepare artifact directory
+        run: |
+          rm -rf dist
+          mkdir -p dist/frontend
+          cp -R src/frontend/build/client/. dist/frontend/
+      - name: Archive Production Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: production
+          path: dist
+          retention-days: 7
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    name: Deploy to production server
+    environment: Production
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: production
+          path: dist
+      - name: Connect to tailnet
+        uses: tailscale/github-action@v3
+        with:
+          oauth-client-id: ${{ secrets.TAILSCALE_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TAILSCALE_CLIENT_SECRET }}
+          tags: tag:ci
+      - name: Wait for reachability
+        run: |
+          until tailscale ping ${{ secrets.TARGET_HOST }}; do
+            echo "Waiting for Tailscale to connect..."
+            sleep 2
+          done
+      - name: Add SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ secrets.TARGET_HOST }} >> ~/.ssh/known_hosts
+      - name: Deploy
+        run: |
+          scp -r dist/* ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }}:${{ secrets.TARGET_PATH }}/
