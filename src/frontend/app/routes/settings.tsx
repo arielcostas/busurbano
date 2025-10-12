@@ -1,4 +1,4 @@
-import { useApp } from "../AppContext";
+import { type Theme, useApp } from "../AppContext";
 import "./settings.css";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
@@ -14,9 +14,6 @@ export default function Settings() {
     setMapPositionMode,
   } = useApp();
 
-  const [isCheckingUpdates, setIsCheckingUpdates] = useState(false);
-  const [updateMessage, setUpdateMessage] = useState<string | null>(null);
-
   return (
     <div className="page-container">
       <h1 className="page-title">{t("about.title")}</h1>
@@ -31,10 +28,11 @@ export default function Settings() {
             id="theme"
             className="form-select-inline"
             value={theme}
-            onChange={(e) => setTheme(e.target.value as "light" | "dark")}
+            onChange={(e) => setTheme(e.target.value as Theme)}
           >
             <option value="light">{t("about.theme_light")}</option>
             <option value="dark">{t("about.theme_dark")}</option>
+            <option value="system">{t("about.theme_system")}</option>
           </select>
         </div>
         <div className="settings-content-inline">

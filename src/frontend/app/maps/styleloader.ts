@@ -1,9 +1,22 @@
 import type { StyleSpecification } from "react-map-gl/maplibre";
+import type { Theme } from "~/AppContext";
 
 export async function loadStyle(
   styleName: string,
-  colorScheme: string,
+  colorScheme: Theme,
 ): Promise<StyleSpecification> {
+  if (styleName == "openfreemap") {
+    const url = "/maps/styles/openfreemap-any.json";
+
+    const resp = await fetch(url);
+    if (!resp.ok) {
+      throw new Error(`Failed to load style: ${url}`);
+    }
+
+    const style = await resp.json();
+    return style as StyleSpecification;
+   }
+
   const stylePath = `/maps/styles/${styleName}-${colorScheme}.json`;
   const resp = await fetch(stylePath);
 

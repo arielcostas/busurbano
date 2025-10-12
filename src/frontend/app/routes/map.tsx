@@ -73,7 +73,8 @@ export default function StopMap() {
   }, []);
 
   useEffect(() => {
-    const styleName = "carto";
+    //const styleName = "carto";
+    const styleName = "openfreemap";
     loadStyle(styleName, theme)
       .then((style) => setMapStyle(style))
       .catch((error) => console.error("Failed to load map style:", error));
@@ -158,11 +159,32 @@ export default function StopMap() {
         source="stops-source"
         layout={{
           "icon-image": "stop",
-          "icon-size": ["interpolate", ["linear"], ["zoom"], 11, 0.4, 16, 0.8],
+          "icon-size": ["interpolate", ["linear"], ["zoom"], 11, 0.4, 18, 0.8],
           "icon-allow-overlap": true,
           "icon-ignore-placement": true,
         }}
       />
+
+      <Layer
+        id="stops-label"
+        type="symbol"
+        source="stops-source"
+        minzoom={16}
+        layout={{
+          "text-field": ["get", "name"],
+          "text-font": ["Noto Sans Regular"],
+          "text-offset": [0, 2.5],
+          "text-anchor": "center",
+          "text-justify": "center",
+          "text-size": ["interpolate", ["linear"], ["zoom"], 11, 8, 22, 14]
+        }}
+        paint={{
+          "text-color": "#45a15a",
+          "text-halo-color": "#fff",
+          "text-halo-width": 1.5
+        }}
+      />
+
 
       {selectedStop && (
         <StopSheet

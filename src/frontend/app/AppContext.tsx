@@ -8,7 +8,7 @@ import {
 } from "react";
 import { type LngLatLike } from "maplibre-gl";
 
-type Theme = "light" | "dark";
+export type Theme = "light" | "dark" | "system";
 type TableStyle = "regular" | "grouped";
 type MapPositionMode = "gps" | "last";
 
@@ -47,23 +47,75 @@ const AppContext = createContext<AppContextProps | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   //#region Theme
+  const getPreferredScheme = () => {
+    if (typeof window === "undefined" || !window.matchMedia) {
+      return "light" as const;
+    }
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+  };
+
+  const [systemTheme, setSystemTheme] = useState<"light" | "dark">(
+    getPreferredScheme,
+  );
+
   const [theme, setTheme] = useState<Theme>(() => {
     const savedTheme = localStorage.getItem("theme");
-    if (savedTheme) {
-      return savedTheme as Theme;
+    if (savedTheme === "light" || savedTheme === "dark" || savedTheme === "system") {
+      return savedTheme;
     }
-    const prefersDark =
-      window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches;
-    return prefersDark ? "dark" : "light";
+    return "system";
   });
 
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) {
+      return;
+    }
+
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleChange = (event: MediaQueryListEvent) => {
+      setSystemTheme(event.matches ? "dark" : "light");
+    };
+
+    // Sync immediately in case theme changed before subscription
+    setSystemTheme(media.matches ? "dark" : "light");
+
+    if (media.addEventListener) {
+      media.addEventListener("change", handleChange);
+    } else {
+      media.addListener(handleChange);
+    }
+
+    return () => {
+      if (media.removeEventListener) {
+        media.removeEventListener("change", handleChange);
+      } else {
+        media.removeListener(handleChange);
+      }
+    };
+  }, []);
+
+  const resolvedTheme = theme === "system" ? systemTheme : theme;
+
   const toggleTheme = () => {
-    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
+    setTheme((prevTheme) => {
+      if (prevTheme === "light") {
+        return "dark";
+      }
+      if (prevTheme === "dark") {
+        return "system";
+      }
+      return "light";
+    });
   };
 
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
+    document.documentElement.setAttribute("data-theme", resolvedTheme);
+    document.documentElement.style.colorScheme = resolvedTheme;
+  }, [resolvedTheme]);
+
+  useEffect(() => {
     localStorage.setItem("theme", theme);
   }, [theme]);
   //#endregion
