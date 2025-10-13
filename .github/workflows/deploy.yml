@@ -69,4 +69,4 @@ jobs:
           ssh-keyscan -H ${{ secrets.TARGET_HOST }} >> ~/.ssh/known_hosts
       - name: Deploy
         run: |
-          scp -r dist/* ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }}:${{ secrets.TARGET_PATH }}/
+          scp -r dist/frontend/* ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }}:${{ secrets.TARGET_PATH }}/
