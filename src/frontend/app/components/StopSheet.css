@@ -93,13 +93,42 @@
   white-space: nowrap;
 }
 
+.stop-sheet-estimate-arrival {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
 .stop-sheet-estimate-time {
-  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.stop-sheet-estimate-time.is-minutes {
+  color: #22c55e;
+}
+
+.stop-sheet-estimate-time svg {
+  width: 18px;
+  height: 18px;
   color: var(--subtitle-color);
+  flex-shrink: 0;
+}
+
+.stop-sheet-estimate-time.is-minutes svg {
+  color: #22c55e;
 }
 
 .stop-sheet-estimate-distance {
+  font-size: 0.75rem;
   color: var(--subtitle-color);
+  text-align: right;
 }
 
 .stop-sheet-footer {

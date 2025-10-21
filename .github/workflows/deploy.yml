@@ -107,7 +107,7 @@ jobs:
         run: scp -r dist/backend/* app@${{ secrets.TARGET_HOST }}:/opt/busurbano/
 
       - name: Allow execution
-        run: ssh ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }} "echo ${{ secrets.TARGET_PASSWORD }} | sudo -S chmod +x /opt/busurbano/Costasdev.Busurbano.Backend"
+        run: ssh ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }} "chmod +x /opt/busurbano/Costasdev.Busurbano.Backend"
 
       - name: Start service
         run: ssh ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }} "echo ${{ secrets.TARGET_PASSWORD }} | sudo -S /usr/bin/systemctl start busurbano"

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Sheet } from "react-modal-sheet";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
-import { RefreshCw } from "lucide-react";
+import { Clock, ClockFading, Hourglass, RefreshCw } from "lucide-react";
 import LineIcon from "./LineIcon";
 import { StopSheetSkeleton } from "./StopSheetSkeleton";
 import { ErrorDisplay } from "./ErrorDisplay";
@@ -168,14 +168,14 @@ export const StopSheet: React.FC<StopSheetProps> = ({
                             <div className="stop-sheet-estimate-route">
                               {estimate.route}
                             </div>
-                            <div className="stop-sheet-estimate-time">
+                          </div>
+                          <div className="stop-sheet-estimate-arrival">
+                            <div className={`stop-sheet-estimate-time ${estimate.minutes <= 15 ? 'is-minutes' : ''}`}>
+                              <Clock />
                               {formatTime(estimate.minutes)}
-                              {regionConfig.showMeters && estimate.meters > -1 && (
-                                <span className="stop-sheet-estimate-distance">
-                                  {" • "}
-                                  {formatDistance(estimate.meters)}
-                                </span>
-                              )}
+                            </div>
+                            <div className="stop-sheet-estimate-distance">
+                              {formatDistance(estimate.meters)}
                             </div>
                           </div>
                         </div>
