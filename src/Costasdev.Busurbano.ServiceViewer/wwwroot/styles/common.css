@@ -1,0 +1,23 @@
+﻿body {
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 2rem;
+  background-color: #fff;
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+h1 {
+  font-size: 1.75rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+body > footer {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #ddd;
+}

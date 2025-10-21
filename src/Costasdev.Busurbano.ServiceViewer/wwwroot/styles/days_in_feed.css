@@ -1,0 +1,28 @@
+﻿main article {
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  margin: 0.5rem 0;
+  text-align: center;
+}
+
+main article.current-day {
+  background: #e3f2fd;
+  border-color: #0074d9;
+}
+
+main article.current-day a {
+  font-weight: 700;
+}
+
+main article a {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #0074d9;
+  text-decoration: none;
+}
+
+main article a:hover {
+  text-decoration: underline;
+}
