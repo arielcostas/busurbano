@@ -101,7 +101,7 @@ jobs:
           scp -r dist/frontend/* ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }}:${{ secrets.TARGET_PATH }}/
 
       - name: Stop service
-        run: ssh -T app@${{ secrets.TARHET_HOST }} "echo '' | sudo -n -S /usr/bin/systemctl stop busurbano"
+        run: ssh -T app@${{ secrets.TARGET_HOST }} "echo '' | sudo -n -S /usr/bin/systemctl stop busurbano"
 
       - name: Upload backend
         run: scp -r dist/backend/* app@${{ secrets.TARGET_HOST }}:/opt/ventasync/
