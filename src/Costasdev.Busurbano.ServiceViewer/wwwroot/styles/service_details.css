@@ -1,0 +1,146 @@
+﻿.navigation-bar {
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.trip-container {
+  border: 1px solid #ddd;
+  border-radius: 0.25rem;
+  background-color: var(--route-color-semi, #fafafa);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.trip-header {
+  display: flex;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+  padding: 0.6rem 0.8rem;
+}
+
+.trip-header .route {
+  font-weight: bold;
+  font-size: 1.1rem;
+  min-width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid #ddd;
+  margin-right: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.trip-header .headsign {
+  flex-grow: 1;
+  font-weight: 500;
+}
+
+.trip-header .distance {
+  min-width: 80px;
+  text-align: right;
+  font-weight: 500;
+}
+
+.trip-details {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.trip-leg {
+  flex: 1;
+  min-width: 280px;
+  padding: 0.75rem;
+}
+
+.trip-leg:first-child {
+  border-right: 1px solid #ddd;
+}
+
+.trip-time {
+  font-weight: 600;
+  font-family: 'Consolas', monospace;
+  font-size: 1.1rem;
+}
+
+.trip-stop {
+  margin-top: 0.25rem;
+  color: #333;
+}
+
+.trip-footer {
+  text-align: right;
+  margin: 0.5em 1em 0.5em 0;
+}
+
+.trip-details-link {
+  color: #0074d9;
+  text-decoration: underline;
+  font-size: 0.98em;
+}
+
+/* Day change marker */
+.day-change-marker {
+  background-color: #fff3cd;
+  border: 2px solid #f5c86a;
+  color: #856404;
+  text-align: center;
+  padding: 0.75rem;
+  margin: 1rem 0;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+/* Total distance counter */
+.total-distance {
+  text-align: right;
+  font-weight: bold;
+  padding: 0.75rem;
+  margin-top: 1.5rem;
+  border-top: 1px solid #ddd;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+}
+
+/* Highlight current trip */
+.trip-container.highlight {
+  box-shadow: 0 0 8px rgba(0, 116, 217, 0.6);
+  border-color: #0074d9;
+  padding: 1rem;
+}
+
+/* Media query for print */
+@media print {
+  body {
+    padding: 0;
+    margin: 0;
+  }
+
+  .trip-container {
+    page-break-inside: avoid;
+    border: 1px solid #000;
+    margin-bottom: 0.5rem;
+  }
+
+  .trip-header {
+    background-color: #f5f5f5 !important;
+  }
+
+  .day-change-marker {
+    border: 1px solid #000;
+    background-color: #f5f5f5 !important;
+    color: #000;
+  }
+
+  .navigation {
+    display: none;
+  }
+}
+
+.trip-line--N1 {
+  background-color: rgba(191, 191, 191, 0.30);
+}
+
+.trip-line-VITRASA {
+  background-color: rgba(0, 153, 0, 0.30);
+}

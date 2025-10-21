@@ -1,0 +1,70 @@
+﻿a {
+  color: #0074d9;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+#service-cards {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#service-cards article {
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin: 0.5rem 0;
+  padding: 1rem;
+}
+
+#service-cards article header {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+#service-cards article main {
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+  color: #555;
+}
+
+#service-cards article footer {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.125rem 0.75rem;
+}
+
+#service-cards article footer span.route-group {
+  display: inline-block;
+  padding: 0.3rem 0.6rem;
+  margin: 0.25rem 0.1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+
+  background: #FFF;
+  border-bottom: 4px solid var(--route-color, #000);
+  color: var(--route-text, #000);
+}
+
+/* Filter button styles */
+.filter-btn {
+  padding: 0.4rem 0.8rem;
+  margin: 0.2rem;
+  border: 1px solid #0074d9;
+  border-radius: 4px;
+  background: #fff;
+  color: #0074d9;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.filter-btn.active {
+  background: #0074d9;
+  color: #fff;
+}
