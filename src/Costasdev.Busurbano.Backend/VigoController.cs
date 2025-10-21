@@ -6,14 +6,14 @@ using System.Text.Json;
 namespace Costasdev.Busurbano.Backend;
 
 [ApiController]
-[Route("api")]
-public class ApiController : ControllerBase
+[Route("api/vigo")]
+public class VigoController : ControllerBase
 {
     private readonly VigoTransitApiClient _api;
     private readonly IMemoryCache _cache;
     private readonly HttpClient _httpClient;
 
-    public ApiController(HttpClient http, IMemoryCache cache)
+    public VigoController(HttpClient http, IMemoryCache cache)
     {
         _api = new VigoTransitApiClient(http);
         _cache = cache;

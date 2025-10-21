@@ -7,6 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import { type LngLatLike } from "maplibre-gl";
+import { type RegionId, DEFAULT_REGION, getRegionConfig, isValidRegion } from "./data/RegionConfig";
 
 export type Theme = "light" | "dark" | "system";
 type TableStyle = "regular" | "grouped";
@@ -37,6 +38,9 @@ interface AppContextProps {
 
   mapPositionMode: MapPositionMode;
   setMapPositionMode: (mode: MapPositionMode) => void;
+
+  region: RegionId;
+  setRegion: (region: RegionId) => void;
 }
 
 // Coordenadas por defecto centradas en Vigo
@@ -153,6 +157,29 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }, [mapPositionMode]);
   //#endregion
 
+  //#region Region
+  const [region, setRegionState] = useState<RegionId>(() => {
+    const savedRegion = localStorage.getItem("region");
+    if (savedRegion && isValidRegion(savedRegion)) {
+      return savedRegion;
+    }
+    return DEFAULT_REGION;
+  });
+
+  const setRegion = (newRegion: RegionId) => {
+    setRegionState(newRegion);
+    localStorage.setItem("region", newRegion);
+
+    // Update map to region's default center and zoom
+    const regionConfig = getRegionConfig(newRegion);
+    updateMapState(regionConfig.defaultCenter, regionConfig.defaultZoom);
+  };
+
+  useEffect(() => {
+    localStorage.setItem("region", region);
+  }, [region]);
+  //#endregion
+
   //#region Map State
   const [mapState, setMapState] = useState<MapState>(() => {
     const savedMapState = localStorage.getItem("mapState");
@@ -253,6 +280,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         updateMapState,
         mapPositionMode,
         setMapPositionMode,
+        region,
+        setRegion,
       }}
     >
       {children}

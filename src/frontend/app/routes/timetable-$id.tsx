@@ -7,6 +7,8 @@ import { TimetableSkeleton } from "../components/TimetableSkeleton";
 import { ErrorDisplay } from "../components/ErrorDisplay";
 import LineIcon from "../components/LineIcon";
 import { useTranslation } from "react-i18next";
+import { type RegionId, getRegionConfig } from "../data/RegionConfig";
+import { useApp } from "../AppContext";
 import "./timetable-$id.css";
 
 interface ErrorInfo {
@@ -15,12 +17,19 @@ interface ErrorInfo {
   message?: string;
 }
 
-const loadTimetableData = async (stopId: string): Promise<TimetableEntry[]> => {
+const loadTimetableData = async (region: RegionId, stopId: string): Promise<TimetableEntry[]> => {
+  const regionConfig = getRegionConfig(region);
+
+  // Check if timetable is available for this region
+  if (!regionConfig.timetableEndpoint) {
+    throw new Error("Timetable not available for this region");
+  }
+
   // Add delay to see skeletons in action (remove in production)
   await new Promise(resolve => setTimeout(resolve, 1000));
 
   const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
-  const resp = await fetch(`/api/GetStopTimetable?date=${today}&stopId=${stopId}`, {
+  const resp = await fetch(`${regionConfig.timetableEndpoint}?date=${today}&stopId=${stopId}`, {
     headers: {
       Accept: "application/json",
     },
@@ -99,6 +108,7 @@ const parseServiceId = (serviceId: string): string => {
 
 export default function Timetable() {
   const { t } = useTranslation();
+  const { region } = useApp();
   const params = useParams();
   const stopIdNum = parseInt(params.id ?? "");
   const [timetableData, setTimetableData] = useState<TimetableEntry[]>([]);
@@ -107,6 +117,7 @@ export default function Timetable() {
   const [error, setError] = useState<ErrorInfo | null>(null);
   const [showPastEntries, setShowPastEntries] = useState(false);
   const nextEntryRef = useRef<HTMLDivElement>(null);
+  const regionConfig = getRegionConfig(region);
 
   const currentTime = new Date().toTimeString().slice(0, 8); // HH:MM:SS
   const filteredData = filterTimetableData(timetableData, currentTime, showPastEntries);
@@ -130,11 +141,22 @@ export default function Timetable() {
   };
 
   const loadData = async () => {
+    // Check if timetable is available for this region
+    if (!regionConfig.timetableEndpoint) {
+      setError({
+        type: 'server',
+        status: 501,
+        message: 'Timetable not available for this region'
+      });
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
 
-      const timetableBody = await loadTimetableData(params.id!);
+      const timetableBody = await loadTimetableData(region, params.id!);
       setTimetableData(timetableBody);
 
       if (timetableBody.length > 0) {
@@ -168,8 +190,8 @@ export default function Timetable() {
 
   useEffect(() => {
     loadData();
-    setCustomName(StopDataProvider.getCustomName(stopIdNum));
-  }, [params.id]);
+    setCustomName(StopDataProvider.getCustomName(region, stopIdNum));
+  }, [params.id, region]);
 
   if (loading) {
     return (
@@ -266,6 +288,7 @@ const TimetableTableWithScroll: React.FC<{
   nextEntryRef: React.RefObject<HTMLDivElement | null>;
 }> = ({ data, showAll, currentTime, nextEntryRef }) => {
   const { t } = useTranslation();
+  const { region } = useApp();
   const nowMinutes = timeToMinutes(currentTime);
 
   return (
@@ -295,7 +318,7 @@ const TimetableTableWithScroll: React.FC<{
             >
               <div className="card-header">
                 <div className="line-info">
-                  <LineIcon line={entry.line.name} />
+                  <LineIcon line={entry.line.name} region={region} />
                 </div>
 
                 <div className="destination-info">

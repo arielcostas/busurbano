@@ -5,9 +5,11 @@ import StopItemSkeleton from "../components/StopItemSkeleton";
 import Fuse from "fuse.js";
 import "./stoplist.css";
 import { useTranslation } from "react-i18next";
+import { useApp } from "../AppContext";
 
 export default function StopList() {
   const { t } = useTranslation();
+  const { region } = useApp();
   const [data, setData] = useState<Stop[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchResults, setSearchResults] = useState<Stop[] | null>(null);
@@ -29,19 +31,19 @@ export default function StopList() {
 
   // Load favourite and recent IDs immediately from localStorage
   useEffect(() => {
-    setFavouriteIds(StopDataProvider.getFavouriteIds());
-    setRecentIds(StopDataProvider.getRecent());
-  }, []);
+    setFavouriteIds(StopDataProvider.getFavouriteIds(region));
+    setRecentIds(StopDataProvider.getRecent(region));
+  }, [region]);
 
   // Load stops from network
   const loadStops = useCallback(async () => {
     try {
       setLoading(true);
 
-      const stops = await StopDataProvider.loadStopsFromNetwork();
+      const stops = await StopDataProvider.loadStopsFromNetwork(region);
 
       // Add favourite flags to stops
-      const favouriteStopsIds = StopDataProvider.getFavouriteIds();
+      const favouriteStopsIds = StopDataProvider.getFavouriteIds(region);
       const stopsWithFavourites = stops.map(stop => ({
         ...stop,
         favourite: favouriteStopsIds.includes(stop.stopId)
@@ -55,7 +57,7 @@ export default function StopList() {
       );
       setFavouriteStops(favStops);
 
-      const recIds = StopDataProvider.getRecent();
+      const recIds = StopDataProvider.getRecent(region);
       const recStops = recIds
         .map(id => stopsWithFavourites.find(stop => stop.stopId === id))
         .filter(Boolean) as Stop[];
@@ -66,7 +68,7 @@ export default function StopList() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [region]);
 
   useEffect(() => {
     loadStops();

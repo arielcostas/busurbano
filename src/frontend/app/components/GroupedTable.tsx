@@ -1,12 +1,14 @@
 import { type StopDetails } from "../routes/estimates-$id";
 import LineIcon from "./LineIcon";
+import { type RegionConfig } from "../data/RegionConfig";
 
 interface GroupedTable {
   data: StopDetails;
   dataDate: Date | null;
+  regionConfig: RegionConfig;
 }
 
-export const GroupedTable: React.FC<GroupedTable> = ({ data, dataDate }) => {
+export const GroupedTable: React.FC<GroupedTable> = ({ data, dataDate, regionConfig }) => {
   const formatDistance = (meters: number) => {
     if (meters > 1024) {
       return `${(meters / 1000).toFixed(1)} km`;
@@ -43,7 +45,7 @@ export const GroupedTable: React.FC<GroupedTable> = ({ data, dataDate }) => {
           <th>Línea</th>
           <th>Ruta</th>
           <th>Llegada</th>
-          <th>Distancia</th>
+          {regionConfig.showMeters && <th>Distancia</th>}
         </tr>
       </thead>
 
@@ -53,16 +55,18 @@ export const GroupedTable: React.FC<GroupedTable> = ({ data, dataDate }) => {
             <tr key={`${line}-${idx}`}>
               {idx === 0 && (
                 <td rowSpan={groupedEstimates[line].length}>
-                  <LineIcon line={line} />
+                  <LineIcon line={line} region={regionConfig.id} />
                 </td>
               )}
               <td>{estimate.route}</td>
               <td>{`${estimate.minutes} min`}</td>
-              <td>
-                {estimate.meters > -1
-                  ? formatDistance(estimate.meters)
-                  : "No disponible"}
-              </td>
+              {regionConfig.showMeters && (
+                <td>
+                  {estimate.meters > -1
+                    ? formatDistance(estimate.meters)
+                    : "No disponible"}
+                </td>
+              )}
             </tr>
           )),
         )}
@@ -71,7 +75,9 @@ export const GroupedTable: React.FC<GroupedTable> = ({ data, dataDate }) => {
       {data?.estimates.length === 0 && (
         <tfoot>
           <tr>
-            <td colSpan={4}>No hay estimaciones disponibles</td>
+            <td colSpan={regionConfig.showMeters ? 4 : 3}>
+              No hay estimaciones disponibles
+            </td>
           </tr>
         </tfoot>
       )}

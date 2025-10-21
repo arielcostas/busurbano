@@ -13,6 +13,7 @@ import { TimetableSkeleton } from "../components/TimetableSkeleton";
 import { ErrorDisplay } from "../components/ErrorDisplay";
 import { PullToRefresh } from "../components/PullToRefresh";
 import { useAutoRefresh } from "../hooks/useAutoRefresh";
+import { type RegionId, getRegionConfig } from "../data/RegionConfig";
 
 export interface StopDetails {
   stop: {
@@ -35,8 +36,9 @@ interface ErrorInfo {
   message?: string;
 }
 
-const loadData = async (stopId: string): Promise<StopDetails> => {
-  const resp = await fetch(`/api/GetStopEstimates?id=${stopId}`, {
+const loadData = async (region: RegionId, stopId: string): Promise<StopDetails> => {
+  const regionConfig = getRegionConfig(region);
+  const resp = await fetch(`${regionConfig.estimatesEndpoint}?id=${stopId}`, {
     headers: {
       Accept: "application/json",
     },
@@ -49,9 +51,16 @@ const loadData = async (stopId: string): Promise<StopDetails> => {
   return await resp.json();
 };
 
-const loadTimetableData = async (stopId: string): Promise<TimetableEntry[]> => {
+const loadTimetableData = async (region: RegionId, stopId: string): Promise<TimetableEntry[]> => {
+  const regionConfig = getRegionConfig(region);
+
+  // Check if timetable is available for this region
+  if (!regionConfig.timetableEndpoint) {
+    throw new Error("Timetable not available for this region");
+  }
+
   const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
-  const resp = await fetch(`/api/GetStopTimetable?date=${today}&stopId=${stopId}`, {
+  const resp = await fetch(`${regionConfig.timetableEndpoint}?date=${today}&stopId=${stopId}`, {
     headers: {
       Accept: "application/json",
     },
@@ -83,7 +92,8 @@ export default function Estimates() {
 
   const [favourited, setFavourited] = useState(false);
   const [isManualRefreshing, setIsManualRefreshing] = useState(false);
-  const { tableStyle } = useApp();
+  const { tableStyle, region } = useApp();
+  const regionConfig = getRegionConfig(region);
 
   const parseError = (error: any): ErrorInfo => {
     if (!navigator.onLine) {
@@ -108,10 +118,10 @@ export default function Estimates() {
       setEstimatesLoading(true);
       setEstimatesError(null);
 
-      const body = await loadData(params.id!);
+      const body = await loadData(region, params.id!);
       setData(body);
       setDataDate(new Date());
-      setCustomName(StopDataProvider.getCustomName(stopIdNum));
+      setCustomName(StopDataProvider.getCustomName(region, stopIdNum));
     } catch (error) {
       console.error('Error loading estimates data:', error);
       setEstimatesError(parseError(error));
@@ -120,14 +130,20 @@ export default function Estimates() {
     } finally {
       setEstimatesLoading(false);
     }
-  }, [params.id, stopIdNum]);
+  }, [params.id, stopIdNum, region]);
 
   const loadTimetableDataAsync = useCallback(async () => {
+    // Skip loading timetable if not available for this region
+    if (!regionConfig.timetableEndpoint) {
+      setTimetableLoading(false);
+      return;
+    }
+
     try {
       setTimetableLoading(true);
       setTimetableError(null);
 
-      const timetableBody = await loadTimetableData(params.id!);
+      const timetableBody = await loadTimetableData(region, params.id!);
       setTimetableData(timetableBody);
     } catch (error) {
       console.error('Error loading timetable data:', error);
@@ -136,7 +152,7 @@ export default function Estimates() {
     } finally {
       setTimetableLoading(false);
     }
-  }, [params.id]);
+  }, [params.id, region, regionConfig.timetableEndpoint]);
 
   const refreshData = useCallback(async () => {
     await Promise.all([
@@ -168,16 +184,16 @@ export default function Estimates() {
     loadEstimatesData();
     loadTimetableDataAsync();
 
-    StopDataProvider.pushRecent(parseInt(params.id ?? ""));
-    setFavourited(StopDataProvider.isFavourite(parseInt(params.id ?? "")));
-  }, [params.id, loadEstimatesData, loadTimetableDataAsync]);
+    StopDataProvider.pushRecent(region, parseInt(params.id ?? ""));
+    setFavourited(StopDataProvider.isFavourite(region, parseInt(params.id ?? "")));
+  }, [params.id, region, loadEstimatesData, loadTimetableDataAsync]);
 
   const toggleFavourite = () => {
     if (favourited) {
-      StopDataProvider.removeFavourite(stopIdNum);
+      StopDataProvider.removeFavourite(region, stopIdNum);
       setFavourited(false);
     } else {
-      StopDataProvider.addFavourite(stopIdNum);
+      StopDataProvider.addFavourite(region, stopIdNum);
       setFavourited(true);
     }
   };
@@ -188,10 +204,10 @@ export default function Estimates() {
     if (input === null) return; // cancelled
     const trimmed = input.trim();
     if (trimmed === "") {
-      StopDataProvider.removeCustomName(stopIdNum);
+      StopDataProvider.removeCustomName(region, stopIdNum);
       setCustomName(undefined);
     } else {
-      StopDataProvider.setCustomName(stopIdNum, trimmed);
+      StopDataProvider.setCustomName(region, stopIdNum, trimmed);
       setCustomName(trimmed);
     }
   };
@@ -270,9 +286,9 @@ export default function Estimates() {
             />
           ) : data ? (
             tableStyle === "grouped" ? (
-              <GroupedTable data={data} dataDate={dataDate} />
+              <GroupedTable data={data} dataDate={dataDate} regionConfig={regionConfig} />
             ) : (
-              <RegularTable data={data} dataDate={dataDate} />
+              <RegularTable data={data} dataDate={dataDate} regionConfig={regionConfig} />
             )
           ) : null}
         </div>

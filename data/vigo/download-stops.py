@@ -11,7 +11,7 @@ import urllib.request
 import yaml  # Add YAML support for overrides
 
 OVERRIDES_DIR = "overrides"
-OUTPUT_FILE = "../src/frontend/public/stops.json"
+OUTPUT_FILE = "../../src/frontend/public/stops/vigo.json"
 
 def load_stop_overrides(file_path):
     """Load stop overrides from a YAML file"""

@@ -2,6 +2,7 @@ import { type Theme, useApp } from "../AppContext";
 import "./settings.css";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
+import { getAvailableRegions } from "../data/RegionConfig";
 
 export default function Settings() {
   const { t, i18n } = useTranslation();
@@ -12,7 +13,11 @@ export default function Settings() {
     setTableStyle,
     mapPositionMode,
     setMapPositionMode,
+    region,
+    setRegion,
   } = useApp();
+
+  const regions = getAvailableRegions();
 
   return (
     <div className="page-container">
@@ -20,6 +25,23 @@ export default function Settings() {
       <p className="about-description">{t("about.description")}</p>
       <section className="settings-section">
         <h2>{t("about.settings")}</h2>
+        <div className="settings-content-inline">
+          <label htmlFor="region" className="form-label-inline">
+            Región:
+          </label>
+          <select
+            id="region"
+            className="form-select-inline"
+            value={region}
+            onChange={(e) => setRegion(e.target.value as any)}
+          >
+            {regions.map((r) => (
+              <option key={r.id} value={r.id}>
+                {r.name}
+              </option>
+            ))}
+          </select>
+        </div>
         <div className="settings-content-inline">
           <label htmlFor="theme" className="form-label-inline">
             {t("about.theme")}

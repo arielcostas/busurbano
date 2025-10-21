@@ -7,6 +7,8 @@ import LineIcon from "./LineIcon";
 import { StopSheetSkeleton } from "./StopSheetSkeleton";
 import { ErrorDisplay } from "./ErrorDisplay";
 import { type StopDetails } from "../routes/estimates-$id";
+import { type RegionId, getRegionConfig } from "../data/RegionConfig";
+import { useApp } from "../AppContext";
 import "./StopSheet.css";
 
 interface StopSheetProps {
@@ -22,8 +24,9 @@ interface ErrorInfo {
   message?: string;
 }
 
-const loadStopData = async (stopId: number): Promise<StopDetails> => {
-  const resp = await fetch(`/api/GetStopEstimates?id=${stopId}`, {
+const loadStopData = async (region: RegionId, stopId: number): Promise<StopDetails> => {
+  const regionConfig = getRegionConfig(region);
+  const resp = await fetch(`${regionConfig.estimatesEndpoint}?id=${stopId}`, {
     headers: {
       Accept: "application/json",
     },
@@ -43,6 +46,8 @@ export const StopSheet: React.FC<StopSheetProps> = ({
   stopName,
 }) => {
   const { t } = useTranslation();
+  const { region } = useApp();
+  const regionConfig = getRegionConfig(region);
   const [data, setData] = useState<StopDetails | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<ErrorInfo | null>(null);
@@ -72,7 +77,7 @@ export const StopSheet: React.FC<StopSheetProps> = ({
       setError(null);
       setData(null);
 
-      const stopData = await loadStopData(stopId);
+      const stopData = await loadStopData(region, stopId);
       setData(stopData);
       setLastUpdated(new Date());
     } catch (err) {
@@ -87,7 +92,7 @@ export const StopSheet: React.FC<StopSheetProps> = ({
     if (isOpen && stopId) {
       loadData();
     }
-  }, [isOpen, stopId]);
+  }, [isOpen, stopId, region]);
 
   const formatTime = (minutes: number) => {
     if (minutes > 15) {
@@ -157,7 +162,7 @@ export const StopSheet: React.FC<StopSheetProps> = ({
                       {limitedEstimates.map((estimate, idx) => (
                         <div key={idx} className="stop-sheet-estimate-item">
                           <div className="stop-sheet-estimate-line">
-                            <LineIcon line={estimate.line} />
+                            <LineIcon line={estimate.line} region={region} />
                           </div>
                           <div className="stop-sheet-estimate-details">
                             <div className="stop-sheet-estimate-route">
@@ -165,7 +170,7 @@ export const StopSheet: React.FC<StopSheetProps> = ({
                             </div>
                             <div className="stop-sheet-estimate-time">
                               {formatTime(estimate.minutes)}
-                              {estimate.meters > -1 && (
+                              {regionConfig.showMeters && estimate.meters > -1 && (
                                 <span className="stop-sheet-estimate-distance">
                                   {" • "}
                                   {formatDistance(estimate.meters)}

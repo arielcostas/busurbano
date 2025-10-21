@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import LineIcon from "./LineIcon";
 import "./TimetableTable.css";
+import { useApp } from "../AppContext";
 
 export interface TimetableEntry {
   line: {
@@ -97,6 +98,7 @@ export const TimetableTable: React.FC<TimetableTableProps> = ({
   currentTime
 }) => {
   const { t } = useTranslation();
+  const { region } = useApp();
 
   const displayData = showAll ? data : findNearbyEntries(data, currentTime || '');
   const nowMinutes = currentTime ? timeToMinutes(currentTime) : timeToMinutes(new Date().toTimeString().slice(0, 8));
@@ -126,7 +128,7 @@ export const TimetableTable: React.FC<TimetableTableProps> = ({
             >
               <div className="card-header">
                 <div className="line-info">
-                  <LineIcon line={entry.line.name} />
+                  <LineIcon line={entry.line.name} region={region} />
                 </div>
 
                 <div className="destination-info">

@@ -4,10 +4,11 @@ const STATIC_CACHE_ASSETS = [
   "/favicon.ico",
   "/logo-256.png",
   "/logo-512.jpg",
-  "/stops.json"
+  "/stops/vigo.json",
+  "/stops/santiago.json"
 ];
 
-const EXPR_CACHE_AFTER_FIRST_VIEW = /(\/assets\/.*)|(\/api\/GetStopTimetable.*)/;
+const EXPR_CACHE_AFTER_FIRST_VIEW = /(\/assets\/.*)|(\/api\/(vigo|santiago)\/GetStopTimetable.*)/;
 
 const ESTIMATES_MIN_AGE = 15 * 1000;
 const ESTIMATES_MAX_AGE = 30 * 1000;

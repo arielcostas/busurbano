@@ -38,7 +38,7 @@ export default function StopMap() {
     name: string;
   } | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const { mapState, updateMapState, theme } = useApp();
+  const { mapState, updateMapState, theme, region } = useApp();
   const mapRef = useRef<MapRef>(null);
   const [mapStyleKey, setMapStyleKey] = useState<string>("light");
 
@@ -56,7 +56,7 @@ export default function StopMap() {
   };
 
   useEffect(() => {
-    StopDataProvider.getStops().then((data) => {
+    StopDataProvider.getStops(region).then((data) => {
       const features: GeoJsonFeature<
         Point,
         { stopId: number; name: string; lines: string[] }
@@ -70,7 +70,7 @@ export default function StopMap() {
       }));
       setStops(features);
     });
-  }, []);
+  }, [region]);
 
   useEffect(() => {
     //const styleName = "carto";
@@ -115,7 +115,7 @@ export default function StopMap() {
   const handlePointClick = (feature: any) => {
     const props: any = feature.properties;
     // fetch full stop to get lines array
-    StopDataProvider.getStopById(props.stopId).then((stop) => {
+    StopDataProvider.getStopById(region, props.stopId).then((stop) => {
       if (!stop) return;
       setSelectedStop({
         stopId: stop.stopId,
