@@ -95,11 +95,11 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H ${{ secrets.TARGET_HOST }} >> ~/.ssh/known_hosts
+      - name: Deploy backend
+        run: |
+          ssh -t ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }} "sudo /usr/bin/systemctl stop busurbano"
+          scp -r dist/backend/* ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }}:/opt/ventasync/
+          ssh -t ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }} "sudo /usr/bin/systemctl start busurbano"
       - name: Deploy frontend
         run: |
           scp -r dist/frontend/* ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }}:${{ secrets.TARGET_PATH }}/
-      - name: Deploy backend
-        run: |
-          ssh ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }} "sudo /usr/bin/systemctl stop busurbano"
-          scp -r dist/backend/* ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }}:/opt/ventasync/
-          ssh ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }} "sudo /usr/bin/systemctl start busurbano"
