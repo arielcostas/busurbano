@@ -158,7 +158,7 @@ export default function StopMap() {
         type="symbol"
         source="stops-source"
         layout={{
-          "icon-image": "stop",
+          "icon-image": `stop-${region}`,
           "icon-size": ["interpolate", ["linear"], ["zoom"], 11, 0.4, 18, 0.8],
           "icon-allow-overlap": true,
           "icon-ignore-placement": true,

@@ -1,7 +1,15 @@
 {
-  "stop": {
-    "id": "stop",
+  "stop-vigo": {
+    "id": "stop-vigo",
     "x": 0,
+    "y": 0,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "stop-santiago": {
+    "id": "stop-santiago",
+    "x": 64,
     "y": 0,
     "width": 64,
     "height": 64,
