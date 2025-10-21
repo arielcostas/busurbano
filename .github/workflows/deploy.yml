@@ -95,7 +95,7 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H ${{ secrets.TARGET_HOST }} >> ~/.ssh/known_hosts
-      
+
       - name: Deploy frontend
         run: |
           scp -r dist/frontend/* ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }}:${{ secrets.TARGET_PATH }}/
@@ -105,6 +105,9 @@ jobs:
 
       - name: Upload backend
         run: scp -r dist/backend/* app@${{ secrets.TARGET_HOST }}:/opt/busurbano/
+
+      - name: Allow execution
+        run: ssh ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }} "echo ${{ secrets.TARGET_PASSWORD }} | sudo -S chmod +x /opt/busurbano/Costasdev.Busurbano.Backend"
 
       - name: Start service
         run: ssh ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }} "echo ${{ secrets.TARGET_PASSWORD }} | sudo -S /usr/bin/systemctl start busurbano"

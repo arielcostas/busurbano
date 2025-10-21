@@ -4394,6 +4394,12 @@
       "filter": [
         "all",
         [
+          "!=",
+          [
+            "get",
+            "class"
+          ], "bus"],
+        [
           "match",
           [
             "geometry-type"

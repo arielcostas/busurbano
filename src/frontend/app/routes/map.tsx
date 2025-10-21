@@ -17,6 +17,7 @@ import { loadStyle } from "app/maps/styleloader";
 import type { Feature as GeoJsonFeature, Point } from "geojson";
 import { StopSheet } from "~/components/StopSheet";
 import { useTranslation } from "react-i18next";
+import { REGIONS } from "~/data/RegionConfig";
 
 // Default minimal fallback style before dynamic loading
 const defaultStyle: StyleSpecification = {
@@ -142,6 +143,10 @@ export default function StopMap() {
         zoom: mapState.zoom,
       }}
       attributionControl={false}
+      maxBounds={REGIONS[region].bounds ? [
+        REGIONS[region].bounds!.sw,
+        REGIONS[region].bounds!.ne,
+      ] : undefined}
     >
       <NavigationControl position="top-right" />
       <GeolocateControl position="top-right" trackUserLocation={true} />
@@ -159,7 +164,7 @@ export default function StopMap() {
         source="stops-source"
         layout={{
           "icon-image": `stop-${region}`,
-          "icon-size": ["interpolate", ["linear"], ["zoom"], 11, 0.4, 18, 0.8],
+          "icon-size": ["interpolate", ["linear"], ["zoom"], 11, 0.7, 18, 1.0],
           "icon-allow-overlap": true,
           "icon-ignore-placement": true,
         }}
@@ -172,16 +177,16 @@ export default function StopMap() {
         minzoom={16}
         layout={{
           "text-field": ["get", "name"],
-          "text-font": ["Noto Sans Regular"],
-          "text-offset": [0, 2.5],
+          "text-font": ["Noto Sans Bold"],
+          "text-offset": [0, 3],
           "text-anchor": "center",
           "text-justify": "center",
-          "text-size": ["interpolate", ["linear"], ["zoom"], 11, 8, 22, 14]
+          "text-size": ["interpolate", ["linear"], ["zoom"], 11, 8, 22, 16]
         }}
         paint={{
-          "text-color": "#45a15a",
-          "text-halo-color": "#fff",
-          "text-halo-width": 1.5
+          "text-color": `${REGIONS[region].textColour || "#000"}`,
+          "text-halo-color": "#FFF",
+          "text-halo-width": 1
         }}
       />
 
