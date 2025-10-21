@@ -100,11 +100,14 @@ jobs:
         run: |
           scp -r dist/frontend/* ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }}:${{ secrets.TARGET_PATH }}/
 
+      - name: Debug SSH Connection
+        run: ssh ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }} "whoami; hostname; pwd"
+
       - name: Stop service
-        run: ssh app@${{ secrets.TARGET_HOST }} "echo ${{ secrets.TARGET_PASSWORD }} | sudo -S /usr/bin/systemctl stop busurbano.service"
+        run: ssh ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }} "echo ${{ secrets.TARGET_PASSWORD }} | sudo -S /usr/bin/systemctl stop busurbano.service"
 
       - name: Upload backend
         run: scp -r dist/backend/* app@${{ secrets.TARGET_HOST }}:/opt/busurbano/
 
       - name: Start service
-        run: ssh app@${{ secrets.TARGET_HOST }} "echo ${{ secrets.TARGET_PASSWORD }} | sudo -S /usr/bin/systemctl start busurbano.service"
+        run: ssh ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }} "echo ${{ secrets.TARGET_PASSWORD }} | sudo -S /usr/bin/systemctl start busurbano.service"
