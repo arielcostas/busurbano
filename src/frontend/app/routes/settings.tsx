@@ -2,10 +2,12 @@ import { type Theme, useApp } from "../AppContext";
 import "./settings.css";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
-import { getAvailableRegions } from "../data/RegionConfig";
+import { getAvailableRegions, REGIONS } from "../data/RegionConfig";
+import { useNavigate } from "react-router";
 
 export default function Settings() {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const {
     theme,
     setTheme,
@@ -18,6 +20,29 @@ export default function Settings() {
   } = useApp();
 
   const regions = getAvailableRegions();
+  const [showModal, setShowModal] = useState(false);
+  const [pendingRegion, setPendingRegion] = useState<string | null>(null);
+
+  const handleRegionChange = (newRegion: string) => {
+    if (newRegion !== region) {
+      setPendingRegion(newRegion);
+      setShowModal(true);
+    }
+  };
+
+  const confirmRegionChange = () => {
+    if (pendingRegion) {
+      setRegion(pendingRegion as any);
+      setShowModal(false);
+      setPendingRegion(null);
+      navigate("/stops");
+    }
+  };
+
+  const cancelRegionChange = () => {
+    setShowModal(false);
+    setPendingRegion(null);
+  };
 
   return (
     <div className="page-container">
@@ -33,7 +58,7 @@ export default function Settings() {
             id="region"
             className="form-select-inline"
             value={region}
-            onChange={(e) => setRegion(e.target.value as any)}
+            onChange={(e) => handleRegionChange(e.target.value)}
           >
             {regions.map((r) => (
               <option key={r.id} value={r.id}>
@@ -118,13 +143,13 @@ export default function Settings() {
       <h2>{t("about.credits")}</h2>
       <p>
         <a
-          href="https://github.com/arielcostas/urbanovigo-web"
+          href="https://github.com/arielcostas/busurbano"
           className="about-link"
           rel="nofollow noreferrer noopener"
         >
           {t("about.github")}
         </a>{" "}
-        -{t("about.developed_by")}{" "}
+        - {t("about.developed_by")}{" "}
         <a
           href="https://www.costas.dev"
           className="about-link"
@@ -133,6 +158,7 @@ export default function Settings() {
           Ariel Costas
         </a>
       </p>
+      {region === "vigo" && (
       <p>
         {t("about.data_source_prefix")}{" "}
         <a
@@ -149,8 +175,44 @@ export default function Settings() {
           rel="nofollow noreferrer noopener"
         >
           Open Data Commons Attribution License
-        </a>
+        </a>.
       </p>
+      )}
+      {region === "santiago" && (
+        <p>
+          Datos obtenidos de app MaisBus (Concello de Santiago/TUSSA),
+          gracias a la documentación de [TP Galicia](https://tpgalicia.github.io/urban/santiago/)
+          en GitHub.
+        </p>
+      )}
+
+      {showModal && (
+        <div className="modal-overlay" onClick={cancelRegionChange}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>{t("about.region_change_title", "Cambiar región")}</h2>
+            <p>
+              {t(
+                "about.region_change_message",
+                "¿Estás seguro de que quieres cambiar la región? Serás redirigido a la lista de paradas."
+              )}
+            </p>
+            <div className="modal-buttons">
+              <button
+                className="modal-button modal-button-cancel"
+                onClick={cancelRegionChange}
+              >
+                {t("about.cancel", "Cancelar")}
+              </button>
+              <button
+                className="modal-button modal-button-confirm"
+                onClick={confirmRegionChange}
+              >
+                {t("about.confirm", "Confirmar")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

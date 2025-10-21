@@ -45,28 +45,28 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <link rel="apple-touch-icon" href="/logo-512.jpg" sizes="512x512" />
         <meta name="theme-color" content="#007bff" />
 
-        <link rel="canonical" href="https://urbanovigo.costas.dev/" />
+        <link rel="canonical" href="https://busurbano.costas.dev/" />
 
         <meta
           name="description"
-          content="Aplicación web para encontrar paradas y tiempos de llegada de los autobuses urbanos de Vigo, España."
+          content="Aplicación web para encontrar paradas y tiempos de llegada de los autobuses urbanos"
         />
         <meta
           name="keywords"
-          content="Vigo, autobús, urbano, parada, tiempo, llegada, transporte, público, España"
+          content="autobús, urbano, parada, tiempo, llegada, transporte, público, España"
         />
         <meta name="author" content="Ariel Costas Guerrero" />
 
-        <meta property="og:title" content="UrbanoVigo Web" />
+        <meta property="og:title" content="Busurbano Web" />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://urbanovigo.costas.dev/" />
+        <meta property="og:url" content="https://busurbano.costas.dev/" />
         <meta
           property="og:image"
-          content="https://urbanovigo.costas.dev/logo-512.jpg"
+          content="https://busurbano.costas.dev/logo-512.jpg"
         />
         <meta
           property="og:description"
-          content="Aplicación web para encontrar paradas y tiempos de llegada de los autobuses urbanos de Vigo, España."
+          content="Aplicación web para encontrar paradas y tiempos de llegada de los autobuses urbanos"
         />
 
         <link rel="manifest" href="/manifest.webmanifest" />

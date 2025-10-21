@@ -15,12 +15,13 @@ Busurbano is a web application designed to help users find bus stops and arrival
 - **Backend**:
   - ASP.NET Core 9 Web API
   - [Costasdev.VigoTransitApi](https://github.com/arielcostas/VigoTransitApi)
+  - WIP: Santiago de Compostela API - Not a package yet
 - **Mapping**:
-  - [Leaflet](https://leafletjs.com/) via [React-Leaflet](https://react-leaflet.js.org/)
-  - [Leaflet Locate Control](https://github.com/domoritz/leaflet-locatecontrol)
-  - [Leaflet Marker Cluster](https://github.com/Leaflet/Leaflet.markercluster)
+  - [MapLibre GL JS](https://maplibre.org)
+  - OpenStreetMap
+  - [OpenFreeMap tiles](https://openfreemap.org)
 - **Styling**: Good old CSS
-- **Fonts**: [Roboto Variable](https://fonts.google.com/specimen/Roboto) via [@fontsource](https://fontsource.org/fonts/outfit)
+- **Fonts**: [Roboto Variable](https://fonts.google.com/specimen/Roboto) via [@fontsource](https://fontsource.org/fonts/roboto)
 
 ## Getting Started
 
@@ -30,6 +31,8 @@ Busurbano is a web application designed to help users find bus stops and arrival
 - .NET 9 SDK
 
 ### Installation
+
+TODO: Update instructions
 
 1. Clone the repository:
 
@@ -54,10 +57,6 @@ Busurbano is a web application designed to help users find bus stops and arrival
     ```
 
 2. Open your browser and navigate to `http://localhost:5173`.
-
-### Deployment
-
-The application is (or will soon be) deployed to [busurbano.costas.dev](https://busurbano.costas.dev) via GitHub Actions, on a normal Ubuntu server with Nginx and a reverse proxy.
 
 ## Contributing
 

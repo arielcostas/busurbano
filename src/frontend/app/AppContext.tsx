@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import { type LngLatLike } from "maplibre-gl";
-import { type RegionId, DEFAULT_REGION, getRegionConfig, isValidRegion } from "./data/RegionConfig";
+import { type RegionId, DEFAULT_REGION, getRegionConfig, isValidRegion, REGIONS } from "./data/RegionConfig";
 
 export type Theme = "light" | "dark" | "system";
 type TableStyle = "regular" | "grouped";
@@ -42,10 +42,6 @@ interface AppContextProps {
   region: RegionId;
   setRegion: (region: RegionId) => void;
 }
-
-// Coordenadas por defecto centradas en Vigo
-const DEFAULT_CENTER: LngLatLike = [42.229188855975046, -8.72246955783102];
-const DEFAULT_ZOOM = 14;
 
 const AppContext = createContext<AppContextProps | undefined>(undefined);
 
@@ -187,8 +183,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       try {
         const parsed = JSON.parse(savedMapState);
         return {
-          center: parsed.center || DEFAULT_CENTER,
-          zoom: parsed.zoom || DEFAULT_ZOOM,
+          center: parsed.center || REGIONS[region].defaultCenter,
+          zoom: parsed.zoom || REGIONS[region].defaultZoom,
           userLocation: parsed.userLocation || null,
           hasLocationPermission: parsed.hasLocationPermission || false,
         };
@@ -197,8 +193,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       }
     }
     return {
-      center: DEFAULT_CENTER,
-      zoom: DEFAULT_ZOOM,
+      center: REGIONS[region].defaultCenter,
+      zoom: REGIONS[region].defaultZoom,
       userLocation: null,
       hasLocationPermission: false,
     };

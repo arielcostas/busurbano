@@ -6,6 +6,7 @@ import Fuse from "fuse.js";
 import "./stoplist.css";
 import { useTranslation } from "react-i18next";
 import { useApp } from "../AppContext";
+import { REGIONS } from "~/data/RegionConfig";
 
 export default function StopList() {
   const { t } = useTranslation();
@@ -100,7 +101,7 @@ export default function StopList() {
 
   return (
     <div className="page-container stoplist-page">
-      <h1 className="page-title">UrbanoVigo Web</h1>
+      <h1 className="page-title">BusUrbano  - {REGIONS[region].name}</h1>
 
       <form className="search-form">
         <div className="form-group">
