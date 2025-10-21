@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Build backend artifact
     environment: Production
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v5
         with:
@@ -32,6 +34,8 @@ jobs:
     needs: build
     name: Deploy backend to production server
     environment: Production
+    permissions:
+      contents: read
     steps:
       - name: Download Artifact
         uses: actions/download-artifact@v5
