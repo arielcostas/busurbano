@@ -69,7 +69,7 @@ jobs:
           BRANCH_NAME: ${{ steps.check_existing.outputs.branch_name }}
           HAS_EXISTING: ${{ steps.check_existing.outputs.has_existing }}
         run: |
-          git add src/frontend/public/stops.json
+          git add src/frontend/public/stops/*.json
 
           if git diff --staged --exit-code; then
             echo "No changes to commit"
