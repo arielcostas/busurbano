@@ -195,8 +195,16 @@ export default function Estimates() {
     }
   };
 
+  // Helper function to get the display name for the stop
+  const getStopDisplayName = () => {
+    if (customName) return customName;
+    if (stopData?.name.intersect) return stopData.name.intersect;
+    if (stopData?.name.original) return stopData.name.original;
+    return `Parada ${stopIdNum}`;
+  };
+
   const handleRename = () => {
-    const current = customName ?? stopData?.name.intersect ?? stopData?.name.original;
+    const current = getStopDisplayName();
     const input = window.prompt("Custom name for this stop:", current);
     if (input === null) return; // cancelled
     const trimmed = input.trim();
@@ -254,7 +262,7 @@ export default function Estimates() {
               onClick={toggleFavourite}
             />
             <Edit2 className="edit-icon" onClick={handleRename} />
-            {customName ?? stopData?.name.intersect ?? stopData?.name.original ?? `Parada ${stopIdNum}`}{" "}
+            {getStopDisplayName()}{" "}
             <span className="estimates-stop-id">({stopIdNum})</span>
           </h1>
 
