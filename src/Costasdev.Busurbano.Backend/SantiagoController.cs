@@ -55,17 +55,8 @@ public class SantiagoController : ControllerBase
                     0
                 )).ToList();
 
-            return new OkObjectResult(new StopEstimateResponse
-            {
-                Stop = new StopEstimateResponse.StopInfo
-                {
-                    Name = root.GetProperty("nombre").GetString() ?? string.Empty,
-                    Id = root.GetProperty("id").GetInt32(),
-                    Latitude = root.GetProperty("coordenadas").GetProperty("latitud").GetDecimal(),
-                    Longitude = root.GetProperty("coordenadas").GetProperty("longitud").GetDecimal()
-                },
-                Estimates = estimates
-            });
+            // Return only the estimates array, not the stop metadata
+            return new OkObjectResult(estimates);
         }
         catch (InvalidOperationException)
         {
