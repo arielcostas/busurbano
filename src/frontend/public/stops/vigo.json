@@ -2864,6 +2864,17 @@
     ]
   },
   {
+    "stopId": 2551,
+    "name": {
+      "original": "Camiño da Brea, 40"
+    },
+    "latitude": 42.205779861,
+    "longitude": -8.704885101,
+    "lines": [
+      "18B"
+    ]
+  },
+  {
     "stopId": 2560,
     "name": {
       "original": "Camiño da Brea, 37"
@@ -8715,6 +8726,17 @@
     },
     "latitude": 42.203039989,
     "longitude": -8.710936623,
+    "lines": [
+      "18B"
+    ]
+  },
+  {
+    "stopId": 7849,
+    "name": {
+      "original": "Rúa de Saá, 105"
+    },
+    "latitude": 42.20622236,
+    "longitude": -8.707026831,
     "lines": [
       "18B"
     ]
@@ -15143,28 +15165,6 @@
       "9B",
       "27",
       "28"
-    ]
-  },
-  {
-    "stopId": 20224,
-    "name": {
-      "original": "Camiño da Brea, 40"
-    },
-    "latitude": 42.205779861,
-    "longitude": -8.704885101,
-    "lines": [
-      "18B"
-    ]
-  },
-  {
-    "stopId": 202241,
-    "name": {
-      "original": "Rúa de Saá, 105"
-    },
-    "latitude": 42.20622236,
-    "longitude": -8.707026831,
-    "lines": [
-      "18B"
     ]
   }
 ]
