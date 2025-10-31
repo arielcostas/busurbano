@@ -1,9 +1,9 @@
-import { type StopDetails } from "../routes/estimates-$id";
+import { type Estimate } from "../routes/estimates-$id";
 import LineIcon from "./LineIcon";
 import { type RegionConfig } from "../data/RegionConfig";
 
 interface GroupedTable {
-  data: StopDetails;
+  data: Estimate[];
   dataDate: Date | null;
   regionConfig: RegionConfig;
 }
@@ -17,7 +17,7 @@ export const GroupedTable: React.FC<GroupedTable> = ({ data, dataDate, regionCon
     }
   };
 
-  const groupedEstimates = data.estimates.reduce(
+  const groupedEstimates = data.reduce(
     (acc, estimate) => {
       if (!acc[estimate.line]) {
         acc[estimate.line] = [];
@@ -25,7 +25,7 @@ export const GroupedTable: React.FC<GroupedTable> = ({ data, dataDate, regionCon
       acc[estimate.line].push(estimate);
       return acc;
     },
-    {} as Record<string, typeof data.estimates>,
+    {} as Record<string, typeof data>,
   );
 
   const sortedLines = Object.keys(groupedEstimates).sort((a, b) => {
@@ -72,7 +72,7 @@ export const GroupedTable: React.FC<GroupedTable> = ({ data, dataDate, regionCon
         )}
       </tbody>
 
-      {data?.estimates.length === 0 && (
+      {data?.length === 0 && (
         <tfoot>
           <tr>
             <td colSpan={regionConfig.showMeters ? 4 : 3}>

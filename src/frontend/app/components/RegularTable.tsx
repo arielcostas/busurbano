@@ -1,10 +1,10 @@
 import { useTranslation } from "react-i18next";
-import { type StopDetails } from "../routes/estimates-$id";
+import { type Estimate } from "../routes/estimates-$id";
 import LineIcon from "./LineIcon";
 import { type RegionConfig } from "../data/RegionConfig";
 
 interface RegularTableProps {
-  data: StopDetails;
+  data: Estimate[];
   dataDate: Date | null;
   regionConfig: RegionConfig;
 }
@@ -56,7 +56,7 @@ export const RegularTable: React.FC<RegularTableProps> = ({
       </thead>
 
       <tbody>
-        {data.estimates
+        {data
           .sort((a, b) => a.minutes - b.minutes)
           .map((estimate, idx) => (
             <tr key={idx}>
@@ -80,7 +80,7 @@ export const RegularTable: React.FC<RegularTableProps> = ({
           ))}
       </tbody>
 
-      {data?.estimates.length === 0 && (
+      {data?.length === 0 && (
         <tfoot>
           <tr>
             <td colSpan={regionConfig.showMeters ? 4 : 3}>
