@@ -18,6 +18,10 @@ export default function StopList() {
   const [recentIds, setRecentIds] = useState<number[]>([]);
   const [favouriteStops, setFavouriteStops] = useState<Stop[]>([]);
   const [recentStops, setRecentStops] = useState<Stop[]>([]);
+  const [userLocation, setUserLocation] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
   const searchTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const randomPlaceholder = useMemo(
@@ -29,6 +33,114 @@ export default function StopList() {
     () => new Fuse(data || [], { threshold: 0.3, keys: ["name.original"] }),
     [data],
   );
+
+  const requestUserLocation = useCallback(() => {
+    if (typeof window === "undefined" || !("geolocation" in navigator)) {
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setUserLocation({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
+      },
+      (error) => {
+        console.warn("Unable to obtain user location", error);
+      },
+      {
+        enableHighAccuracy: false,
+        maximumAge: 5 * 60 * 1000,
+      },
+    );
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !("geolocation" in navigator)) {
+      return;
+    }
+
+    let permissionStatus: PermissionStatus | null = null;
+
+    const handlePermissionChange = () => {
+      if (permissionStatus?.state === "granted") {
+        requestUserLocation();
+      }
+    };
+
+    const checkPermission = async () => {
+      try {
+        if (navigator.permissions?.query) {
+          permissionStatus = await navigator.permissions.query({ name: "geolocation" });
+          if (permissionStatus.state === "granted") {
+            requestUserLocation();
+          }
+          permissionStatus.addEventListener("change", handlePermissionChange);
+        } else {
+          requestUserLocation();
+        }
+      } catch (error) {
+        console.warn("Geolocation permission check failed", error);
+        requestUserLocation();
+      }
+    };
+
+    checkPermission();
+
+    return () => {
+      permissionStatus?.removeEventListener("change", handlePermissionChange);
+    };
+  }, [requestUserLocation]);
+
+  // Sort stops by proximity when we know where the user is located.
+  const sortedAllStops = useMemo(() => {
+    if (!data) {
+      return [] as Stop[];
+    }
+
+    if (!userLocation) {
+      return [...data].sort((a, b) => a.stopId - b.stopId);
+    }
+
+    const toRadians = (value: number) => (value * Math.PI) / 180;
+    const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+      const R = 6371000; // meters
+      const dLat = toRadians(lat2 - lat1);
+      const dLon = toRadians(lon2 - lon1);
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRadians(lat1)) *
+          Math.cos(toRadians(lat2)) *
+          Math.sin(dLon / 2) *
+          Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    };
+
+    return data
+      .map((stop) => {
+        if (typeof stop.latitude !== "number" || typeof stop.longitude !== "number") {
+          return { stop, distance: Number.POSITIVE_INFINITY };
+        }
+
+        const distance = getDistance(
+          userLocation.latitude,
+          userLocation.longitude,
+          stop.latitude,
+          stop.longitude,
+        );
+
+        return { stop, distance };
+      })
+      .sort((a, b) => {
+        if (a.distance === b.distance) {
+          return a.stop.stopId - b.stop.stopId;
+        }
+        return a.distance - b.distance;
+      })
+      .map(({ stop }) => stop);
+  }, [data, userLocation]);
 
   // Load favourite and recent IDs immediately from localStorage
   useEffect(() => {
@@ -184,8 +296,8 @@ export default function StopList() {
             </>
           )}
           {!loading && data
-            ?.sort((a, b) => a.stopId - b.stopId)
-            .map((stop) => <StopItem key={stop.stopId} stop={stop} />)}
+            ? sortedAllStops.map((stop) => <StopItem key={stop.stopId} stop={stop} />)
+            : null}
         </ul>
       </div>
     </div>
