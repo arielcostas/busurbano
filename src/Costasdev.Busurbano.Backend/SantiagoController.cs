@@ -60,7 +60,7 @@ public class SantiagoController : ControllerBase
         }
         catch (InvalidOperationException)
         {
-            return new BadRequestObjectResult("Stop not found");
+            return BadRequest("Stop not found");
         }
     }
 

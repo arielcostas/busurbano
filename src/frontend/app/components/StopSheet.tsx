@@ -7,7 +7,7 @@ import LineIcon from "./LineIcon";
 import { StopSheetSkeleton } from "./StopSheetSkeleton";
 import { ErrorDisplay } from "./ErrorDisplay";
 import { type Estimate } from "../routes/estimates-$id";
-import { type RegionId, getRegionConfig } from "../data/RegionConfig";
+import { REGIONS, type RegionId, getRegionConfig } from "../data/RegionConfig";
 import { useApp } from "../AppContext";
 import "./StopSheet.css";
 
@@ -174,9 +174,11 @@ export const StopSheet: React.FC<StopSheetProps> = ({
                               <Clock />
                               {formatTime(estimate.minutes)}
                             </div>
-                            <div className="stop-sheet-estimate-distance">
-                              {formatDistance(estimate.meters)}
-                            </div>
+                            {REGIONS[region].showMeters && (
+                              <div className="stop-sheet-estimate-distance">
+                                {formatDistance(estimate.meters)}
+                              </div>
+                            )}
                           </div>
                         </div>
                       ))}

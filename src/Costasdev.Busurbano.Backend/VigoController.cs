@@ -43,7 +43,7 @@ public class VigoController : ControllerBase
         }
         catch (InvalidOperationException)
         {
-            return new BadRequestObjectResult("Stop not found");
+            return BadRequest("Stop not found");
         }
     }
 
@@ -56,7 +56,7 @@ public class VigoController : ControllerBase
             : DateTime.Today.ToString("yyyy-MM-dd");
 
         // Validate date format
-        if (!DateTime.TryParseExact(dateString, "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out var parsedDate))
+        if (!DateTime.TryParseExact(dateString, "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out _))
         {
             return BadRequest("Invalid date format. Please use yyyy-MM-dd format.");
         }
