@@ -1,4 +1,4 @@
-import StopDataProvider from "../data/StopDataProvider";
+import StopDataProvider, { type Stop } from "../data/StopDataProvider";
 import "./map.css";
 
 import { useEffect, useRef, useState } from "react";
@@ -34,10 +34,7 @@ export default function StopMap() {
   const [stops, setStops] = useState<
     GeoJsonFeature<Point, { stopId: number; name: string; lines: string[] }>[]
   >([]);
-  const [selectedStop, setSelectedStop] = useState<{
-    stopId: number;
-    name: string;
-  } | null>(null);
+  const [selectedStop, setSelectedStop] = useState<Stop | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const { mapState, updateMapState, theme, region } = useApp();
   const mapRef = useRef<MapRef>(null);
@@ -118,10 +115,7 @@ export default function StopMap() {
     // fetch full stop to get lines array
     StopDataProvider.getStopById(region, props.stopId).then((stop) => {
       if (!stop) return;
-      setSelectedStop({
-        stopId: stop.stopId,
-        name: stop.name.original,
-      });
+      setSelectedStop(stop);
       setIsSheetOpen(true);
     });
   };
@@ -190,13 +184,11 @@ export default function StopMap() {
         }}
       />
 
-
       {selectedStop && (
         <StopSheet
           isOpen={isSheetOpen}
           onClose={() => setIsSheetOpen(false)}
-          stopId={selectedStop.stopId}
-          stopName={selectedStop.name}
+          stop={selectedStop}
         />
       )}
     </Map>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Sheet } from "react-modal-sheet";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
-import { Clock, ClockFading, Hourglass, RefreshCw } from "lucide-react";
+import { Clock, RefreshCw } from "lucide-react";
 import LineIcon from "./LineIcon";
 import { StopSheetSkeleton } from "./StopSheetSkeleton";
 import { ErrorDisplay } from "./ErrorDisplay";
@@ -10,12 +10,12 @@ import { type Estimate } from "../routes/estimates-$id";
 import { REGIONS, type RegionId, getRegionConfig } from "../data/RegionConfig";
 import { useApp } from "../AppContext";
 import "./StopSheet.css";
+import type { Stop } from "~/data/StopDataProvider";
 
 interface StopSheetProps {
   isOpen: boolean;
   onClose: () => void;
-  stopId: number;
-  stopName: string;
+  stop: Stop;
 }
 
 interface ErrorInfo {
@@ -42,8 +42,7 @@ const loadStopData = async (region: RegionId, stopId: number): Promise<Estimate[
 export const StopSheet: React.FC<StopSheetProps> = ({
   isOpen,
   onClose,
-  stopId,
-  stopName,
+  stop
 }) => {
   const { t } = useTranslation();
   const { region } = useApp();
@@ -77,7 +76,7 @@ export const StopSheet: React.FC<StopSheetProps> = ({
       setError(null);
       setData(null);
 
-      const stopData = await loadStopData(region, stopId);
+      const stopData = await loadStopData(region, stop.stopId);
       setData(stopData);
       setLastUpdated(new Date());
     } catch (err) {
@@ -89,10 +88,10 @@ export const StopSheet: React.FC<StopSheetProps> = ({
   };
 
   useEffect(() => {
-    if (isOpen && stopId) {
+    if (isOpen && stop.stopId) {
       loadData();
     }
-  }, [isOpen, stopId, region]);
+  }, [isOpen, stop.stopId, region]);
 
   const formatTime = (minutes: number) => {
     if (minutes > 15) {
@@ -133,8 +132,16 @@ export const StopSheet: React.FC<StopSheetProps> = ({
         <Sheet.Content>
           <div className="stop-sheet-content">
             <div className="stop-sheet-header">
-              <h2 className="stop-sheet-title">{stopName}</h2>
-              <span className="stop-sheet-id">({stopId})</span>
+              <h2 className="stop-sheet-title">{stop.name.original}</h2>
+              <span className="stop-sheet-id">({stop.stopId})</span>
+            </div>
+
+            <div className="stop-sheet-lines-container">
+              {stop.lines.map((line) => (
+                <div key={line} className="stop-sheet-line-icon">
+                  <LineIcon line={line} region={region} rounded />
+                </div>
+              ))}
             </div>
 
             {loading ? (
@@ -210,7 +217,7 @@ export const StopSheet: React.FC<StopSheetProps> = ({
                     </button>
 
                     <Link
-                      to={`/estimates/${stopId}`}
+                      to={`/estimates/${stop.stopId}`}
                       className="stop-sheet-view-all"
                       onClick={onClose}
                     >

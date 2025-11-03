@@ -1,6 +1,7 @@
 /* Vigo line colors */
 :root {
   --line-vigo-c1: rgb(237, 71, 19);
+  --line-vigo-c1-text: #ffffff;
   --line-vigo-c3d: rgb(255, 204, 0);
   --line-vigo-c3i: rgb(255, 204, 0);
   --line-vigo-l4a: rgb(0, 153, 0);
@@ -11,7 +12,9 @@
   --line-vigo-l7: rgb(150, 220, 153);
   --line-vigo-l9b: rgb(244, 202, 140);
   --line-vigo-l10: rgb(153, 51, 0);
+  --line-vigo-l10-text: #ffffff;
   --line-vigo-l11: rgb(226, 0, 38);
+  --line-vigo-l11-text: #ffffff;
   --line-vigo-l12a: rgb(106, 150, 190);
   --line-vigo-l12b: rgb(106, 150, 190);
   --line-vigo-l13: rgb(0, 176, 240);
@@ -22,8 +25,11 @@
   --line-vigo-l16: rgb(129, 142, 126);
   --line-vigo-l17: rgb(214, 245, 31);
   --line-vigo-l18a: rgb(212, 80, 168);
-  --line-vigo-l18b: rgb(0, 0, 0);
-  --line-vigo-l18h: rgb(0, 0, 0);
+  --line-vigo-l18a-text: #ffffff;
+  --line-vigo-l18b: rgb(212, 80, 168);
+  --line-vigo-l18b-text: #ffffff;
+  --line-vigo-l18h: rgb(212, 80, 168);
+  --line-vigo-l18h-text: #ffffff;
   --line-vigo-l23: rgb(0, 70, 210);
   --line-vigo-l24: rgb(191, 191, 191);
   --line-vigo-l25: rgb(172, 100, 4);
@@ -32,6 +38,7 @@
   --line-vigo-l29: rgb(248, 184, 90);
   --line-vigo-l31: rgb(255, 255, 0);
   --line-vigo-a: rgb(119, 41, 143);
+  --line-vigo-a-text: #ffffff;
   --line-vigo-h: rgb(0, 96, 168);
   --line-vigo-h1: rgb(0, 96, 168);
   --line-vigo-h2: rgb(0, 96, 168);
@@ -39,6 +46,7 @@
   --line-vigo-lzd: rgb(61, 78, 167);
   --line-vigo-n1: rgb(191, 191, 191);
   --line-vigo-n4: rgb(102, 51, 102);
+  --line-vigo-n4-text: #ffffff;
   --line-vigo-psa1: rgb(0, 153, 0);
   --line-vigo-psa4: rgb(0, 153, 0);
   --line-vigo-ptl: rgb(150, 220, 153);
@@ -56,12 +64,18 @@
   --line-santiago-l9: #46b8bb;
   --line-santiago-c11: #aec741;
   --line-santiago-l12: #842e14;
+  --line-santiago-l12-text: #ffffff;
   --line-santiago-l13: #336600;
+  --line-santiago-l13-text: #ffffff;
   --line-santiago-l15: #7a4b2a;
+  --line-santiago-l15-text: #ffffff;
   --line-santiago-c2: #283a87;
+  --line-santiago-c2-text: #ffffff;
   --line-santiago-c4: #283a87;
+  --line-santiago-c4-text: #ffffff;
   --line-santiago-c5: #999999;
   --line-santiago-c6: #006666;
+  --line-santiago-c6-text: #ffffff;
   --line-santiago-p1: #537eb3;
   --line-santiago-p2: #d23354;
   --line-santiago-p3: #75bd96;
@@ -76,13 +90,30 @@
   display: inline-block;
   padding: 0.25rem 0.5rem;
   margin-right: 0.5rem;
-  border-bottom: 3px solid;
   font-size: 0.9rem;
   font-weight: 600;
   text-transform: uppercase;
   border-radius: 0.25rem 0.25rem 0 0;
   color: var(--text-color);
   background-color: var(--background-color);
+
+  border-bottom: 3px solid;
+  border-color: var(--line-colour);
 }
 
+.line-icon-rounded {
+  display: block;
+  width: 54px;
+  height: 54px;
+  box-sizing: border-box;
+
+  background-color: var(--line-colour);
+  color: var(--line-text-colour);
+  padding: 1.25rem 0.5rem;
+  text-align: center;
+  border-radius: 50%;
+
+  font: 600 14px/1 monospace;
+  letter-spacing: 0.05em;
+}
 
