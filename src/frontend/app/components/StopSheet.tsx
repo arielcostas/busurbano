@@ -6,7 +6,7 @@ import { Clock, ClockFading, Hourglass, RefreshCw } from "lucide-react";
 import LineIcon from "./LineIcon";
 import { StopSheetSkeleton } from "./StopSheetSkeleton";
 import { ErrorDisplay } from "./ErrorDisplay";
-import { type StopDetails } from "../routes/estimates-$id";
+import { type Estimate } from "../routes/estimates-$id";
 import { type RegionId, getRegionConfig } from "../data/RegionConfig";
 import { useApp } from "../AppContext";
 import "./StopSheet.css";
@@ -24,7 +24,7 @@ interface ErrorInfo {
   message?: string;
 }
 
-const loadStopData = async (region: RegionId, stopId: number): Promise<StopDetails> => {
+const loadStopData = async (region: RegionId, stopId: number): Promise<Estimate[]> => {
   const regionConfig = getRegionConfig(region);
   const resp = await fetch(`${regionConfig.estimatesEndpoint}?id=${stopId}`, {
     headers: {
@@ -48,7 +48,7 @@ export const StopSheet: React.FC<StopSheetProps> = ({
   const { t } = useTranslation();
   const { region } = useApp();
   const regionConfig = getRegionConfig(region);
-  const [data, setData] = useState<StopDetails | null>(null);
+  const [data, setData] = useState<Estimate[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<ErrorInfo | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
@@ -120,7 +120,7 @@ export const StopSheet: React.FC<StopSheetProps> = ({
 
   // Show only the next 4 arrivals
   const limitedEstimates =
-    data?.estimates.sort((a, b) => a.minutes - b.minutes).slice(0, 4) || [];
+    data?.sort((a, b) => a.minutes - b.minutes).slice(0, 4) || [];
 
   return (
     <Sheet

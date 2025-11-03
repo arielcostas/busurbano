@@ -1,6 +1,6 @@
 import { type JSX, useEffect, useState, useCallback } from "react";
 import { useParams, Link } from "react-router";
-import StopDataProvider from "../data/StopDataProvider";
+import StopDataProvider, { type Stop } from "../data/StopDataProvider";
 import { Star, Edit2, ExternalLink, RefreshCw } from "lucide-react";
 import "./estimates-$id.css";
 import { RegularTable } from "../components/RegularTable";
@@ -15,19 +15,11 @@ import { PullToRefresh } from "../components/PullToRefresh";
 import { useAutoRefresh } from "../hooks/useAutoRefresh";
 import { type RegionId, getRegionConfig } from "../data/RegionConfig";
 
-export interface StopDetails {
-  stop: {
-    id: number;
-    name: string;
-    latitude: number;
-    longitude: number;
-  };
-  estimates: {
-    line: string;
-    route: string;
-    minutes: number;
-    meters: number;
-  }[];
+export interface Estimate {
+  line: string;
+  route: string;
+  minutes: number;
+  meters: number;
 }
 
 interface ErrorInfo {
@@ -36,7 +28,7 @@ interface ErrorInfo {
   message?: string;
 }
 
-const loadData = async (region: RegionId, stopId: string): Promise<StopDetails> => {
+const loadData = async (region: RegionId, stopId: string): Promise<Estimate[]> => {
   const regionConfig = getRegionConfig(region);
   const resp = await fetch(`${regionConfig.estimatesEndpoint}?id=${stopId}`, {
     headers: {
@@ -78,9 +70,10 @@ export default function Estimates() {
   const params = useParams();
   const stopIdNum = parseInt(params.id ?? "");
   const [customName, setCustomName] = useState<string | undefined>(undefined);
+  const [stopData, setStopData] = useState<Stop | undefined>(undefined);
 
   // Estimates data state
-  const [data, setData] = useState<StopDetails | null>(null);
+  const [data, setData] = useState<Estimate[] | null>(null);
   const [dataDate, setDataDate] = useState<Date | null>(null);
   const [estimatesLoading, setEstimatesLoading] = useState(true);
   const [estimatesError, setEstimatesError] = useState<ErrorInfo | null>(null);
@@ -121,6 +114,10 @@ export default function Estimates() {
       const body = await loadData(region, params.id!);
       setData(body);
       setDataDate(new Date());
+      
+      // Load stop data from StopDataProvider
+      const stop = await StopDataProvider.getStopById(region, stopIdNum);
+      setStopData(stop);
       setCustomName(StopDataProvider.getCustomName(region, stopIdNum));
     } catch (error) {
       console.error('Error loading estimates data:', error);
@@ -198,8 +195,16 @@ export default function Estimates() {
     }
   };
 
+  // Helper function to get the display name for the stop
+  const getStopDisplayName = () => {
+    if (customName) return customName;
+    if (stopData?.name.intersect) return stopData.name.intersect;
+    if (stopData?.name.original) return stopData.name.original;
+    return `Parada ${stopIdNum}`;
+  };
+
   const handleRename = () => {
-    const current = customName ?? data?.stop.name;
+    const current = getStopDisplayName();
     const input = window.prompt("Custom name for this stop:", current);
     if (input === null) return; // cancelled
     const trimmed = input.trim();
@@ -257,8 +262,8 @@ export default function Estimates() {
               onClick={toggleFavourite}
             />
             <Edit2 className="edit-icon" onClick={handleRename} />
-            {customName ?? data?.stop.name ?? `Parada ${stopIdNum}`}{" "}
-            <span className="estimates-stop-id">({data?.stop.id ?? stopIdNum})</span>
+            {getStopDisplayName()}{" "}
+            <span className="estimates-stop-id">({stopIdNum})</span>
           </h1>
 
           <button

@@ -37,8 +37,9 @@ public class VigoController : ControllerBase
 
         try
         {
-            var estimates = await _api.GetStopEstimates(requestedStopId);
-            return new OkObjectResult(estimates);
+            var response = await _api.GetStopEstimates(requestedStopId);
+            // Return only the estimates array, not the stop metadata
+            return new OkObjectResult(response.Estimates);
         }
         catch (InvalidOperationException)
         {
