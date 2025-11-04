@@ -19,7 +19,7 @@ jobs:
         with:
           submodules: true
           lfs: false
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v6
         with:
           node-version: lts/*
           cache: "npm"
@@ -36,7 +36,7 @@ jobs:
           mkdir -p dist/frontend
           cp -R src/frontend/build/client/. dist/frontend/
       - name: Archive Production Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: production
           path: dist
@@ -59,7 +59,7 @@ jobs:
       - name: Build backend
         run: dotnet publish -c Release -r linux-arm64 --self-contained false src/Costasdev.Busurbano.Backend/Costasdev.Busurbano.Backend.csproj -o dist/backend
       - name: Archive Backend Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: backend
           path: dist/backend
@@ -72,17 +72,17 @@ jobs:
     environment: Production
     steps:
       - name: Download Frontend Artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: production
           path: dist
       - name: Download Backend Artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: backend
           path: dist/backend
       - name: Connect to tailnet
-        uses: tailscale/github-action@v3
+        uses: tailscale/github-action@v4
         with:
           oauth-client-id: ${{ secrets.TAILSCALE_CLIENT_ID }}
           oauth-secret: ${{ secrets.TAILSCALE_CLIENT_SECRET }}
