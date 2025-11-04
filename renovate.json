@@ -2,5 +2,31 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
+  ],
+  "packageRules": [
+    {
+      "matchManagers": ["npm"],
+      "groupName": "all npm dependencies",
+      "groupSlug": "npm-all",
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ]
+    },
+    {
+      "matchManagers": ["nuget"],
+      "groupName": "all NuGet dependencies",
+      "groupSlug": "nuget-all",
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ]
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "groupName": "all GitHub Actions",
+      "groupSlug": "gh-actions-all"
+    }
   ]
+
 }
