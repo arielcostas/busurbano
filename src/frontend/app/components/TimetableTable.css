@@ -18,15 +18,15 @@
 }
 
 .timetable-card {
-  background: var(--surface-future, #fff);
+  background-color: var(--surface-future, #fff);
   border: 1px solid var(--card-border, #e0e0e0);
   border-radius: 10px;
   padding: 1.25rem;
-  transition: background 0.2s ease, border 0.2s ease;
+  transition: background-color 0.2s ease, border 0.2s ease;
 }
 
 .timetable-card.timetable-past {
-  background: var(--surface-past, #f3f3f3);
+  background-color: var(--surface-past, #f3f3f3);
   color: var(--text-secondary, #aaa);
   border: 1px solid #e0e0e0;
 }
