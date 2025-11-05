@@ -20,7 +20,7 @@ const LineIcon: React.FC<LineIconProps> = ({ line, region = "vigo", rounded = fa
       className={rounded ? 'line-icon-rounded' : 'line-icon'}
       style={{ '--line-colour': `var(${cssVarName})`, '--line-text-colour': `var(${cssTextVarName}, unset)` } as React.CSSProperties}
     >
-      {formattedLine}
+      {line}
     </span>
   );
 };

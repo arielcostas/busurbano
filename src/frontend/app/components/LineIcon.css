@@ -5,7 +5,9 @@
   --line-vigo-c3d: rgb(255, 204, 0);
   --line-vigo-c3i: rgb(255, 204, 0);
   --line-vigo-l4a: rgb(0, 153, 0);
+  --line-vigo-l4a-text: #ffffff;
   --line-vigo-l4c: rgb(0, 153, 0);
+  --line-vigo-l4c-text: #ffffff;
   --line-vigo-l5a: rgb(0, 176, 240);
   --line-vigo-l5b: rgb(0, 176, 240);
   --line-vigo-l6: rgb(204, 51, 153);
@@ -19,10 +21,12 @@
   --line-vigo-l12b: rgb(106, 150, 190);
   --line-vigo-l13: rgb(0, 176, 240);
   --line-vigo-l14: rgb(129, 142, 126);
+  --line-vigo-l14-text: #ffffff;
   --line-vigo-l15a: rgb(216, 168, 206);
   --line-vigo-l15b: rgb(216, 168, 206);
   --line-vigo-l15c: rgb(216, 168, 168);
   --line-vigo-l16: rgb(129, 142, 126);
+  --line-vigo-l16-text: #ffffff;
   --line-vigo-l17: rgb(214, 245, 31);
   --line-vigo-l18a: rgb(212, 80, 168);
   --line-vigo-l18a-text: #ffffff;
@@ -103,17 +107,17 @@
 
 .line-icon-rounded {
   display: block;
-  width: 54px;
-  height: 54px;
+  width: 5ch;
+  height: 5ch;
   box-sizing: border-box;
 
   background-color: var(--line-colour);
   color: var(--line-text-colour);
-  padding: 1.25rem 0.5rem;
+  padding: 1.75ch 1ch;
   text-align: center;
   border-radius: 50%;
 
-  font: 600 14px/1 monospace;
-  letter-spacing: 0.05em;
+  font: 600 14px / 1 monospace;
+  letter-spacing: .05em;
 }
 
