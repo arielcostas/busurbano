@@ -6,6 +6,7 @@ import { Clock, RefreshCw } from "lucide-react";
 import LineIcon from "./LineIcon";
 import { StopSheetSkeleton } from "./StopSheetSkeleton";
 import { ErrorDisplay } from "./ErrorDisplay";
+import { StopAlert } from "./StopAlert";
 import { type Estimate } from "../routes/estimates-$id";
 import { REGIONS, type RegionId, getRegionConfig } from "../data/RegionConfig";
 import { useApp } from "../AppContext";
@@ -143,6 +144,8 @@ export const StopSheet: React.FC<StopSheetProps> = ({
                 </div>
               ))}
             </div>
+
+            <StopAlert stop={stop} compact />
 
             {loading ? (
               <StopSheetSkeleton />

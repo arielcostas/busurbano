@@ -29,11 +29,19 @@ def load_stop_overrides(file_path):
         return {}
 
 def apply_overrides(stops, overrides):
-    """Apply overrides to the stop data"""
+    """Apply overrides to the stop data and add new stops"""
+    # Track existing stop IDs
+    existing_stop_ids = {stop.get("stopId") for stop in stops}
+    
+    # Apply overrides to existing stops
     for stop in stops:
         stop_id = stop.get("stopId")
         if stop_id in overrides:
             override = overrides[stop_id]
+
+            # Override name if provided
+            if "name" in override:
+                stop["name"]["original"] = override["name"]
 
             # Apply or add alternate names
             if "alternateNames" in override:
@@ -54,6 +62,62 @@ def apply_overrides(stops, overrides):
             # Mark stop as hidden if needed
             if "hide" in override:
                 stop["hide"] = override["hide"]
+
+            # Mark stop as cancelled
+            if "cancelled" in override:
+                stop["cancelled"] = override["cancelled"]
+
+            # Add alert title
+            if "title" in override:
+                stop["title"] = override["title"]
+
+            # Add alert message
+            if "message" in override:
+                stop["message"] = override["message"]
+
+            # Add alternate codes
+            if "alternateCodes" in override:
+                stop["alternateCodes"] = override["alternateCodes"]
+    
+    # Add new stops (those with "new: true" parameter)
+    new_stops_added = 0
+    for stop_id, override in overrides.items():
+        # Check if this is a new stop
+        if override.get("new") and stop_id not in existing_stop_ids:
+            # Ensure stop_id is an integer for consistency
+            stop_id_int = int(stop_id) if isinstance(stop_id, str) else stop_id
+            
+            # Create the new stop
+            new_stop = {
+                "stopId": stop_id_int,
+                "name": {
+                    "original": override.get("name", f"Stop {stop_id_int}")
+                },
+                "latitude": override.get("location", {}).get("latitude"),
+                "longitude": override.get("location", {}).get("longitude"),
+                "lines": override.get("lines", [])
+            }
+            
+            # Add optional fields (excluding the 'new' parameter)
+            if "alternateNames" in override:
+                for key, value in override["alternateNames"].items():
+                    new_stop["name"][key] = value
+            if "amenities" in override:
+                new_stop["amenities"] = override["amenities"]
+            if "cancelled" in override:
+                new_stop["cancelled"] = override["cancelled"]
+            if "title" in override:
+                new_stop["title"] = override["title"]
+            if "message" in override:
+                new_stop["message"] = override["message"]
+            if "alternateCodes" in override:
+                new_stop["alternateCodes"] = override["alternateCodes"]
+            
+            stops.append(new_stop)
+            new_stops_added += 1
+    
+    if new_stops_added > 0:
+        print(f"Added {new_stops_added} new stops from overrides")
 
     return stops
 
