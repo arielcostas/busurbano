@@ -1,7 +1,14 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, Link } from "react-router";
 import StopDataProvider from "../data/StopDataProvider";
-import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import {
+  ArrowLeft,
+  Eye,
+  EyeOff,
+  ChevronUp,
+  ChevronDown,
+  Clock,
+} from "lucide-react";
 import { type ScheduledTable } from "~/components/SchedulesTable";
 import { TimetableSkeleton } from "~/components/TimetableSkeleton";
 import { ErrorDisplay } from "~/components/ErrorDisplay";
@@ -12,12 +19,15 @@ import { useApp } from "~/AppContext";
 import "./timetable-$id.css";
 
 interface ErrorInfo {
-  type: 'network' | 'server' | 'unknown';
+  type: "network" | "server" | "unknown";
   status?: number;
   message?: string;
 }
 
-const loadTimetableData = async (region: RegionId, stopId: string): Promise<ScheduledTable[]> => {
+const loadTimetableData = async (
+  region: RegionId,
+  stopId: string,
+): Promise<ScheduledTable[]> => {
   const regionConfig = getRegionConfig(region);
 
   // Check if timetable is available for this region
@@ -26,14 +36,17 @@ const loadTimetableData = async (region: RegionId, stopId: string): Promise<Sche
   }
 
   // Add delay to see skeletons in action (remove in production)
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
-  const resp = await fetch(`${regionConfig.timetableEndpoint}?date=${today}&stopId=${stopId}`, {
-    headers: {
-      Accept: "application/json",
+  const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD format
+  const resp = await fetch(
+    `${regionConfig.timetableEndpoint}?date=${today}&stopId=${stopId}`,
+    {
+      headers: {
+        Accept: "application/json",
+      },
     },
-  });
+  );
 
   if (!resp.ok) {
     throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
@@ -44,22 +57,26 @@ const loadTimetableData = async (region: RegionId, stopId: string): Promise<Sche
 
 // Utility function to compare times
 const timeToMinutes = (time: string): number => {
-  const [hours, minutes] = time.split(':').map(Number);
+  const [hours, minutes] = time.split(":").map(Number);
   return hours * 60 + minutes;
 };
 
 // Filter past entries (keep only a few recent past ones)
-const filterTimetableData = (data: ScheduledTable[], currentTime: string, showPast: boolean = false): ScheduledTable[] => {
+const filterTimetableData = (
+  data: ScheduledTable[],
+  currentTime: string,
+  showPast: boolean = false,
+): ScheduledTable[] => {
   if (showPast) return data;
 
   const currentMinutes = timeToMinutes(currentTime);
-  const sortedData = [...data].sort((a, b) =>
-    timeToMinutes(a.calling_time) - timeToMinutes(b.calling_time)
+  const sortedData = [...data].sort(
+    (a, b) => timeToMinutes(a.calling_time) - timeToMinutes(b.calling_time),
   );
 
   // Find the current position
-  const currentIndex = sortedData.findIndex(entry =>
-    timeToMinutes(entry.calling_time) >= currentMinutes
+  const currentIndex = sortedData.findIndex(
+    (entry) => timeToMinutes(entry.calling_time) >= currentMinutes,
   );
 
   if (currentIndex === -1) {
@@ -74,11 +91,11 @@ const filterTimetableData = (data: ScheduledTable[], currentTime: string, showPa
 
 // Utility function to parse service ID and get the turn number
 const parseServiceId = (serviceId: string): string => {
-  const parts = serviceId.split('_');
-  if (parts.length === 0) return '';
+  const parts = serviceId.split("_");
+  if (parts.length === 0) return "";
 
   const lastPart = parts[parts.length - 1];
-  if (lastPart.length < 6) return '';
+  if (lastPart.length < 6) return "";
 
   const last6 = lastPart.slice(-6);
   const lineCode = last6.slice(0, 3);
@@ -92,19 +109,39 @@ const parseServiceId = (serviceId: string): string => {
   let displayLine: string;
 
   switch (lineNumber) {
-    case 1: displayLine = "C1"; break;
-    case 3: displayLine = "C3"; break;
-    case 30: displayLine = "N1"; break;
-    case 33: displayLine = "N4"; break;
-    case 8: displayLine = "A"; break;
-    case 101: displayLine = "H"; break;
-    case 150: displayLine = "REF"; break;
-    case 500: displayLine = "TUR"; break;
-    default: displayLine = `L${lineNumber}`;
+    case 1:
+      displayLine = "C1";
+      break;
+    case 3:
+      displayLine = "C3";
+      break;
+    case 30:
+      displayLine = "N1";
+      break;
+    case 33:
+      displayLine = "N4";
+      break;
+    case 8:
+      displayLine = "A";
+      break;
+    case 101:
+      displayLine = "H";
+      break;
+    case 150:
+      displayLine = "REF";
+      break;
+    case 500:
+      displayLine = "TUR";
+      break;
+    default:
+      displayLine = `L${lineNumber}`;
   }
 
   return `${displayLine}-${turnNumber}`;
 };
+
+// Scroll threshold for showing FAB buttons (in pixels)
+const SCROLL_THRESHOLD = 100;
 
 export default function Timetable() {
   const { t } = useTranslation();
@@ -116,37 +153,48 @@ export default function Timetable() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<ErrorInfo | null>(null);
   const [showPastEntries, setShowPastEntries] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [showScrollBottom, setShowScrollBottom] = useState(false);
+  const [showGoToNow, setShowGoToNow] = useState(false);
   const nextEntryRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const regionConfig = getRegionConfig(region);
 
   const currentTime = new Date().toTimeString().slice(0, 8); // HH:MM:SS
-  const filteredData = filterTimetableData(timetableData, currentTime, showPastEntries);
+  const filteredData = filterTimetableData(
+    timetableData,
+    currentTime,
+    showPastEntries,
+  );
 
   const parseError = (error: any): ErrorInfo => {
     if (!navigator.onLine) {
-      return { type: 'network', message: 'No internet connection' };
+      return { type: "network", message: "No internet connection" };
     }
 
-    if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError')) {
-      return { type: 'network' };
+    if (
+      error.message?.includes("Failed to fetch") ||
+      error.message?.includes("NetworkError")
+    ) {
+      return { type: "network" };
     }
 
-    if (error.message?.includes('HTTP')) {
+    if (error.message?.includes("HTTP")) {
       const statusMatch = error.message.match(/HTTP (\d+):/);
       const status = statusMatch ? parseInt(statusMatch[1]) : undefined;
-      return { type: 'server', status };
+      return { type: "server", status };
     }
 
-    return { type: 'unknown', message: error.message };
+    return { type: "unknown", message: error.message };
   };
 
   const loadData = async () => {
     // Check if timetable is available for this region
     if (!regionConfig.timetableEndpoint) {
       setError({
-        type: 'server',
+        type: "server",
         status: 501,
-        message: 'Timetable not available for this region'
+        message: "Timetable not available for this region",
       });
       setLoading(false);
       return;
@@ -163,24 +211,25 @@ export default function Timetable() {
         // Scroll to next entry after a short delay to allow rendering
         setTimeout(() => {
           const currentMinutes = timeToMinutes(currentTime);
-          const sortedData = [...timetableBody].sort((a, b) =>
-            timeToMinutes(a.calling_time) - timeToMinutes(b.calling_time)
+          const sortedData = [...timetableBody].sort(
+            (a, b) =>
+              timeToMinutes(a.calling_time) - timeToMinutes(b.calling_time),
           );
 
-          const nextIndex = sortedData.findIndex(entry =>
-            timeToMinutes(entry.calling_time) >= currentMinutes
+          const nextIndex = sortedData.findIndex(
+            (entry) => timeToMinutes(entry.calling_time) >= currentMinutes,
           );
 
           if (nextIndex !== -1 && nextEntryRef.current) {
             nextEntryRef.current.scrollIntoView({
-              behavior: 'smooth',
-              block: 'center'
+              behavior: "smooth",
+              block: "center",
             });
           }
         }, 500);
       }
     } catch (err) {
-      console.error('Error loading timetable data:', err);
+      console.error("Error loading timetable data:", err);
       setError(parseError(err));
       setTimetableData([]);
     } finally {
@@ -192,6 +241,74 @@ export default function Timetable() {
     loadData();
     setCustomName(StopDataProvider.getCustomName(region, stopIdNum));
   }, [params.id, region]);
+
+  // Handle scroll events to update FAB visibility
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        !containerRef.current ||
+        loading ||
+        error ||
+        timetableData.length === 0
+      ) {
+        return;
+      }
+
+      const container = containerRef.current;
+      const scrollTop = container.scrollTop;
+      const scrollHeight = container.scrollHeight;
+      const clientHeight = container.clientHeight;
+      const scrollBottom = scrollHeight - scrollTop - clientHeight;
+
+      // Threshold for showing scroll buttons (in pixels)
+      const threshold = 100;
+
+      // Show scroll top button when scrolled down
+      setShowScrollTop(scrollTop > threshold);
+
+      // Show scroll bottom button when not at bottom
+      setShowScrollBottom(scrollBottom > threshold);
+
+      // Check if next entry (current time) is visible
+      if (nextEntryRef.current) {
+        const rect = nextEntryRef.current.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        const isNextVisible =
+          rect.top >= containerRect.top && rect.bottom <= containerRect.bottom;
+
+        setShowGoToNow(!isNextVisible);
+      }
+    };
+
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener("scroll", handleScroll);
+      // Initial check
+      handleScroll();
+
+      return () => {
+        container.removeEventListener("scroll", handleScroll);
+      };
+    }
+  }, [loading, error, timetableData]);
+
+  const scrollToTop = () => {
+    containerRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const scrollToBottom = () => {
+    containerRef.current?.scrollTo({
+      top: containerRef.current.scrollHeight,
+      behavior: "smooth",
+    });
+  };
+
+  const scrollToNow = () => {
+    nextEntryRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  };
 
   if (loading) {
     return (
@@ -242,16 +359,24 @@ export default function Timetable() {
         </div>
       ) : timetableData.length === 0 ? (
         <div className="error-message">
-          <p>{t("timetable.noDataAvailable", "No hay datos de horarios disponibles para hoy")}</p>
+          <p>
+            {t(
+              "timetable.noDataAvailable",
+              "No hay datos de horarios disponibles para hoy",
+            )}
+          </p>
           <p className="error-detail">
-            {t("timetable.errorDetail", "Los horarios teóricos se actualizan diariamente. Inténtalo más tarde.")}
+            {t(
+              "timetable.errorDetail",
+              "Los horarios teóricos se actualizan diariamente. Inténtalo más tarde.",
+            )}
           </p>
         </div>
       ) : (
-        <div className="timetable-full-content">
+        <div className="timetable-full-content" ref={containerRef}>
           <div className="timetable-controls">
             <button
-              className={`past-toggle ${showPastEntries ? 'active' : ''}`}
+              className={`past-toggle ${showPastEntries ? "active" : ""}`}
               onClick={() => setShowPastEntries(!showPastEntries)}
             >
               {showPastEntries ? (
@@ -274,6 +399,42 @@ export default function Timetable() {
             currentTime={currentTime}
             nextEntryRef={nextEntryRef}
           />
+
+          {/* Floating Action Button */}
+          {(showGoToNow || showScrollTop || showScrollBottom) && (
+            <div className="fab-container">
+              {showGoToNow && !showScrollTop && !showScrollBottom && (
+                <button
+                  className="fab fab-now"
+                  onClick={scrollToNow}
+                  title={t("timetable.goToNow", "Ir a ahora")}
+                  aria-label={t("timetable.goToNow", "Ir a ahora")}
+                >
+                  <Clock className="fab-icon" />
+                </button>
+              )}
+              {showScrollTop && (
+                <button
+                  className="fab fab-up"
+                  onClick={scrollToTop}
+                  title={t("timetable.scrollUp", "Subir")}
+                  aria-label={t("timetable.scrollUp", "Subir")}
+                >
+                  <ChevronUp className="fab-icon" />
+                </button>
+              )}
+              {showScrollBottom && !showScrollTop && (
+                <button
+                  className="fab fab-down"
+                  onClick={scrollToBottom}
+                  title={t("timetable.scrollDown", "Bajar")}
+                  aria-label={t("timetable.scrollDown", "Bajar")}
+                >
+                  <ChevronDown className="fab-icon" />
+                </button>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -301,7 +462,11 @@ const TimetableTableWithScroll: React.FC<{
         {data.map((entry, index) => {
           const entryMinutes = timeToMinutes(entry.calling_time);
           const isPast = entryMinutes < nowMinutes;
-          const isNext = !isPast && (index === 0 || timeToMinutes(data[index - 1]?.calling_time || '00:00:00') < nowMinutes);
+          const isNext =
+            !isPast &&
+            (index === 0 ||
+              timeToMinutes(data[index - 1]?.calling_time || "00:00:00") <
+                nowMinutes);
 
           return (
             <div
@@ -312,8 +477,8 @@ const TimetableTableWithScroll: React.FC<{
                 background: isPast
                   ? "var(--surface-past, #f3f3f3)"
                   : isNext
-                  ? "var(--surface-next, #e8f5e8)"
-                  : "var(--surface-future, #fff)"
+                    ? "var(--surface-next, #e8f5e8)"
+                    : "var(--surface-future, #fff)",
               }}
             >
               <div className="card-header">
@@ -325,7 +490,9 @@ const TimetableTableWithScroll: React.FC<{
                   {entry.route && entry.route.trim() ? (
                     <strong>{entry.route}</strong>
                   ) : (
-                    <strong>{t("timetable.noDestination", "Línea")} {entry.line}</strong>
+                    <strong>
+                      {t("timetable.noDestination", "Línea")} {entry.line}
+                    </strong>
                   )}
                 </div>
 
@@ -341,7 +508,7 @@ const TimetableTableWithScroll: React.FC<{
               <div className="card-body">
                 {!isPast && entry.next_streets.length > 0 && (
                   <div className="route-streets">
-                    {entry.next_streets.join(' — ')}
+                    {entry.next_streets.join(" — ")}
                   </div>
                 )}
               </div>
@@ -351,7 +518,9 @@ const TimetableTableWithScroll: React.FC<{
       </div>
 
       {data.length === 0 && (
-        <p className="no-data">{t("timetable.noData", "No hay datos de horarios disponibles")}</p>
+        <p className="no-data">
+          {t("timetable.noData", "No hay datos de horarios disponibles")}
+        </p>
       )}
     </div>
   );
