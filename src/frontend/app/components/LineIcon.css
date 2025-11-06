@@ -87,6 +87,7 @@
   --line-santiago-p6: #999999;
   --line-santiago-p7: #d2438c;
   --line-santiago-p8: #e28c3a;
+
 }
 
 .line-icon {
@@ -117,5 +118,6 @@
   border-radius: 50%;
 
   font: 600 14px / 1 monospace;
-  letter-spacing: 0.05em;
+  letter-spacing: .05em;
 }
+

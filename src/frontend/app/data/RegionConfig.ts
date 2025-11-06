@@ -26,7 +26,7 @@ export const REGIONS: Record<RegionId, RegionConfig> = {
     defaultCenter: [42.229188855975046, -8.72246955783102],
     bounds: {
       sw: [-8.951059, 42.098923],
-      ne: [-8.447748, 42.3496],
+      ne: [-8.447748, 42.3496]
     },
     textColour: "#e72b37",
     defaultZoom: 14,
@@ -41,7 +41,7 @@ export const REGIONS: Record<RegionId, RegionConfig> = {
     defaultCenter: [42.8782, -8.5448],
     bounds: {
       sw: [-8.884454, 42.719102],
-      ne: [-8.243814, 43.02205],
+      ne: [-8.243814, 43.02205]
     },
     textColour: "#6bb238",
     defaultZoom: 14,

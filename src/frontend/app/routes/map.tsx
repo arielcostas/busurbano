@@ -137,11 +137,10 @@ export default function StopMap() {
         zoom: mapState.zoom,
       }}
       attributionControl={false}
-      maxBounds={
-        REGIONS[region].bounds
-          ? [REGIONS[region].bounds!.sw, REGIONS[region].bounds!.ne]
-          : undefined
-      }
+      maxBounds={REGIONS[region].bounds ? [
+        REGIONS[region].bounds!.sw,
+        REGIONS[region].bounds!.ne,
+      ] : undefined}
     >
       <NavigationControl position="top-right" />
       <GeolocateControl position="top-right" trackUserLocation={true} />
@@ -176,12 +175,12 @@ export default function StopMap() {
           "text-offset": [0, 3],
           "text-anchor": "center",
           "text-justify": "center",
-          "text-size": ["interpolate", ["linear"], ["zoom"], 11, 8, 22, 16],
+          "text-size": ["interpolate", ["linear"], ["zoom"], 11, 8, 22, 16]
         }}
         paint={{
           "text-color": `${REGIONS[region].textColour || "#000"}`,
           "text-halo-color": "#FFF",
-          "text-halo-width": 1,
+          "text-halo-width": 1
         }}
       />
 

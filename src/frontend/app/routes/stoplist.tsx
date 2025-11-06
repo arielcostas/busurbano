@@ -72,9 +72,7 @@ export default function StopList() {
     const checkPermission = async () => {
       try {
         if (navigator.permissions?.query) {
-          permissionStatus = await navigator.permissions.query({
-            name: "geolocation",
-          });
+          permissionStatus = await navigator.permissions.query({ name: "geolocation" });
           if (permissionStatus.state === "granted") {
             requestUserLocation();
           }
@@ -106,12 +104,7 @@ export default function StopList() {
     }
 
     const toRadians = (value: number) => (value * Math.PI) / 180;
-    const getDistance = (
-      lat1: number,
-      lon1: number,
-      lat2: number,
-      lon2: number,
-    ) => {
+    const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
       const R = 6371000; // meters
       const dLat = toRadians(lat2 - lat1);
       const dLon = toRadians(lon2 - lon1);
@@ -127,10 +120,7 @@ export default function StopList() {
 
     return data
       .map((stop) => {
-        if (
-          typeof stop.latitude !== "number" ||
-          typeof stop.longitude !== "number"
-        ) {
+        if (typeof stop.latitude !== "number" || typeof stop.longitude !== "number") {
           return { stop, distance: Number.POSITIVE_INFINITY };
         }
 
@@ -167,24 +157,25 @@ export default function StopList() {
 
       // Add favourite flags to stops
       const favouriteStopsIds = StopDataProvider.getFavouriteIds(region);
-      const stopsWithFavourites = stops.map((stop) => ({
+      const stopsWithFavourites = stops.map(stop => ({
         ...stop,
-        favourite: favouriteStopsIds.includes(stop.stopId),
+        favourite: favouriteStopsIds.includes(stop.stopId)
       }));
 
       setData(stopsWithFavourites);
 
       // Update favourite and recent stops with full data
-      const favStops = stopsWithFavourites.filter((stop) =>
-        favouriteStopsIds.includes(stop.stopId),
+      const favStops = stopsWithFavourites.filter(stop =>
+        favouriteStopsIds.includes(stop.stopId)
       );
       setFavouriteStops(favStops);
 
       const recIds = StopDataProvider.getRecent(region);
       const recStops = recIds
-        .map((id) => stopsWithFavourites.find((stop) => stop.stopId === id))
+        .map(id => stopsWithFavourites.find(stop => stop.stopId === id))
         .filter(Boolean) as Stop[];
       setRecentStops(recStops.reverse());
+
     } catch (error) {
       console.error("Failed to load stops:", error);
     } finally {
@@ -222,7 +213,7 @@ export default function StopList() {
 
   return (
     <div className="page-container stoplist-page">
-      <h1 className="page-title">BusUrbano - {REGIONS[region].name}</h1>
+      <h1 className="page-title">BusUrbano  - {REGIONS[region].name}</h1>
 
       <form className="search-form">
         <div className="form-group">
@@ -265,15 +256,14 @@ export default function StopList() {
         )}
 
         <ul className="list">
-          {loading &&
-            favouriteIds.length > 0 &&
+          {loading && favouriteIds.length > 0 &&
             favouriteIds.map((id) => (
               <StopItemSkeleton key={id} showId={true} stopId={id} />
-            ))}
-          {!loading &&
-            favouriteStops
-              .sort((a, b) => a.stopId - b.stopId)
-              .map((stop) => <StopItem key={stop.stopId} stop={stop} />)}
+            ))
+          }
+          {!loading && favouriteStops
+            .sort((a, b) => a.stopId - b.stopId)
+            .map((stop) => <StopItem key={stop.stopId} stop={stop} />)}
         </ul>
       </div>
 
@@ -282,15 +272,14 @@ export default function StopList() {
           <h2 className="page-subtitle">{t("stoplist.recents")}</h2>
 
           <ul className="list">
-            {loading &&
-              recentIds.length > 0 &&
+            {loading && recentIds.length > 0 &&
               recentIds.map((id) => (
                 <StopItemSkeleton key={id} showId={true} stopId={id} />
-              ))}
-            {!loading &&
-              recentStops.map((stop) => (
-                <StopItem key={stop.stopId} stop={stop} />
-              ))}
+              ))
+            }
+            {!loading && recentStops.map((stop) => (
+              <StopItem key={stop.stopId} stop={stop} />
+            ))}
           </ul>
         </div>
       )}
@@ -307,9 +296,7 @@ export default function StopList() {
             </>
           )}
           {!loading && data
-            ? sortedAllStops.map((stop) => (
-                <StopItem key={stop.stopId} stop={stop} />
-              ))
+            ? sortedAllStops.map((stop) => <StopItem key={stop.stopId} stop={stop} />)
             : null}
         </ul>
       </div>

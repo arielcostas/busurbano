@@ -24,7 +24,7 @@ export type ScheduledTable = {
   terminus_code: string;
   terminus_name: string;
   terminus_time: string;
-};
+}
 
 interface TimetableTableProps {
   data: ScheduledTable[];
@@ -34,11 +34,11 @@ interface TimetableTableProps {
 
 // Utility function to parse service ID and get the turn number
 const parseServiceId = (serviceId: string): string => {
-  const parts = serviceId.split("_");
-  if (parts.length === 0) return "";
+  const parts = serviceId.split('_');
+  if (parts.length === 0) return '';
 
   const lastPart = parts[parts.length - 1];
-  if (lastPart.length < 6) return "";
+  if (lastPart.length < 6) return '';
 
   const last6 = lastPart.slice(-6);
   const lineCode = last6.slice(0, 3);
@@ -52,32 +52,15 @@ const parseServiceId = (serviceId: string): string => {
   let displayLine: string;
 
   switch (lineNumber) {
-    case 1:
-      displayLine = "C1";
-      break;
-    case 3:
-      displayLine = "C3";
-      break;
-    case 30:
-      displayLine = "N1";
-      break;
-    case 33:
-      displayLine = "N4";
-      break;
-    case 8:
-      displayLine = "A";
-      break;
-    case 101:
-      displayLine = "H";
-      break;
-    case 150:
-      displayLine = "REF";
-      break;
-    case 500:
-      displayLine = "TUR";
-      break;
-    default:
-      displayLine = `L${lineNumber}`;
+    case 1: displayLine = "C1"; break;
+    case 3: displayLine = "C3"; break;
+    case 30: displayLine = "N1"; break;
+    case 33: displayLine = "N4"; break;
+    case 8: displayLine = "A"; break;
+    case 101: displayLine = "H"; break;
+    case 150: displayLine = "REF"; break;
+    case 500: displayLine = "TUR"; break;
+    default: displayLine = `L${lineNumber}`;
   }
 
   return `${displayLine}-${turnNumber}`;
@@ -85,26 +68,21 @@ const parseServiceId = (serviceId: string): string => {
 
 // Utility function to compare times
 const timeToMinutes = (time: string): number => {
-  const [hours, minutes] = time.split(":").map(Number);
+  const [hours, minutes] = time.split(':').map(Number);
   return hours * 60 + minutes;
 };
 
 // Utility function to find nearby entries
-const findNearbyEntries = (
-  entries: ScheduledTable[],
-  currentTime: string,
-  before: number = 4,
-  after: number = 4,
-): ScheduledTable[] => {
+const findNearbyEntries = (entries: ScheduledTable[], currentTime: string, before: number = 4, after: number = 4): ScheduledTable[] => {
   if (!currentTime) return entries.slice(0, before + after);
 
   const currentMinutes = timeToMinutes(currentTime);
-  const sortedEntries = [...entries].sort(
-    (a, b) => timeToMinutes(a.calling_time) - timeToMinutes(b.calling_time),
+  const sortedEntries = [...entries].sort((a, b) =>
+    timeToMinutes(a.calling_time) - timeToMinutes(b.calling_time)
   );
 
-  let currentIndex = sortedEntries.findIndex(
-    (entry) => timeToMinutes(entry.calling_time) >= currentMinutes,
+  let currentIndex = sortedEntries.findIndex(entry =>
+    timeToMinutes(entry.calling_time) >= currentMinutes
   );
 
   if (currentIndex === -1) {
@@ -121,24 +99,21 @@ const findNearbyEntries = (
 export const SchedulesTable: React.FC<TimetableTableProps> = ({
   data,
   showAll = false,
-  currentTime,
+  currentTime
 }) => {
   const { t } = useTranslation();
   const { region } = useApp();
 
-  const displayData = showAll
-    ? data
-    : findNearbyEntries(data, currentTime || "");
-  const nowMinutes = currentTime
-    ? timeToMinutes(currentTime)
-    : timeToMinutes(new Date().toTimeString().slice(0, 8));
+  const displayData = showAll ? data : findNearbyEntries(data, currentTime || '');
+  const nowMinutes = currentTime ? timeToMinutes(currentTime) : timeToMinutes(new Date().toTimeString().slice(0, 8));
 
   return (
     <div className="timetable-container">
       <div className="timetable-caption">
         {showAll
           ? t("timetable.fullCaption", "Horarios teóricos de la parada")
-          : t("timetable.nearbyCaption", "Próximos horarios teóricos")}
+          : t("timetable.nearbyCaption", "Próximos horarios teóricos")
+        }
       </div>
 
       <div className="timetable-cards">
@@ -152,7 +127,7 @@ export const SchedulesTable: React.FC<TimetableTableProps> = ({
               style={{
                 background: isPast
                   ? "var(--surface-past, #f3f3f3)"
-                  : "var(--surface-future, #fff)",
+                  : "var(--surface-future, #fff)"
               }}
             >
               <div className="card-header">
@@ -164,9 +139,7 @@ export const SchedulesTable: React.FC<TimetableTableProps> = ({
                   {entry.route && entry.route.trim() ? (
                     <strong>{entry.route}</strong>
                   ) : (
-                    <strong>
-                      {t("timetable.noDestination", "Línea")} {entry.line}
-                    </strong>
+                    <strong>{t("timetable.noDestination", "Línea")} {entry.line}</strong>
                   )}
                 </div>
 
@@ -182,7 +155,7 @@ export const SchedulesTable: React.FC<TimetableTableProps> = ({
                     {parseServiceId(entry.service_id)}
                   </span>
                   {entry.next_streets.length > 0 && (
-                    <span> — {entry.next_streets.join(" — ")}</span>
+                    <span> — {entry.next_streets.join(' — ')}</span>
                   )}
                 </div>
               </div>
@@ -191,9 +164,7 @@ export const SchedulesTable: React.FC<TimetableTableProps> = ({
         })}
       </div>
       {displayData.length === 0 && (
-        <p className="no-data">
-          {t("timetable.noData", "No hay datos de horarios disponibles")}
-        </p>
+        <p className="no-data">{t("timetable.noData", "No hay datos de horarios disponibles")}</p>
       )}
     </div>
   );

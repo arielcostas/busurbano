@@ -8,11 +8,7 @@ interface LineIconProps {
   rounded?: boolean;
 }
 
-const LineIcon: React.FC<LineIconProps> = ({
-  line,
-  region = "vigo",
-  rounded = false,
-}) => {
+const LineIcon: React.FC<LineIconProps> = ({ line, region = "vigo", rounded = false }) => {
   const formattedLine = useMemo(() => {
     return /^[a-zA-Z]/.test(line) ? line : `L${line}`;
   }, [line]);
@@ -21,13 +17,8 @@ const LineIcon: React.FC<LineIconProps> = ({
 
   return (
     <span
-      className={rounded ? "line-icon-rounded" : "line-icon"}
-      style={
-        {
-          "--line-colour": `var(${cssVarName})`,
-          "--line-text-colour": `var(${cssTextVarName}, unset)`,
-        } as React.CSSProperties
-      }
+      className={rounded ? 'line-icon-rounded' : 'line-icon'}
+      style={{ '--line-colour': `var(${cssVarName})`, '--line-text-colour': `var(${cssTextVarName}, unset)` } as React.CSSProperties}
     >
       {line}
     </span>

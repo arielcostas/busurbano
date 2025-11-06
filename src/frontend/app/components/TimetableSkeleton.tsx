@@ -8,7 +8,7 @@ interface TimetableSkeletonProps {
 }
 
 export const TimetableSkeleton: React.FC<TimetableSkeletonProps> = ({
-  rows = 4,
+  rows = 4
 }) => {
   const { t } = useTranslation();
 
@@ -24,11 +24,7 @@ export const TimetableSkeleton: React.FC<TimetableSkeletonProps> = ({
             <div key={`timetable-skeleton-${index}`} className="timetable-card">
               <div className="card-header">
                 <div className="line-info">
-                  <Skeleton
-                    width="40px"
-                    height="24px"
-                    style={{ borderRadius: "4px" }}
-                  />
+                  <Skeleton width="40px" height="24px" style={{ borderRadius: "4px" }} />
                 </div>
 
                 <div className="destination-info">
@@ -52,7 +48,7 @@ export const TimetableSkeleton: React.FC<TimetableSkeletonProps> = ({
                     style={{
                       display: "inline-block",
                       borderRadius: "3px",
-                      marginRight: "0.5rem",
+                      marginRight: "0.5rem"
                     }}
                   />
                   <Skeleton

@@ -5,7 +5,7 @@ import "./ErrorDisplay.css";
 
 interface ErrorDisplayProps {
   error: {
-    type: "network" | "server" | "unknown";
+    type: 'network' | 'server' | 'unknown';
     status?: number;
     message?: string;
   };
@@ -18,15 +18,15 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
   error,
   onRetry,
   title,
-  className = "",
+  className = ""
 }) => {
   const { t } = useTranslation();
 
   const getErrorIcon = () => {
     switch (error.type) {
-      case "network":
+      case 'network':
         return <WifiOff className="error-icon" />;
-      case "server":
+      case 'server':
         return <AlertTriangle className="error-icon" />;
       default:
         return <AlertTriangle className="error-icon" />;
@@ -35,38 +35,21 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
 
   const getErrorMessage = () => {
     switch (error.type) {
-      case "network":
-        return t(
-          "errors.network",
-          "No hay conexión a internet. Comprueba tu conexión y vuelve a intentarlo.",
-        );
-      case "server":
+      case 'network':
+        return t("errors.network", "No hay conexión a internet. Comprueba tu conexión y vuelve a intentarlo.");
+      case 'server':
         if (error.status === 404) {
-          return t(
-            "errors.not_found",
-            "No se encontraron datos para esta parada.",
-          );
+          return t("errors.not_found", "No se encontraron datos para esta parada.");
         }
         if (error.status === 500) {
-          return t(
-            "errors.server_error",
-            "Error del servidor. Inténtalo de nuevo más tarde.",
-          );
+          return t("errors.server_error", "Error del servidor. Inténtalo de nuevo más tarde.");
         }
         if (error.status && error.status >= 400) {
-          return t(
-            "errors.client_error",
-            "Error en la solicitud. Verifica que la parada existe.",
-          );
+          return t("errors.client_error", "Error en la solicitud. Verifica que la parada existe.");
         }
-        return t("errors.server_generic", "Error del servidor ({{status}})", {
-          status: error.status || "desconocido",
-        });
+        return t("errors.server_generic", "Error del servidor ({{status}})", { status: error.status || 'desconocido' });
       default:
-        return (
-          error.message ||
-          t("errors.unknown", "Ha ocurrido un error inesperado.")
-        );
+        return error.message || t("errors.unknown", "Ha ocurrido un error inesperado.");
     }
   };
 
@@ -74,9 +57,9 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
     if (title) return title;
 
     switch (error.type) {
-      case "network":
+      case 'network':
         return t("errors.network_title", "Sin conexión");
-      case "server":
+      case 'server':
         return t("errors.server_title", "Error del servidor");
       default:
         return t("errors.unknown_title", "Error");
