@@ -93,8 +93,12 @@ public class VigoController : ControllerBase
     {
         StringBuilder outputBuffer = new();
 
-        var realtimeTask = _api.GetStopEstimates(stopId);
-        var timetableTask = LoadTimetable(stopId.ToString(), DateTime.Today.ToString("yyyy-MM-dd"));
+    // Use Europe/Madrid timezone consistently to avoid UTC/local skew
+    var tz = TimeZoneInfo.FindSystemTimeZoneById("Europe/Madrid");
+    var nowLocal = TimeZoneInfo.ConvertTime(DateTime.UtcNow, tz);
+
+    var realtimeTask = _api.GetStopEstimates(stopId);
+    var timetableTask = LoadTimetable(stopId.ToString(), nowLocal.Date.ToString("yyyy-MM-dd"));
 
         await Task.WhenAll(realtimeTask, timetableTask);
 
@@ -104,13 +108,14 @@ public class VigoController : ControllerBase
             .Where(c => c.StartingDateTime() != null && c.CallingDateTime() != null)
             .ToList();
 
-        var now = DateTime.Now.AddSeconds(60 - DateTime.Now.Second);
+    var now = nowLocal.AddSeconds(60 - nowLocal.Second);
         // Define the scope end as the time of the last realtime arrival (no extra buffer)
         var scopeEnd = realTimeEstimates.Count > 0
             ? now.AddMinutes(realTimeEstimates.Max(e => e.Minutes))
             : now;
 
-        List<ConsolidatedCirculation> consolidatedCirculations = [];
+    List<ConsolidatedCirculation> consolidatedCirculations = [];
+    var usedTripIds = new HashSet<string>();
 
         foreach (var estimate in realTimeEstimates)
         {
@@ -192,6 +197,13 @@ public class VigoController : ControllerBase
                 continue;
             }
 
+            // Ensure each scheduled trip is only matched once to a realtime estimate
+            if (usedTripIds.Contains(closestCirculation.TripId))
+            {
+                _logger.LogInformation("Skipping duplicate realtime match for TripId {TripId}", closestCirculation.TripId);
+                continue;
+            }
+
             consolidatedCirculations.Add(new ConsolidatedCirculation
             {
                 Line = estimate.Line,
@@ -209,16 +221,14 @@ public class VigoController : ControllerBase
                     Distance = estimate.Meters
                 }
             });
+
+            usedTripIds.Add(closestCirculation.TripId);
         }
 
         // Add scheduled-only circulations between now and the last realtime arrival
         if (scopeEnd > now)
         {
-            var matchedTripIds = new HashSet<string>(
-                consolidatedCirculations
-                    .Where(c => c.Schedule != null)
-                    .Select(c => c.Schedule!.TripId)
-            );
+            var matchedTripIds = new HashSet<string>(usedTripIds);
 
             var scheduledWindow = timetable
                 .Where(c => c.CallingDateTime()!.Value >= now && c.CallingDateTime()!.Value <= scopeEnd)
@@ -246,8 +256,12 @@ public class VigoController : ControllerBase
                 });
             }
         }
+        // Sort by ETA (RealTime minutes if present; otherwise Schedule minutes)
+        var sorted = consolidatedCirculations
+            .OrderBy(c => c.RealTime?.Minutes ?? c.Schedule!.Minutes)
+            .ToList();
 
-        return Ok(consolidatedCirculations);
+        return Ok(sorted);
     }
 
     private async Task<List<ScheduledStop>> LoadTimetable(string stopId, string dateString)
