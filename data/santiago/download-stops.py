@@ -83,7 +83,7 @@ def apply_overrides(stops, overrides):
     new_stops_added = 0
     for stop_id, override in overrides.items():
         # Check if this is a new stop
-        if override.get("new") is True and stop_id not in existing_stop_ids:
+        if override.get("new") and stop_id not in existing_stop_ids:
             # Ensure stop_id is an integer for consistency
             stop_id_int = int(stop_id) if isinstance(stop_id, str) else stop_id
             
