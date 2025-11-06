@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import StopDataProvider, { type Stop } from "../data/StopDataProvider";
 import StopItem from "../components/StopItem";
 import StopItemSkeleton from "../components/StopItemSkeleton";
+import StopGallery from "../components/StopGallery";
+import ServiceAlerts from "../components/ServiceAlerts";
 import Fuse from "fuse.js";
 import "./stoplist.css";
 import { useTranslation } from "react-i18next";
@@ -30,7 +32,10 @@ export default function StopList() {
   );
 
   const fuse = useMemo(
-    () => new Fuse(data || [], { threshold: 0.3, keys: ["name.original"] }),
+    () => new Fuse(data || [], { 
+      threshold: 0.3, 
+      keys: ["name.original", "name.intersect", "stopId"] 
+    }),
     [data],
   );
 
@@ -188,14 +193,14 @@ export default function StopList() {
   }, [loadStops]);
 
   const handleStopSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const stopName = event.target.value || "";
+    const searchQuery = event.target.value || "";
 
     if (searchTimeout.current) {
       clearTimeout(searchTimeout.current);
     }
 
     searchTimeout.current = setTimeout(() => {
-      if (stopName.length === 0) {
+      if (searchQuery.length === 0) {
         setSearchResults(null);
         return;
       }
@@ -205,8 +210,27 @@ export default function StopList() {
         return;
       }
 
-      const results = fuse.search(stopName);
-      const items = results.map((result) => result.item);
+      // Check if search query is a number (stop code search)
+      const isNumericSearch = /^\d+$/.test(searchQuery.trim());
+      
+      let items: Stop[];
+      if (isNumericSearch) {
+        // Direct match for stop codes
+        const stopId = parseInt(searchQuery.trim(), 10);
+        const exactMatch = data.filter(stop => stop.stopId === stopId);
+        if (exactMatch.length > 0) {
+          items = exactMatch;
+        } else {
+          // Fuzzy search if no exact match
+          const results = fuse.search(searchQuery);
+          items = results.map((result) => result.item);
+        }
+      } else {
+        // Text search using Fuse.js
+        const results = fuse.search(searchQuery);
+        items = results.map((result) => result.item);
+      }
+      
       setSearchResults(items);
     }, 300);
   };
@@ -243,60 +267,43 @@ export default function StopList() {
         </div>
       )}
 
-      <div className="list-container">
-        <h2 className="page-subtitle">{t("stoplist.favourites")}</h2>
-
-        {favouriteIds.length === 0 && (
-          <p className="message">
-            {t(
-              "stoplist.no_favourites",
-              "Accede a una parada y márcala como favorita para verla aquí.",
-            )}
-          </p>
-        )}
-
-        <ul className="list">
-          {loading && favouriteIds.length > 0 &&
-            favouriteIds.map((id) => (
-              <StopItemSkeleton key={id} showId={true} stopId={id} />
-            ))
-          }
-          {!loading && favouriteStops
-            .sort((a, b) => a.stopId - b.stopId)
-            .map((stop) => <StopItem key={stop.stopId} stop={stop} />)}
-        </ul>
-      </div>
-
-      {(recentIds.length > 0 || (!loading && recentStops.length > 0)) && (
-        <div className="list-container">
-          <h2 className="page-subtitle">{t("stoplist.recents")}</h2>
-
-          <ul className="list">
-            {loading && recentIds.length > 0 &&
-              recentIds.map((id) => (
-                <StopItemSkeleton key={id} showId={true} stopId={id} />
-              ))
-            }
-            {!loading && recentStops.map((stop) => (
-              <StopItem key={stop.stopId} stop={stop} />
-            ))}
-          </ul>
-        </div>
+      {!loading && (
+        <StopGallery
+          stops={recentStops.slice(0, 5)}
+          title={t("stoplist.recents")}
+        />
       )}
 
+      {!loading && (
+        <StopGallery
+          stops={favouriteStops.sort((a, b) => a.stopId - b.stopId)}
+          title={t("stoplist.favourites")}
+          emptyMessage={t("stoplist.no_favourites")}
+        />
+      )}
+
+      <ServiceAlerts />
+
       <div className="list-container">
-        <h2 className="page-subtitle">{t("stoplist.all_stops", "Paradas")}</h2>
+        <h2 className="page-subtitle">
+          {userLocation 
+            ? t("stoplist.nearby_stops", "Nearby stops") 
+            : t("stoplist.all_stops", "Paradas")
+          }
+        </h2>
 
         <ul className="list">
           {loading && (
             <>
-              {Array.from({ length: 8 }, (_, index) => (
+              {Array.from({ length: 6 }, (_, index) => (
                 <StopItemSkeleton key={`skeleton-${index}`} />
               ))}
             </>
           )}
           {!loading && data
-            ? sortedAllStops.map((stop) => <StopItem key={stop.stopId} stop={stop} />)
+            ? (userLocation ? sortedAllStops.slice(0, 6) : sortedAllStops).map((stop) => (
+                <StopItem key={stop.stopId} stop={stop} />
+              ))
             : null}
         </ul>
       </div>

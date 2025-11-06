@@ -40,13 +40,17 @@
     "details_grouped": "Stops are grouped by bus line. Apps like iTranvias (A Coruña) or Moovit (more or less) use this style."
   },
   "stoplist": {
-    "search_placeholder": "Search stop...",
+    "search_placeholder": "Search stop by name or code...",
     "search_label": "Search stops",
     "search_results": "Search results",
     "favourites": "Favourite stops",
     "no_favourites": "Go to a stop and mark it as favourite to see it here.",
     "recents": "Recent",
-    "all_stops": "Stops"
+    "all_stops": "Stops",
+    "nearby_stops": "Nearby stops",
+    "service_alerts": "Service alerts",
+    "alerts_coming_soon": "Feature coming soon",
+    "alerts_description": "Service alerts and disruption notifications will be available here soon."
   },
   "estimates": {
     "minutes": "min",
