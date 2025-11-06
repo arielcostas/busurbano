@@ -54,12 +54,12 @@ const filterTimetableData = (data: ScheduledTable[], currentTime: string, showPa
 
   const currentMinutes = timeToMinutes(currentTime);
   const sortedData = [...data].sort((a, b) =>
-    timeToMinutes(a.departure_time) - timeToMinutes(b.departure_time)
+    timeToMinutes(a.calling_time) - timeToMinutes(b.calling_time)
   );
 
   // Find the current position
   const currentIndex = sortedData.findIndex(entry =>
-    timeToMinutes(entry.departure_time) >= currentMinutes
+    timeToMinutes(entry.calling_time) >= currentMinutes
   );
 
   if (currentIndex === -1) {
@@ -164,11 +164,11 @@ export default function Timetable() {
         setTimeout(() => {
           const currentMinutes = timeToMinutes(currentTime);
           const sortedData = [...timetableBody].sort((a, b) =>
-            timeToMinutes(a.departure_time) - timeToMinutes(b.departure_time)
+            timeToMinutes(a.calling_time) - timeToMinutes(b.calling_time)
           );
 
           const nextIndex = sortedData.findIndex(entry =>
-            timeToMinutes(entry.departure_time) >= currentMinutes
+            timeToMinutes(entry.calling_time) >= currentMinutes
           );
 
           if (nextIndex !== -1 && nextEntryRef.current) {
@@ -299,13 +299,13 @@ const TimetableTableWithScroll: React.FC<{
 
       <div className="timetable-cards">
         {data.map((entry, index) => {
-          const entryMinutes = timeToMinutes(entry.departure_time);
+          const entryMinutes = timeToMinutes(entry.calling_time);
           const isPast = entryMinutes < nowMinutes;
-          const isNext = !isPast && (index === 0 || timeToMinutes(data[index - 1]?.departure_time || '00:00:00') < nowMinutes);
+          const isNext = !isPast && (index === 0 || timeToMinutes(data[index - 1]?.calling_time || '00:00:00') < nowMinutes);
 
           return (
             <div
-              key={`${entry.trip.id}-${index}`}
+              key={`${entry.trip_id}-${index}`}
               ref={isNext ? nextEntryRef : null}
               className={`timetable-card${isPast ? " timetable-past" : ""}${isNext ? " timetable-next" : ""}`}
               style={{
@@ -318,23 +318,23 @@ const TimetableTableWithScroll: React.FC<{
             >
               <div className="card-header">
                 <div className="line-info">
-                  <LineIcon line={entry.line.name} region={region} />
+                  <LineIcon line={entry.line} region={region} />
                 </div>
 
                 <div className="destination-info">
-                  {entry.trip.headsign && entry.trip.headsign.trim() ? (
-                    <strong>{entry.trip.headsign}</strong>
+                  {entry.route && entry.route.trim() ? (
+                    <strong>{entry.route}</strong>
                   ) : (
-                    <strong>{t("timetable.noDestination", "Línea")} {entry.line.name}</strong>
+                    <strong>{t("timetable.noDestination", "Línea")} {entry.line}</strong>
                   )}
                 </div>
 
                 <div className="time-info">
                   <span className="departure-time">
-                    {entry.departure_time.slice(0, 5)}
+                    {entry.calling_time.slice(0, 5)}
                   </span>
                   <div className="service-id">
-                    {parseServiceId(entry.trip.service_id)}
+                    {parseServiceId(entry.service_id)}
                   </div>
                 </div>
               </div>
