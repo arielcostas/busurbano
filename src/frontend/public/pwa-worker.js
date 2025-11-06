@@ -1,11 +1,9 @@
-const CACHE_VERSION = "20251106a";
+const CACHE_VERSION = "20251106b";
 const STATIC_CACHE_NAME = `static-cache-${CACHE_VERSION}`;
 const STATIC_CACHE_ASSETS = [
   "/favicon.ico",
   "/logo-256.png",
-  "/logo-512.jpg",
-  "/stops/vigo.json",
-  "/stops/santiago.json"
+  "/logo-512.jpg"
 ];
 
 const EXPR_CACHE_AFTER_FIRST_VIEW = /(\/assets\/.*)|(\/api\/(vigo|santiago)\/GetStopTimetable.*)/;

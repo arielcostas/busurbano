@@ -1,0 +1,32 @@
+20208:
+  new: true
+  name: "Colón 12"
+  title: "Parada provisional sin datos"
+  description: "Parada provisional donde paran las líneas de Policarpo Sanz 40 *exceptuando 9B*"
+  location:
+    latitude: 42.23805815883466
+    longitude: -8.72057889828808
+  lines:
+    - "C1",
+    - "A",
+    - "5A",
+    - "9B",
+    - "15B",
+    - "15C",
+    - "24",
+    - "28",
+    - "N4"
+
+6620:
+  cancelled: true
+  title: "Parada movida a Colón 12"
+  description: "Con motivo del corte por las atracciones navideñas, las líneas se deben coger en Colón 12 (20208), excepto la línea 9B que arranca en Urzaiz-Príncipe."
+  alternateCodes:
+    - 20208
+
+20198:
+  cancelled: true
+  title: "Parada movida a Marqués de Valladares (fronte 19)"
+  description: "Con motivo del corte por las atracciones navideñas, las líneas se deben coger en Marqués de Valladares (fronte 19), excepto la línea 9B que arranca en Urzaiz-Príncipe y la 24 que para en Colón 12 (provisional)."
+  alternateCodes:
+    - 20206
