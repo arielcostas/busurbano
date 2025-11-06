@@ -90,12 +90,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 import NavBar from "./components/NavBar";
 
 export default function App() {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker
-      .register('/pwa-worker.js')
-      .catch((error) => {
-        console.error('Error registering SW:', error);
-      });
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/pwa-worker.js").catch((error) => {
+      console.error("Error registering SW:", error);
+    });
   }
 
   return (

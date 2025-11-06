@@ -1,12 +1,9 @@
 const CACHE_VERSION = "20251106b";
 const STATIC_CACHE_NAME = `static-cache-${CACHE_VERSION}`;
-const STATIC_CACHE_ASSETS = [
-  "/favicon.ico",
-  "/logo-256.png",
-  "/logo-512.jpg"
-];
+const STATIC_CACHE_ASSETS = ["/favicon.ico", "/logo-256.png", "/logo-512.jpg"];
 
-const EXPR_CACHE_AFTER_FIRST_VIEW = /(\/assets\/.*)|(\/api\/(vigo|santiago)\/GetStopTimetable.*)/;
+const EXPR_CACHE_AFTER_FIRST_VIEW =
+  /(\/assets\/.*)|(\/api\/(vigo|santiago)\/GetStopTimetable.*)/;
 
 const ESTIMATES_MIN_AGE = 15 * 1000;
 const ESTIMATES_MAX_AGE = 30 * 1000;
@@ -14,9 +11,10 @@ const ESTIMATES_MAX_AGE = 30 * 1000;
 self.addEventListener("install", (event) => {
   console.log("SW: Install event in progress. Cache version: ", CACHE_VERSION);
   event.waitUntil(
-    caches.open(STATIC_CACHE_NAME).then((cache) =>
-      cache.addAll(STATIC_CACHE_ASSETS)
-    ).then(() => self.skipWaiting())
+    caches
+      .open(STATIC_CACHE_NAME)
+      .then((cache) => cache.addAll(STATIC_CACHE_ASSETS))
+      .then(() => self.skipWaiting()),
   );
 });
 
@@ -29,11 +27,11 @@ self.addEventListener("activate", (event) => {
         if (name !== STATIC_CACHE_NAME) {
           return caches.delete(name);
         }
-      })
+      }),
     );
 
     await self.clients.claim();
-  }
+  };
 
   event.waitUntil(doCleanup());
 });
@@ -43,7 +41,7 @@ self.addEventListener("fetch", async (event) => {
   const url = new URL(request.url);
 
   // Ignore requests with unsupported schemes
-  if (!url.protocol.startsWith('http')) {
+  if (!url.protocol.startsWith("http")) {
     return;
   }
 
@@ -53,7 +51,9 @@ self.addEventListener("fetch", async (event) => {
   }
 
   // Static => cache first, if not, network; if not, fallback
-  const isAssetCacheable = STATIC_CACHE_ASSETS.includes(url.pathname) || EXPR_CACHE_AFTER_FIRST_VIEW.test(url.pathname);
+  const isAssetCacheable =
+    STATIC_CACHE_ASSETS.includes(url.pathname) ||
+    EXPR_CACHE_AFTER_FIRST_VIEW.test(url.pathname);
   if (request.method === "GET" && isAssetCacheable) {
     const response = handleStaticRequest(request);
     if (response !== null) {
@@ -66,7 +66,7 @@ self.addEventListener("fetch", async (event) => {
 async function handleStaticRequest(request) {
   const cache = await caches.open(STATIC_CACHE_NAME);
   const cachedResponse = await cache.match(request);
-  if (cachedResponse){
+  if (cachedResponse) {
     console.log("SW handleStaticRequest: HIT for ", request.url);
     return cachedResponse;
   }

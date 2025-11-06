@@ -8,7 +8,7 @@ interface StopSheetSkeletonProps {
 }
 
 export const StopSheetSkeleton: React.FC<StopSheetSkeletonProps> = ({
-  rows = 4
+  rows = 4,
 }) => {
   const { t } = useTranslation();
 
@@ -23,7 +23,11 @@ export const StopSheetSkeleton: React.FC<StopSheetSkeletonProps> = ({
           {Array.from({ length: rows }, (_, index) => (
             <div key={`skeleton-${index}`} className="stop-sheet-estimate-item">
               <div className="stop-sheet-estimate-line">
-                <Skeleton width="40px" height="24px" style={{ borderRadius: "4px" }} />
+                <Skeleton
+                  width="40px"
+                  height="24px"
+                  style={{ borderRadius: "4px" }}
+                />
               </div>
 
               <div className="stop-sheet-estimate-details">
@@ -45,18 +49,24 @@ export const StopSheetSkeleton: React.FC<StopSheetSkeletonProps> = ({
         </div>
 
         <div className="stop-sheet-actions">
-          <div className="stop-sheet-reload" style={{
-            opacity: 0.6,
-            pointerEvents: "none"
-          }}>
+          <div
+            className="stop-sheet-reload"
+            style={{
+              opacity: 0.6,
+              pointerEvents: "none",
+            }}
+          >
             <Skeleton width="70px" height="0.85rem" />
           </div>
 
-          <div className="stop-sheet-view-all" style={{
-            background: "#f0f0f0",
-            cursor: "not-allowed",
-            pointerEvents: "none"
-          }}>
+          <div
+            className="stop-sheet-view-all"
+            style={{
+              background: "#f0f0f0",
+              cursor: "not-allowed",
+              pointerEvents: "none",
+            }}
+          >
             <Skeleton width="180px" height="0.85rem" />
           </div>
         </div>

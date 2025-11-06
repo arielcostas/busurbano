@@ -8,7 +8,7 @@ interface EstimatesTableSkeletonProps {
 }
 
 export const SchedulesTableSkeleton: React.FC<EstimatesTableSkeletonProps> = ({
-  rows = 3
+  rows = 3,
 }) => {
   const { t } = useTranslation();
 
@@ -32,13 +32,23 @@ export const SchedulesTableSkeleton: React.FC<EstimatesTableSkeletonProps> = ({
           {Array.from({ length: rows }, (_, index) => (
             <tr key={`skeleton-${index}`}>
               <td>
-                <Skeleton width="40px" height="24px" style={{ borderRadius: "4px" }} />
+                <Skeleton
+                  width="40px"
+                  height="24px"
+                  style={{ borderRadius: "4px" }}
+                />
               </td>
               <td>
                 <Skeleton width="120px" />
               </td>
               <td>
-                <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "2px",
+                  }}
+                >
                   <Skeleton width="60px" />
                   <Skeleton width="40px" />
                 </div>
@@ -59,10 +69,9 @@ interface EstimatesGroupedSkeletonProps {
   rowsPerGroup?: number;
 }
 
-export const EstimatesGroupedSkeleton: React.FC<EstimatesGroupedSkeletonProps> = ({
-  groups = 3,
-  rowsPerGroup = 2
-}) => {
+export const EstimatesGroupedSkeleton: React.FC<
+  EstimatesGroupedSkeletonProps
+> = ({ groups = 3, rowsPerGroup = 2 }) => {
   const { t } = useTranslation();
 
   return (
@@ -85,17 +94,30 @@ export const EstimatesGroupedSkeleton: React.FC<EstimatesGroupedSkeletonProps> =
           {Array.from({ length: groups }, (_, groupIndex) => (
             <React.Fragment key={`group-${groupIndex}`}>
               {Array.from({ length: rowsPerGroup }, (_, rowIndex) => (
-                <tr key={`skeleton-${groupIndex}-${rowIndex}`} className={rowIndex === 0 ? "group-start" : ""}>
+                <tr
+                  key={`skeleton-${groupIndex}-${rowIndex}`}
+                  className={rowIndex === 0 ? "group-start" : ""}
+                >
                   <td>
                     {rowIndex === 0 && (
-                      <Skeleton width="40px" height="24px" style={{ borderRadius: "4px" }} />
+                      <Skeleton
+                        width="40px"
+                        height="24px"
+                        style={{ borderRadius: "4px" }}
+                      />
                     )}
                   </td>
                   <td>
                     <Skeleton width="120px" />
                   </td>
                   <td>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "2px",
+                      }}
+                    >
                       <Skeleton width="60px" />
                       <Skeleton width="40px" />
                     </div>
