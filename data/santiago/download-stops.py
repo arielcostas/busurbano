@@ -29,7 +29,11 @@ def load_stop_overrides(file_path):
         return {}
 
 def apply_overrides(stops, overrides):
-    """Apply overrides to the stop data"""
+    """Apply overrides to the stop data and add new stops"""
+    # Track existing stop IDs
+    existing_stop_ids = {stop.get("stopId") for stop in stops}
+    
+    # Apply overrides to existing stops
     for stop in stops:
         stop_id = stop.get("stopId")
         if stop_id in overrides:
@@ -74,59 +78,48 @@ def apply_overrides(stops, overrides):
             # Add alternate codes
             if "alternateCodes" in override:
                 stop["alternateCodes"] = override["alternateCodes"]
+    
+    # Add new stops (those with "new: true" parameter)
+    new_stops_added = 0
+    for stop_id, override in overrides.items():
+        # Check if this is a new stop
+        if override.get("new") is True and stop_id not in existing_stop_ids:
+            # Ensure stop_id is an integer for consistency
+            stop_id_int = int(stop_id) if isinstance(stop_id, str) else stop_id
+            
+            # Create the new stop
+            new_stop = {
+                "stopId": stop_id_int,
+                "name": {
+                    "original": override.get("name", f"Stop {stop_id_int}")
+                },
+                "latitude": override.get("location", {}).get("latitude"),
+                "longitude": override.get("location", {}).get("longitude"),
+                "lines": override.get("lines", [])
+            }
+            
+            # Add optional fields (excluding the 'new' parameter)
+            if "alternateNames" in override:
+                for key, value in override["alternateNames"].items():
+                    new_stop["name"][key] = value
+            if "amenities" in override:
+                new_stop["amenities"] = override["amenities"]
+            if "cancelled" in override:
+                new_stop["cancelled"] = override["cancelled"]
+            if "title" in override:
+                new_stop["title"] = override["title"]
+            if "message" in override:
+                new_stop["message"] = override["message"]
+            if "alternateCodes" in override:
+                new_stop["alternateCodes"] = override["alternateCodes"]
+            
+            stops.append(new_stop)
+            new_stops_added += 1
+    
+    if new_stops_added > 0:
+        print(f"Added {new_stops_added} new stops from overrides")
 
     return stops
-
-def load_manual_stops(file_path):
-    """Load manually defined stops from a YAML file"""
-    if not os.path.exists(file_path):
-        print(f"No manual stops file found at {file_path}")
-        return []
-
-    try:
-        with open(file_path, 'r', encoding='utf-8') as f:
-            manual_data = yaml.safe_load(f)
-            if not manual_data:
-                return []
-            
-            manual_stops = []
-            for stop_id, stop_def in manual_data.items():
-                # Ensure stop_id is an integer for consistency
-                stop_id_int = int(stop_id) if isinstance(stop_id, str) else stop_id
-                
-                # Build the stop object from the manual definition
-                stop = {
-                    "stopId": stop_id_int,
-                    "name": {
-                        "original": stop_def.get("name", f"Stop {stop_id_int}")
-                    },
-                    "latitude": stop_def.get("location", {}).get("latitude"),
-                    "longitude": stop_def.get("location", {}).get("longitude"),
-                    "lines": stop_def.get("lines", [])
-                }
-                
-                # Add optional fields
-                if "amenities" in stop_def:
-                    stop["amenities"] = stop_def["amenities"]
-                if "cancelled" in stop_def:
-                    stop["cancelled"] = stop_def["cancelled"]
-                if "title" in stop_def:
-                    stop["title"] = stop_def["title"]
-                if "message" in stop_def:
-                    stop["message"] = stop_def["message"]
-                if "alternateCodes" in stop_def:
-                    stop["alternateCodes"] = stop_def["alternateCodes"]
-                if "alternateNames" in stop_def:
-                    for key, value in stop_def["alternateNames"].items():
-                        stop["name"][key] = value
-                
-                manual_stops.append(stop)
-            
-            print(f"Loaded {len(manual_stops)} manual stops")
-            return manual_stops
-    except Exception as e:
-        print(f"Error loading manual stops: {e}", file=sys.stderr)
-        return []
 
 def main():
     print("Fetching stop list data...")
@@ -179,11 +172,6 @@ def main():
             overrides_file = os.path.join(overrides_dir, filename)
             overrides = load_stop_overrides(overrides_file)
             processed_stops = apply_overrides(processed_stops, overrides)
-
-        # Load and add manual stops
-        manual_stops_file = os.path.join(script_dir, OVERRIDES_DIR, "manual-stops.yaml")
-        manual_stops = load_manual_stops(manual_stops_file)
-        processed_stops.extend(manual_stops)
 
         # Filter out hidden stops
         visible_stops = [stop for stop in processed_stops if not stop.get("hide")]

@@ -25,14 +25,15 @@ stopId:            # Numeric ID of the stop to override
         - "ALT-123"
 ```
 
-## Manual Stops Format
+## Adding New Stops
 
-Manual stops allow adding completely new stops that don't exist in the transit API. These are defined in `manual-stops.yaml` files.
+New stops that don't exist in the transit API can be added directly in override files using the `new: true` parameter. The `new` parameter is automatically removed after the stop is added to the list.
 
 ```yaml
 stopId:            # Numeric ID for the new stop (must not conflict with existing stops)
+    new: true        # Mark this as a new stop (required, will be removed after processing)
     name:            # Name of the stop (string)
-    location:        # Location coordinates (required for manual stops)
+    location:        # Location coordinates (required for new stops)
         latitude:      # Latitude coordinate (float)
         longitude:     # Longitude coordinate (float)
     lines:           # List of lines serving this stop (list of strings)
@@ -49,13 +50,14 @@ stopId:            # Numeric ID for the new stop (must not conflict with existin
 ## Field Descriptions
 
 - **stopId** (integer): Unique identifier of the bus stop.  
+- **new** (boolean): Set to `true` to add a new stop that doesn't exist in the API. This parameter is removed after processing.
 - **name** (string): Override or set the stop name.
 - **alternateNames** (object): Other names used in different contexts.
     - **key** (string): Name used in a specific context, such as `metro`.
 - **location** (object):
     - **latitude** (float): Override/set latitude coordinate.  
     - **longitude** (float): Override/set longitude coordinate.  
-- **lines** (array of strings): List of line numbers serving this stop (required for manual stops).
+- **lines** (array of strings): List of line numbers serving this stop (required for new stops).
 - **hide** (boolean): Set to `true` to exclude the stop from maps and listings.  
 - **cancelled** (boolean): Set to `true` to mark the stop as cancelled or out of service.
 - **title** (string): Alert title displayed to users (e.g., "Stop Temporarily Closed").
@@ -83,10 +85,11 @@ stopId:            # Numeric ID for the new stop (must not conflict with existin
     message: "This stop has been temporarily moved 50 meters north."
 ```
 
-### Manual Stop Example
+### New Stop Example
 
 ```yaml
 99999:
+    new: true
     name: "New Development Stop"
     location:
         latitude: 42.229188
