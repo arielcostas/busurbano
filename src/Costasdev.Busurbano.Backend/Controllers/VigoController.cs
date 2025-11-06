@@ -99,7 +99,10 @@ public class VigoController : ControllerBase
         await Task.WhenAll(realtimeTask, timetableTask);
 
         var realTimeEstimates = realtimeTask.Result.Estimates;
-        var timetable = timetableTask.Result;
+        // Filter out records with unparseable times (e.g., hours >= 24)
+        var timetable = timetableTask.Result
+            .Where(c => c.StartingDateTime() != null && c.CallingDateTime() != null)
+            .ToList();
 
         var now = DateTime.Now.AddSeconds(60 - DateTime.Now.Second);
         // Define the scope end as the time of the last realtime arrival (no extra buffer)
@@ -118,7 +121,7 @@ public class VigoController : ControllerBase
                     c.Line.Trim() == estimate.Line.Trim() &&
                     c.Route.Trim() == estimate.Route.Trim()
                 )
-                .OrderBy(c => c.CallingDateTime())
+                .OrderBy(c => c.CallingDateTime()!.Value)
                 .ToArray();
 
             ScheduledStop? closestCirculation = null;
@@ -130,11 +133,11 @@ public class VigoController : ControllerBase
             const int startedMatchToleranceMinutes = 15; // how close a started trip must be to consider it a match
 
             var startedCandidates = possibleCirculations
-                .Where(c => c.StartingDateTime() <= now)
+                .Where(c => c.StartingDateTime()!.Value <= now)
                 .Select(c => new
                 {
                     Circulation = c,
-                    AbsDiff = Math.Abs((estimatedArrivalTime - c.CallingDateTime()).TotalMinutes)
+                    AbsDiff = Math.Abs((estimatedArrivalTime - c.CallingDateTime()!.Value).TotalMinutes)
                 })
                 .OrderBy(x => x.AbsDiff)
                 .ToList();
@@ -142,7 +145,7 @@ public class VigoController : ControllerBase
             var bestStarted = startedCandidates.FirstOrDefault();
 
             var futureCandidates = possibleCirculations
-                .Where(c => c.StartingDateTime() > now)
+                .Where(c => c.StartingDateTime()!.Value > now)
                 .ToList();
 
             if (bestStarted != null && bestStarted.AbsDiff <= startedMatchToleranceMinutes)
@@ -181,7 +184,7 @@ public class VigoController : ControllerBase
                 foreach (var circulation in possibleCirculations)
                 {
                     outputBuffer.AppendLine(
-                        $"Circulation {circulation.TripId} stopping at {circulation.CallingDateTime()} (diff: {estimatedArrivalTime - circulation.CallingDateTime():HH:mm})");
+                        $"Circulation {circulation.TripId} stopping at {circulation.CallingDateTime()!.Value} (diff: {estimatedArrivalTime - circulation.CallingDateTime()!.Value:HH:mm})");
                 }
 
                 outputBuffer.AppendLine();
@@ -195,8 +198,8 @@ public class VigoController : ControllerBase
                 Route = estimate.Route,
                 Schedule = new ScheduleData
                 {
-                    Running = closestCirculation.StartingDateTime() <= now,
-                    Minutes = (int)(closestCirculation.CallingDateTime() - now).TotalMinutes,
+                    Running = closestCirculation.StartingDateTime()!.Value <= now,
+                    Minutes = (int)(closestCirculation.CallingDateTime()!.Value - now).TotalMinutes,
                     TripId = closestCirculation.TripId,
                     ServiceId = closestCirculation.ServiceId,
                 },
@@ -218,8 +221,8 @@ public class VigoController : ControllerBase
             );
 
             var scheduledWindow = timetable
-                .Where(c => c.CallingDateTime() >= now && c.CallingDateTime() <= scopeEnd)
-                .OrderBy(c => c.CallingDateTime());
+                .Where(c => c.CallingDateTime()!.Value >= now && c.CallingDateTime()!.Value <= scopeEnd)
+                .OrderBy(c => c.CallingDateTime()!.Value);
 
             foreach (var sched in scheduledWindow)
             {
@@ -234,8 +237,8 @@ public class VigoController : ControllerBase
                     Route = sched.Route,
                     Schedule = new ScheduleData
                     {
-                        Running = sched.StartingDateTime() <= now,
-                        Minutes = (int)(sched.CallingDateTime() - now).TotalMinutes,
+                        Running = sched.StartingDateTime()!.Value <= now,
+                        Minutes = (int)(sched.CallingDateTime()!.Value - now).TotalMinutes,
                         TripId = sched.TripId,
                         ServiceId = sched.ServiceId,
                     },
