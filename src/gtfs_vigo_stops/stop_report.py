@@ -194,9 +194,11 @@ def get_stop_arrivals(
                 else:
                     next_streets = []
 
+                trip_id_fmt = "_".join(trip_id.split("_")[1:3])
+
                 stop_arrivals[stop_code].append({
-                    "trip_id": trip_id,
-                    "service_id": service_id,
+                    "trip_id": trip_id_fmt,
+                    "service_id": service_id.split("_")[1],
                     "line": route_short_name,
                     "route": trip_headsign,
                     "stop_sequence": stop_time.stop_sequence,

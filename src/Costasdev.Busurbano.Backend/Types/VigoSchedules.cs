@@ -14,9 +14,17 @@ public class ScheduledStop
     public required double ShapeDistTraveled { get; set; }
 
     [JsonPropertyName("next_streets")] public required string[] NextStreets { get; set; }
+
     [JsonPropertyName("starting_code")] public required string StartingCode { get; set; }
     [JsonPropertyName("starting_name")] public required string StartingName { get; set; }
     [JsonPropertyName("starting_time")] public required string StartingTime { get; set; }
+    public DateTime StartingDateTime()
+    {
+        var dt = DateTime.Today + TimeOnly.Parse(StartingTime).ToTimeSpan();
+        return dt.AddSeconds(60 - dt.Second);
+    }
+
+    [JsonPropertyName("calling_ssm")] public required int CallingSsm { get; set; }
     [JsonPropertyName("calling_time")] public required string CallingTime { get; set; }
     public DateTime CallingDateTime()
     {
@@ -24,7 +32,6 @@ public class ScheduledStop
         return dt.AddSeconds(60 - dt.Second);
     }
 
-    [JsonPropertyName("calling_ssm")] public required int CallingSsm { get; set; }
     [JsonPropertyName("terminus_code")] public required string TerminusCode { get; set; }
     [JsonPropertyName("terminus_name")] public required string TerminusName { get; set; }
     [JsonPropertyName("terminus_time")] public required string TerminusTime { get; set; }
