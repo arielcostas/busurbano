@@ -91,11 +91,14 @@ def load_manual_stops(file_path):
             
             manual_stops = []
             for stop_id, stop_def in manual_data.items():
+                # Ensure stop_id is an integer for consistency
+                stop_id_int = int(stop_id) if isinstance(stop_id, str) else stop_id
+                
                 # Build the stop object from the manual definition
                 stop = {
-                    "stopId": stop_id,
+                    "stopId": stop_id_int,
                     "name": {
-                        "original": stop_def.get("name", f"Stop {stop_id}")
+                        "original": stop_def.get("name", f"Stop {stop_id_int}")
                     },
                     "latitude": stop_def.get("location", {}).get("latitude"),
                     "longitude": stop_def.get("location", {}).get("longitude"),

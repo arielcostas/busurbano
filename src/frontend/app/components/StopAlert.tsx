@@ -9,17 +9,13 @@ interface StopAlertProps {
 }
 
 export const StopAlert: React.FC<StopAlertProps> = ({ stop, compact = false }) => {
-  // Don't render anything if there's no alert
-  if (!stop.cancelled && !stop.title && !stop.message) {
+  // Don't render anything if there's no alert content
+  const hasContent = stop.title || stop.message;
+  if (!hasContent) {
     return null;
   }
 
   const isError = stop.cancelled === true;
-  const hasContent = stop.title || stop.message;
-
-  if (!hasContent) {
-    return null;
-  }
 
   return (
     <div className={`stop-alert ${isError ? 'stop-alert-error' : 'stop-alert-info'} ${compact ? 'stop-alert-compact' : ''}`}>
