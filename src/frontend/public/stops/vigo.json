@@ -7366,6 +7366,11 @@
       "28",
       "N4"
     ],
+    "cancelled": true,
+    "title": "Parada movida a Colón 12",
+    "alternateCodes": [
+      20208
+    ],
     "amenities": [
       "shelter",
       "display"
@@ -15018,6 +15023,11 @@
       "28",
       "N4"
     ],
+    "cancelled": true,
+    "title": "Parada movida a Marqués de Valladares (fronte 19)",
+    "alternateCodes": [
+      20206
+    ],
     "amenities": [
       "shelter"
     ]
@@ -15061,6 +15071,26 @@
       "C3d",
       "10"
     ]
+  },
+  {
+    "stopId": 20208,
+    "name": {
+      "original": "Colón 12"
+    },
+    "latitude": 42.23805815883466,
+    "longitude": -8.72057889828808,
+    "lines": [
+      "C1",
+      "A",
+      "5A",
+      "9B",
+      "15B",
+      "15C",
+      "24",
+      "28",
+      "N4"
+    ],
+    "title": "Parada provisional sin datos"
   },
   {
     "stopId": 20209,
