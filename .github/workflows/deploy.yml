@@ -65,9 +65,26 @@ jobs:
           path: dist/backend
           retention-days: 7
 
+  build-stops-script:
+    runs-on: ubuntu-latest
+    name: Build stop report script
+    environment: Production
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: true
+          lfs: false
+      - name: Archive Stop Report Script Artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: stop_report
+          path: src/gtfs_vigo_stops/
+
   deploy:
     runs-on: ubuntu-latest
-    needs: [build-frontend, build-backend]
+    needs: [build-frontend, build-backend, build-stops-script]
     name: Deploy to production server
     environment: Production
     steps:
@@ -81,6 +98,11 @@ jobs:
         with:
           name: backend
           path: dist/backend
+      - name: Download Stop Report Script Artifact
+        uses: actions/download-artifact@v6
+        with:
+          name: stop_report
+          path: dist/stop_report
       - name: Connect to tailnet
         uses: tailscale/github-action@v4
         with:
@@ -115,3 +137,7 @@ jobs:
 
       - name: Start service
         run: ssh ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }} "echo ${{ secrets.TARGET_PASSWORD }} | sudo -S /usr/bin/systemctl start busurbano"
+
+      - name: Deploy stop report script
+        run: |
+          scp -r dist/stop_report/* ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }}:/opt/gtfs_vigo_stops/
