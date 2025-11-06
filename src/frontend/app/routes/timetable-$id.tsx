@@ -140,6 +140,9 @@ const parseServiceId = (serviceId: string): string => {
   return `${displayLine}-${turnNumber}`;
 };
 
+// Scroll threshold for showing FAB buttons (in pixels)
+const SCROLL_THRESHOLD = 100;
+
 export default function Timetable() {
   const { t } = useTranslation();
   const { region } = useApp();
