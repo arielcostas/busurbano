@@ -3,23 +3,27 @@ import LineIcon from "./LineIcon";
 import "./SchedulesTable.css";
 import { useApp } from "~/AppContext";
 
-export interface ScheduledTable {
-  line: {
-    name: string;
-    colour: string;
-  };
-  trip: {
-    id: string;
-    service_id: string;
-    headsign: string;
-    direction_id: number;
-  };
-  route_id: string;
-  departure_time: string;
-  arrival_time: string;
+export type ScheduledTable = {
+  trip_id: string;
+  service_id: string;
+
+  line: string;
+  route: string;
+
   stop_sequence: number;
   shape_dist_traveled: number;
   next_streets: string[];
+
+  starting_code: string;
+  starting_name: string;
+  starting_time: string;
+
+  calling_time: string;
+  calling_ssm: number;
+
+  terminus_code: string;
+  terminus_name: string;
+  terminus_time: string;
 }
 
 interface TimetableTableProps {
@@ -74,11 +78,11 @@ const findNearbyEntries = (entries: ScheduledTable[], currentTime: string, befor
 
   const currentMinutes = timeToMinutes(currentTime);
   const sortedEntries = [...entries].sort((a, b) =>
-    timeToMinutes(a.departure_time) - timeToMinutes(b.departure_time)
+    timeToMinutes(a.calling_time) - timeToMinutes(b.calling_time)
   );
 
   let currentIndex = sortedEntries.findIndex(entry =>
-    timeToMinutes(entry.departure_time) >= currentMinutes
+    timeToMinutes(entry.calling_time) >= currentMinutes
   );
 
   if (currentIndex === -1) {
@@ -114,11 +118,11 @@ export const SchedulesTable: React.FC<TimetableTableProps> = ({
 
       <div className="timetable-cards">
         {displayData.map((entry, index) => {
-          const entryMinutes = timeToMinutes(entry.departure_time);
+          const entryMinutes = timeToMinutes(entry.calling_time);
           const isPast = entryMinutes < nowMinutes;
           return (
             <div
-              key={`${entry.trip.id}-${index}`}
+              key={`${entry.trip_id}-${index}`}
               className={`timetable-card${isPast ? " timetable-past" : ""}`}
               style={{
                 background: isPast
@@ -128,27 +132,27 @@ export const SchedulesTable: React.FC<TimetableTableProps> = ({
             >
               <div className="card-header">
                 <div className="line-info">
-                  <LineIcon line={entry.line.name} region={region} />
+                  <LineIcon line={entry.line} region={region} />
                 </div>
 
                 <div className="destination-info">
-                  {entry.trip.headsign && entry.trip.headsign.trim() ? (
-                    <strong>{entry.trip.headsign}</strong>
+                  {entry.route && entry.route.trim() ? (
+                    <strong>{entry.route}</strong>
                   ) : (
-                    <strong>{t("timetable.noDestination", "Línea")} {entry.line.name}</strong>
+                    <strong>{t("timetable.noDestination", "Línea")} {entry.line}</strong>
                   )}
                 </div>
 
                 <div className="time-info">
                   <span className="departure-time">
-                    {entry.departure_time.slice(0, 5)}
+                    {entry.calling_time.slice(0, 5)}
                   </span>
                 </div>
               </div>
               <div className="card-body">
                 <div className="route-streets">
                   <span className="service-id">
-                    {parseServiceId(entry.trip.service_id)}
+                    {parseServiceId(entry.service_id)}
                   </span>
                   {entry.next_streets.length > 0 && (
                     <span> — {entry.next_streets.join(' — ')}</span>
