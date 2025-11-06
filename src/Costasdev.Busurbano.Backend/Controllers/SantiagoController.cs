@@ -3,7 +3,7 @@ using Costasdev.VigoTransitApi.Types;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Costasdev.Busurbano.Backend;
+namespace Costasdev.Busurbano.Backend.Controllers;
 
 [ApiController]
 [Route("api/santiago")]

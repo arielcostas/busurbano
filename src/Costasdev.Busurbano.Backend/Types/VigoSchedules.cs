@@ -4,35 +4,28 @@ namespace Costasdev.Busurbano.Backend.Types;
 
 public class ScheduledStop
 {
-    [JsonPropertyName("line")] public required Line Line { get; set; }
-    [JsonPropertyName("trip")] public required Trip Trip { get; set; }
-    [JsonPropertyName("route_id")] public required string RouteId { get; set; }
-    [JsonPropertyName("departure_time")] public required string DepartureTime { get; set; }
-
-    public DateTime DepartureDateTime()
-    {
-        var dt = DateTime.Today + TimeOnly.Parse(DepartureTime).ToTimeSpan();
-        return dt.AddSeconds(60 - dt.Second);
-    }
-
+    [JsonPropertyName("trip_id")] public required string TripId { get; set; }
+    [JsonPropertyName("service_id")] public required string ServiceId { get; set; }
+    [JsonPropertyName("line")] public required string Line { get; set; }
+    [JsonPropertyName("route")] public required string Route { get; set; }
     [JsonPropertyName("stop_sequence")] public required int StopSequence { get; set; }
 
     [JsonPropertyName("shape_dist_traveled")]
-    public required float ShapeDistTraveled { get; set; }
+    public required double ShapeDistTraveled { get; set; }
 
     [JsonPropertyName("next_streets")] public required string[] NextStreets { get; set; }
-}
+    [JsonPropertyName("starting_code")] public required string StartingCode { get; set; }
+    [JsonPropertyName("starting_name")] public required string StartingName { get; set; }
+    [JsonPropertyName("starting_time")] public required string StartingTime { get; set; }
+    [JsonPropertyName("calling_time")] public required string CallingTime { get; set; }
+    public DateTime CallingDateTime()
+    {
+        var dt = DateTime.Today + TimeOnly.Parse(CallingTime).ToTimeSpan();
+        return dt.AddSeconds(60 - dt.Second);
+    }
 
-public class Line
-{
-    [JsonPropertyName("name")] public required string Name { get; set; }
-    [JsonPropertyName("colour")] public required string Colour { get; set; }
-}
-
-public class Trip
-{
-    [JsonPropertyName("id")] public required string Id { get; set; }
-    [JsonPropertyName("service_id")] public required string ServiceId { get; set; }
-    [JsonPropertyName("headsign")] public required string Headsign { get; set; }
-    [JsonPropertyName("direction_id")] public required int DirectionId { get; set; }
+    [JsonPropertyName("calling_ssm")] public required int CallingSsm { get; set; }
+    [JsonPropertyName("terminus_code")] public required string TerminusCode { get; set; }
+    [JsonPropertyName("terminus_name")] public required string TerminusName { get; set; }
+    [JsonPropertyName("terminus_time")] public required string TerminusTime { get; set; }
 }

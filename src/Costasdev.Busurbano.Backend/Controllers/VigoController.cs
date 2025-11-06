@@ -1,27 +1,29 @@
 using System.Globalization;
 using System.Text;
+using System.Text.Json;
+using Costasdev.Busurbano.Backend.Configuration;
+using Costasdev.Busurbano.Backend.Types;
+using Costasdev.VigoTransitApi;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-using Costasdev.VigoTransitApi;
-using System.Text.Json;
-using Costasdev.Busurbano.Backend.Types;
-using Costasdev.VigoTransitApi.Types;
+using Microsoft.Extensions.Options;
+using SysFile = System.IO.File;
 
-namespace Costasdev.Busurbano.Backend;
+namespace Costasdev.Busurbano.Backend.Controllers;
 
 [ApiController]
 [Route("api/vigo")]
 public class VigoController : ControllerBase
 {
+    private readonly  ILogger<VigoController> _logger;
     private readonly VigoTransitApiClient _api;
-    private readonly IMemoryCache _cache;
-    private readonly HttpClient _httpClient;
+    private readonly AppConfiguration  _configuration;
 
-    public VigoController(HttpClient http, IMemoryCache cache)
+    public VigoController(HttpClient http, IOptions<AppConfiguration> options, ILogger<VigoController> logger)
     {
+        _logger = logger;
         _api = new VigoTransitApiClient(http);
-        _cache = cache;
-        _httpClient = http;
+        _configuration = options.Value;
     }
 
     [HttpGet("GetStopEstimates")]
@@ -53,44 +55,21 @@ public class VigoController : ControllerBase
             return BadRequest("Invalid date format. Please use yyyy-MM-dd format.");
         }
 
-        // Create cache key
-        var cacheKey = $"timetable_{date}_{stopId}";
-
-        // Try to get from cache first
-        if (_cache.TryGetValue(cacheKey, out var cachedData))
-        {
-            Response.Headers.Append("App-CacheUsage", "HIT");
-            return new OkObjectResult(cachedData);
-        }
-
         try
         {
             var timetableData = await LoadTimetable(stopId.ToString(), date);
 
-            // Cache the data for 12 hours
-            var cacheOptions = new MemoryCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(12),
-                SlidingExpiration = TimeSpan.FromHours(6), // Refresh cache if accessed within 6 hours of expiry
-                Priority = CacheItemPriority.Normal
-            };
-
-            _cache.Set(cacheKey, timetableData, cacheOptions);
-
-            Response.Headers.Append("App-CacheUsage", "MISS");
             return new OkObjectResult(timetableData);
         }
-        catch (HttpRequestException ex)
+        catch (FileNotFoundException ex)
         {
-            return StatusCode((int?)ex.StatusCode ?? 500, $"Error fetching timetable data: {ex.Message}");
+            _logger.LogError(ex, "Stop data not found for stop {StopId} on date {Date}", stopId, date);
+            return StatusCode(404, $"Stop data not found for stop {stopId} on date {date}");
         }
-        catch (JsonException ex)
+        catch(Exception ex)
         {
-            return StatusCode(500, $"Error parsing timetable data: {ex.Message}");
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"Unexpected error: {ex.Message}");
+            _logger.LogError(ex, "Error loading stop data");
+            return StatusCode(500, "Error loading timetable");
         }
     }
 
@@ -119,14 +98,10 @@ public class VigoController : ControllerBase
         var realtimeTask = _api.GetStopEstimates(stopId);
         var timetableTask = LoadTimetable(stopId.ToString(), now.ToString("yyyy-MM-dd"));
 
-        Task.WaitAll(realtimeTask, timetableTask);
+        await Task.WhenAll(realtimeTask, timetableTask);
 
         var realTimeEstimates = realtimeTask.Result.Estimates;
         var timetable = timetableTask.Result;
-
-        /*var now = DateTime.Today.AddHours(17).AddMinutes(59);
-        var realTimeEstimates = LoadDebugEstimates();
-        var timetable = LoadDebugTimetable();*/
 
         foreach (var estimate in realTimeEstimates)
         {
@@ -134,8 +109,8 @@ public class VigoController : ControllerBase
             var fullArrivalTime = now.AddMinutes(estimate.Minutes);
 
             var possibleCirculations = timetable
-                .Where(c => c.Line.Name.Trim() == estimate.Line.Trim() && c.Trip.Headsign.Trim() == estimate.Route.Trim())
-                .OrderBy(c => c.DepartureDateTime())
+                .Where(c => c.Line.Trim() == estimate.Line.Trim() && c.Route.Trim() == estimate.Route.Trim())
+                .OrderBy(c => c.CallingDateTime())
                 .ToArray();
 
             outputBuffer.AppendLine($"Found {possibleCirculations.Length} potential circulations");
@@ -145,7 +120,7 @@ public class VigoController : ControllerBase
 
             foreach (var circulation in possibleCirculations)
             {
-                var diffBetweenScheduleAndTrip = (int)Math.Round((fullArrivalTime - circulation.DepartureDateTime()).TotalMinutes);
+                var diffBetweenScheduleAndTrip = (int)Math.Round((fullArrivalTime - circulation.CallingDateTime()).TotalMinutes);
                 var diffBetweenNowAndSchedule = (int)(fullArrivalTime - now).TotalMinutes;
 
                 var tolerance = Math.Max(2, diffBetweenNowAndSchedule * 0.15); // Positive amount of minutes
@@ -168,7 +143,7 @@ public class VigoController : ControllerBase
                 foreach (var circulation in possibleCirculations)
                 {
                     // Circulation A  03LP000_008003_16 stopping at 05/11/2025 22:06:00 (diff: -03:29:59.2644092)
-                    outputBuffer.AppendLine($"Circulation {circulation.Trip.Id} stopping at {circulation.DepartureDateTime()} (diff: {fullArrivalTime - circulation.DepartureDateTime():HH:mm})");
+                    outputBuffer.AppendLine($"Circulation {circulation.TripId} stopping at {circulation.CallingDateTime()} (diff: {fullArrivalTime - circulation.CallingDateTime():HH:mm})");
                 }
                 outputBuffer.AppendLine();
 
@@ -177,19 +152,19 @@ public class VigoController : ControllerBase
 
             if (closestCirculationTime > 0)
             {
-                outputBuffer.Append($"Closest circulation is {closestCirculation.Trip.Id} and arriving {closestCirculationTime} minutes LATE");
+                outputBuffer.Append($"Closest circulation is {closestCirculation.TripId} and arriving {closestCirculationTime} minutes LATE");
             }
             else if (closestCirculationTime == 0)
             {
-                outputBuffer.Append($"Closest circulation is {closestCirculation.Trip.Id} and arriving ON TIME");
+                outputBuffer.Append($"Closest circulation is {closestCirculation.TripId} and arriving ON TIME");
             }
             else
             {
-                outputBuffer.Append($"Closest circulation is {closestCirculation.Trip.Id} and arriving {Math.Abs(closestCirculationTime)} minutes EARLY");
+                outputBuffer.Append($"Closest circulation is {closestCirculation.TripId} and arriving {Math.Abs(closestCirculationTime)} minutes EARLY");
             }
 
             outputBuffer.AppendLine(
-                $" -- Circulation expected at {closestCirculation.DepartureDateTime():HH:mm)}");
+                $" -- Circulation expected at {closestCirculation.CallingDateTime():HH:mm)}");
 
             outputBuffer.AppendLine();
         }
@@ -199,12 +174,12 @@ public class VigoController : ControllerBase
 
     private async Task<List<ScheduledStop>> LoadTimetable(string stopId, string dateString)
     {
-        var url = $"https://www.costas.dev/static-storage/vitrasa_svc/stops/{dateString}/{stopId}.json";
-        var response = await _httpClient.GetAsync(url);
-
-        response.EnsureSuccessStatusCode();
-
-        var jsonContent = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<List<ScheduledStop>>(jsonContent) ?? [];
+        var file = Path.Combine(_configuration.ScheduleBasePath, dateString, stopId + ".json");
+        if (!SysFile.Exists(file))
+        {
+            throw new FileNotFoundException();
+        }
+        var contents = await SysFile.ReadAllTextAsync(file);
+        return JsonSerializer.Deserialize<List<ScheduledStop>>(contents)!;
     }
 }
