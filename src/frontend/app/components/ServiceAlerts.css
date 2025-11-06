@@ -1,0 +1,72 @@
+/* Service Alerts Container */
+.service-alerts-container {
+  margin-bottom: 1.5rem;
+}
+
+.service-alert {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+  border: 1px solid;
+}
+
+.service-alert.info {
+  background-color: #e3f2fd;
+  border-color: #2196f3;
+  color: #0d47a1;
+}
+
+.service-alert.warning {
+  background-color: #fff3e0;
+  border-color: #ff9800;
+  color: #e65100;
+}
+
+.service-alert.error {
+  background-color: #ffebee;
+  border-color: #f44336;
+  color: #b71c1c;
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  .service-alert.info {
+    background-color: #0d47a1;
+    border-color: #2196f3;
+    color: #e3f2fd;
+  }
+
+  .service-alert.warning {
+    background-color: #e65100;
+    border-color: #ff9800;
+    color: #fff3e0;
+  }
+
+  .service-alert.error {
+    background-color: #b71c1c;
+    border-color: #f44336;
+    color: #ffebee;
+  }
+}
+
+.alert-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.alert-content {
+  flex: 1;
+}
+
+.alert-title {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.alert-message {
+  font-size: 0.9rem;
+  line-height: 1.4;
+}

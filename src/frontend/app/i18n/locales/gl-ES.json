@@ -40,13 +40,17 @@
     "details_grouped": "As paradas agrúpanse pola liña de autobús. Aplicacións como iTranvias (A Coruña) ou Moovit (máis ou menos) usan este estilo."
   },
   "stoplist": {
-    "search_placeholder": "Buscar parada...",
+    "search_placeholder": "Buscar parada por nome ou código...",
     "search_label": "Buscar paradas",
     "search_results": "Resultados da busca",
     "favourites": "Paradas favoritas",
     "no_favourites": "Accede a unha parada e márcaa como favorita para vela aquí.",
     "recents": "Recentes",
-    "all_stops": "Paradas"
+    "all_stops": "Paradas",
+    "nearby_stops": "Paradas cercanas",
+    "service_alerts": "Alertas do servizo",
+    "alerts_coming_soon": "Función proximamente",
+    "alerts_description": "As alertas do servizo e notificacións de interrupcións estarán dispoñibles aquí pronto."
   },
   "estimates": {
     "minutes": "min",
