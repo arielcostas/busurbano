@@ -7,7 +7,13 @@ import {
   type ReactNode,
 } from "react";
 import { type LngLatLike } from "maplibre-gl";
-import { type RegionId, DEFAULT_REGION, getRegionConfig, isValidRegion, REGIONS } from "./data/RegionConfig";
+import {
+  type RegionId,
+  DEFAULT_REGION,
+  getRegionConfig,
+  isValidRegion,
+  REGIONS,
+} from "./data/RegionConfig";
 
 export type Theme = "light" | "dark" | "system";
 type TableStyle = "regular" | "grouped";
@@ -62,7 +68,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const [theme, setTheme] = useState<Theme>(() => {
     const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "light" || savedTheme === "dark" || savedTheme === "system") {
+    if (
+      savedTheme === "light" ||
+      savedTheme === "dark" ||
+      savedTheme === "system"
+    ) {
       return savedTheme;
     }
     return "system";

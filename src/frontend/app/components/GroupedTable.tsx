@@ -8,7 +8,11 @@ interface GroupedTable {
   regionConfig: RegionConfig;
 }
 
-export const GroupedTable: React.FC<GroupedTable> = ({ data, dataDate, regionConfig }) => {
+export const GroupedTable: React.FC<GroupedTable> = ({
+  data,
+  dataDate,
+  regionConfig,
+}) => {
   const formatDistance = (meters: number) => {
     if (meters > 1024) {
       return `${(meters / 1000).toFixed(1)} km`;

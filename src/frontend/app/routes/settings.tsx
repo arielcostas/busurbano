@@ -159,30 +159,31 @@ export default function Settings() {
         </a>
       </p>
       {region === "vigo" && (
-      <p>
-        {t("about.data_source_prefix")}{" "}
-        <a
-          href="https://datos.vigo.org"
-          className="about-link"
-          rel="nofollow noreferrer noopener"
-        >
-          datos.vigo.org
-        </a>{" "}
-        {t("about.data_source_middle")}{" "}
-        <a
-          href="https://opendefinition.org/licenses/odc-by/"
-          className="about-link"
-          rel="nofollow noreferrer noopener"
-        >
-          Open Data Commons Attribution License
-        </a>.
-      </p>
+        <p>
+          {t("about.data_source_prefix")}{" "}
+          <a
+            href="https://datos.vigo.org"
+            className="about-link"
+            rel="nofollow noreferrer noopener"
+          >
+            datos.vigo.org
+          </a>{" "}
+          {t("about.data_source_middle")}{" "}
+          <a
+            href="https://opendefinition.org/licenses/odc-by/"
+            className="about-link"
+            rel="nofollow noreferrer noopener"
+          >
+            Open Data Commons Attribution License
+          </a>
+          .
+        </p>
       )}
       {region === "santiago" && (
         <p>
-          Datos obtenidos de app MaisBus (Concello de Santiago/TUSSA),
-          gracias a la documentación de [TP Galicia](https://tpgalicia.github.io/urban/santiago/)
-          en GitHub.
+          Datos obtenidos de app MaisBus (Concello de Santiago/TUSSA), gracias a
+          la documentación de [TP
+          Galicia](https://tpgalicia.github.io/urban/santiago/) en GitHub.
         </p>
       )}
 
@@ -193,7 +194,7 @@ export default function Settings() {
             <p>
               {t(
                 "about.region_change_message",
-                "¿Estás seguro de que quieres cambiar la región? Serás redirigido a la lista de paradas."
+                "¿Estás seguro de que quieres cambiar la región? Serás redirigido a la lista de paradas.",
               )}
             </p>
             <div className="modal-buttons">

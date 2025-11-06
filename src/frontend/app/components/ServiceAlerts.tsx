@@ -12,7 +12,9 @@ const ServiceAlerts: React.FC = () => {
         <div className="alert-icon">ℹ️</div>
         <div className="alert-content">
           <div className="alert-title">{t("stoplist.alerts_coming_soon")}</div>
-          <div className="alert-message">{t("stoplist.alerts_description")}</div>
+          <div className="alert-message">
+            {t("stoplist.alerts_description")}
+          </div>
         </div>
       </div>
     </div>

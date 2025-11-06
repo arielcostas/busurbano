@@ -22,7 +22,9 @@
   border: 1px solid var(--card-border);
   border-radius: 10px;
   padding: 1.25rem;
-  transition: background-color 0.2s ease, border 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    border 0.2s ease;
 }
 
 /* Next upcoming service: slight emphasis */

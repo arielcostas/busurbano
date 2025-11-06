@@ -57,7 +57,10 @@
 .gallery-item-link {
   display: block;
   padding: 1rem;
-  background-color: var(--card-background-color, var(--message-background-color));
+  background-color: var(
+    --card-background-color,
+    var(--message-background-color)
+  );
   border: 1px solid var(--border-color);
   border-radius: 12px;
   text-decoration: none;
@@ -146,7 +149,7 @@
   .gallery-item {
     flex: 0 0 320px;
   }
-  
+
   .gallery-scroll-container {
     margin: 0;
     padding: 0;

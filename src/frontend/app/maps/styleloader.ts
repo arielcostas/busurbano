@@ -15,7 +15,7 @@ export async function loadStyle(
 
     const style = await resp.json();
     return style as StyleSpecification;
-   }
+  }
 
   const stylePath = `/maps/styles/${styleName}-${colorScheme}.json`;
   const resp = await fetch(stylePath);
