@@ -38,6 +38,10 @@
 
 .timetable-full-content {
   margin-top: 1rem;
+  overflow-y: auto;
+  max-height: calc(100vh - 250px);
+  position: relative;
+  padding-bottom: 80px; /* Space for FAB */
 }
 
 .error-message {
@@ -147,5 +151,76 @@
 
   .timetable-full-content .timetable-card {
     padding: 1rem;
+  }
+}
+
+/* Floating Action Button */
+.fab-container {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 1000;
+}
+
+.fab {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background-color: var(--button-background-color, #007bff);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  animation: fadeIn 0.3s ease;
+}
+
+.fab:hover {
+  background-color: var(--button-hover-background-color, #0069d9);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  transform: scale(1.05);
+}
+
+.fab:active {
+  transform: scale(0.95);
+}
+
+.fab-icon {
+  width: 24px;
+  height: 24px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Adjust FAB position on mobile */
+@media (max-width: 768px) {
+  .fab-container {
+    bottom: 70px;
+    right: 16px;
+  }
+
+  .fab {
+    width: 48px;
+    height: 48px;
+  }
+
+  .fab-icon {
+    width: 20px;
+    height: 20px;
   }
 }

@@ -79,7 +79,10 @@
     "loadError": "Error al cargar los horarios",
     "errorDetail": "Los horarios teóricos se actualizan diariamente. Inténtalo más tarde.",
     "showPast": "Mostrar todos",
-    "hidePast": "Ocultar pasados"
+    "hidePast": "Ocultar pasados",
+    "goToNow": "Ir a ahora",
+    "scrollUp": "Subir",
+    "scrollDown": "Bajar"
   },
   "map": {
     "popup_title": "Parada",

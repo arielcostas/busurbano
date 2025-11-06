@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, Link } from "react-router";
 import StopDataProvider from "../data/StopDataProvider";
-import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, ChevronUp, ChevronDown, Clock } from "lucide-react";
 import { type ScheduledTable } from "~/components/SchedulesTable";
 import { TimetableSkeleton } from "~/components/TimetableSkeleton";
 import { ErrorDisplay } from "~/components/ErrorDisplay";
@@ -116,7 +116,11 @@ export default function Timetable() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<ErrorInfo | null>(null);
   const [showPastEntries, setShowPastEntries] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [showScrollBottom, setShowScrollBottom] = useState(false);
+  const [showGoToNow, setShowGoToNow] = useState(false);
   const nextEntryRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const regionConfig = getRegionConfig(region);
 
   const currentTime = new Date().toTimeString().slice(0, 8); // HH:MM:SS
@@ -193,6 +197,70 @@ export default function Timetable() {
     setCustomName(StopDataProvider.getCustomName(region, stopIdNum));
   }, [params.id, region]);
 
+  // Handle scroll events to update FAB visibility
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!containerRef.current || loading || error || timetableData.length === 0) {
+        return;
+      }
+
+      const container = containerRef.current;
+      const scrollTop = container.scrollTop;
+      const scrollHeight = container.scrollHeight;
+      const clientHeight = container.clientHeight;
+      const scrollBottom = scrollHeight - scrollTop - clientHeight;
+
+      // Threshold for showing scroll buttons (in pixels)
+      const threshold = 100;
+
+      // Show scroll top button when scrolled down
+      setShowScrollTop(scrollTop > threshold);
+      
+      // Show scroll bottom button when not at bottom
+      setShowScrollBottom(scrollBottom > threshold);
+
+      // Check if next entry (current time) is visible
+      if (nextEntryRef.current) {
+        const rect = nextEntryRef.current.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        const isNextVisible = 
+          rect.top >= containerRect.top && 
+          rect.bottom <= containerRect.bottom;
+        
+        setShowGoToNow(!isNextVisible);
+      }
+    };
+
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener('scroll', handleScroll);
+      // Initial check
+      handleScroll();
+      
+      return () => {
+        container.removeEventListener('scroll', handleScroll);
+      };
+    }
+  }, [loading, error, timetableData]);
+
+  const scrollToTop = () => {
+    containerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const scrollToBottom = () => {
+    containerRef.current?.scrollTo({ 
+      top: containerRef.current.scrollHeight, 
+      behavior: 'smooth' 
+    });
+  };
+
+  const scrollToNow = () => {
+    nextEntryRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center'
+    });
+  };
+
   if (loading) {
     return (
       <div className="page-container">
@@ -248,7 +316,7 @@ export default function Timetable() {
           </p>
         </div>
       ) : (
-        <div className="timetable-full-content">
+        <div className="timetable-full-content" ref={containerRef}>
           <div className="timetable-controls">
             <button
               className={`past-toggle ${showPastEntries ? 'active' : ''}`}
@@ -274,6 +342,42 @@ export default function Timetable() {
             currentTime={currentTime}
             nextEntryRef={nextEntryRef}
           />
+
+          {/* Floating Action Button */}
+          {(showGoToNow || showScrollTop || showScrollBottom) && (
+            <div className="fab-container">
+              {showGoToNow && !showScrollTop && !showScrollBottom && (
+                <button
+                  className="fab fab-now"
+                  onClick={scrollToNow}
+                  title={t("timetable.goToNow", "Ir a ahora")}
+                  aria-label={t("timetable.goToNow", "Ir a ahora")}
+                >
+                  <Clock className="fab-icon" />
+                </button>
+              )}
+              {showScrollTop && (
+                <button
+                  className="fab fab-up"
+                  onClick={scrollToTop}
+                  title={t("timetable.scrollUp", "Subir")}
+                  aria-label={t("timetable.scrollUp", "Subir")}
+                >
+                  <ChevronUp className="fab-icon" />
+                </button>
+              )}
+              {showScrollBottom && !showScrollTop && (
+                <button
+                  className="fab fab-down"
+                  onClick={scrollToBottom}
+                  title={t("timetable.scrollDown", "Bajar")}
+                  aria-label={t("timetable.scrollDown", "Bajar")}
+                >
+                  <ChevronDown className="fab-icon" />
+                </button>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -79,7 +79,10 @@
     "loadError": "Error loading timetables",
     "errorDetail": "Theoretical timetables are updated daily. Please try again later.",
     "showPast": "Show all",
-    "hidePast": "Hide past"
+    "hidePast": "Hide past",
+    "goToNow": "Go to now",
+    "scrollUp": "Scroll up",
+    "scrollDown": "Scroll down"
   },
   "map": {
     "popup_title": "Stop",
