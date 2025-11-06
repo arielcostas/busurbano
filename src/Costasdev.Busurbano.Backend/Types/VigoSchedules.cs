@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Costasdev.Busurbano.Backend.Types;
 
@@ -18,17 +18,25 @@ public class ScheduledStop
     [JsonPropertyName("starting_code")] public required string StartingCode { get; set; }
     [JsonPropertyName("starting_name")] public required string StartingName { get; set; }
     [JsonPropertyName("starting_time")] public required string StartingTime { get; set; }
-    public DateTime StartingDateTime()
+    public DateTime? StartingDateTime()
     {
-        var dt = DateTime.Today + TimeOnly.Parse(StartingTime).ToTimeSpan();
+        if (!TimeOnly.TryParse(StartingTime, out var time))
+        {
+            return null;
+        }
+        var dt = DateTime.Today + time.ToTimeSpan();
         return dt.AddSeconds(60 - dt.Second);
     }
 
     [JsonPropertyName("calling_ssm")] public required int CallingSsm { get; set; }
     [JsonPropertyName("calling_time")] public required string CallingTime { get; set; }
-    public DateTime CallingDateTime()
+    public DateTime? CallingDateTime()
     {
-        var dt = DateTime.Today + TimeOnly.Parse(CallingTime).ToTimeSpan();
+        if (!TimeOnly.TryParse(CallingTime, out var time))
+        {
+            return null;
+        }
+        var dt = DateTime.Today + time.ToTimeSpan();
         return dt.AddSeconds(60 - dt.Second);
     }
 

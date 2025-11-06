@@ -9,9 +9,9 @@
     "data_source_middle": "bajo licencia",
     "settings": "Ajustes",
     "theme": "Modo:",
-  "theme_light": "Claro",
-  "theme_dark": "Oscuro",
-  "theme_system": "Sistema",
+    "theme_light": "Claro",
+    "theme_dark": "Oscuro",
+    "theme_system": "Sistema",
     "table_style": "Estilo de tabla:",
     "table_style_regular": "Mostrar por orden",
     "table_style_grouped": "Agrupar por línea",
@@ -79,7 +79,10 @@
     "loadError": "Error al cargar los horarios",
     "errorDetail": "Los horarios teóricos se actualizan diariamente. Inténtalo más tarde.",
     "showPast": "Mostrar todos",
-    "hidePast": "Ocultar pasados"
+    "hidePast": "Ocultar pasados",
+    "goToNow": "Ir a ahora",
+    "scrollUp": "Subir",
+    "scrollDown": "Bajar"
   },
   "map": {
     "popup_title": "Parada",

@@ -9,9 +9,9 @@
     "data_source_middle": "under license",
     "settings": "Settings",
     "theme": "Mode:",
-  "theme_light": "Light",
-  "theme_dark": "Dark",
-  "theme_system": "System",
+    "theme_light": "Light",
+    "theme_dark": "Dark",
+    "theme_system": "System",
     "table_style": "Table style:",
     "table_style_regular": "Show in order",
     "table_style_grouped": "Group by line",
@@ -79,7 +79,10 @@
     "loadError": "Error loading timetables",
     "errorDetail": "Theoretical timetables are updated daily. Please try again later.",
     "showPast": "Show all",
-    "hidePast": "Hide past"
+    "hidePast": "Hide past",
+    "goToNow": "Go to now",
+    "scrollUp": "Scroll up",
+    "scrollDown": "Scroll down"
   },
   "map": {
     "popup_title": "Stop",
