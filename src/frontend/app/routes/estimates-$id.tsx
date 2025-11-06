@@ -7,8 +7,14 @@ import { RegularTable } from "../components/RegularTable";
 import { useApp } from "../AppContext";
 import { GroupedTable } from "../components/GroupedTable";
 import { useTranslation } from "react-i18next";
-import { SchedulesTable, type ScheduledTable } from "~/components/SchedulesTable";
-import { SchedulesTableSkeleton, EstimatesGroupedSkeleton } from "~/components/SchedulesTableSkeleton";
+import {
+  SchedulesTable,
+  type ScheduledTable,
+} from "~/components/SchedulesTable";
+import {
+  SchedulesTableSkeleton,
+  EstimatesGroupedSkeleton,
+} from "~/components/SchedulesTableSkeleton";
 import { TimetableSkeleton } from "~/components/TimetableSkeleton";
 import { ErrorDisplay } from "~/components/ErrorDisplay";
 import { PullToRefresh } from "~/components/PullToRefresh";
@@ -23,12 +29,15 @@ export interface Estimate {
 }
 
 interface ErrorInfo {
-  type: 'network' | 'server' | 'unknown';
+  type: "network" | "server" | "unknown";
   status?: number;
   message?: string;
 }
 
-const loadData = async (region: RegionId, stopId: string): Promise<Estimate[]> => {
+const loadData = async (
+  region: RegionId,
+  stopId: string,
+): Promise<Estimate[]> => {
   const regionConfig = getRegionConfig(region);
   const resp = await fetch(`${regionConfig.estimatesEndpoint}?id=${stopId}`, {
     headers: {
@@ -43,7 +52,10 @@ const loadData = async (region: RegionId, stopId: string): Promise<Estimate[]> =
   return await resp.json();
 };
 
-const loadTimetableData = async (region: RegionId, stopId: string): Promise<ScheduledTable[]> => {
+const loadTimetableData = async (
+  region: RegionId,
+  stopId: string,
+): Promise<ScheduledTable[]> => {
   const regionConfig = getRegionConfig(region);
 
   // Check if timetable is available for this region
@@ -51,12 +63,15 @@ const loadTimetableData = async (region: RegionId, stopId: string): Promise<Sche
     throw new Error("Timetable not available for this region");
   }
 
-  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
-  const resp = await fetch(`${regionConfig.timetableEndpoint}?date=${today}&stopId=${stopId}`, {
-    headers: {
-      Accept: "application/json",
+  const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD format
+  const resp = await fetch(
+    `${regionConfig.timetableEndpoint}?date=${today}&stopId=${stopId}`,
+    {
+      headers: {
+        Accept: "application/json",
+      },
     },
-  });
+  );
 
   if (!resp.ok) {
     throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
@@ -90,20 +105,23 @@ export default function Estimates() {
 
   const parseError = (error: any): ErrorInfo => {
     if (!navigator.onLine) {
-      return { type: 'network', message: 'No internet connection' };
+      return { type: "network", message: "No internet connection" };
     }
 
-    if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError')) {
-      return { type: 'network' };
+    if (
+      error.message?.includes("Failed to fetch") ||
+      error.message?.includes("NetworkError")
+    ) {
+      return { type: "network" };
     }
 
-    if (error.message?.includes('HTTP')) {
+    if (error.message?.includes("HTTP")) {
       const statusMatch = error.message.match(/HTTP (\d+):/);
       const status = statusMatch ? parseInt(statusMatch[1]) : undefined;
-      return { type: 'server', status };
+      return { type: "server", status };
     }
 
-    return { type: 'unknown', message: error.message };
+    return { type: "unknown", message: error.message };
   };
 
   const loadEstimatesData = useCallback(async () => {
@@ -120,7 +138,7 @@ export default function Estimates() {
       setStopData(stop);
       setCustomName(StopDataProvider.getCustomName(region, stopIdNum));
     } catch (error) {
-      console.error('Error loading estimates data:', error);
+      console.error("Error loading estimates data:", error);
       setEstimatesError(parseError(error));
       setData(null);
       setDataDate(null);
@@ -143,7 +161,7 @@ export default function Estimates() {
       const timetableBody = await loadTimetableData(region, params.id!);
       setTimetableData(timetableBody);
     } catch (error) {
-      console.error('Error loading timetable data:', error);
+      console.error("Error loading timetable data:", error);
       setTimetableError(parseError(error));
       setTimetableData([]);
     } finally {
@@ -152,10 +170,7 @@ export default function Estimates() {
   }, [params.id, region, regionConfig.timetableEndpoint]);
 
   const refreshData = useCallback(async () => {
-    await Promise.all([
-      loadEstimatesData(),
-      loadTimetableDataAsync()
-    ]);
+    await Promise.all([loadEstimatesData(), loadTimetableDataAsync()]);
   }, [loadEstimatesData, loadTimetableDataAsync]);
 
   // Manual refresh function for pull-to-refresh and button
@@ -182,7 +197,9 @@ export default function Estimates() {
     loadTimetableDataAsync();
 
     StopDataProvider.pushRecent(region, parseInt(params.id ?? ""));
-    setFavourited(StopDataProvider.isFavourite(region, parseInt(params.id ?? "")));
+    setFavourited(
+      StopDataProvider.isFavourite(region, parseInt(params.id ?? "")),
+    );
   }, [params.id, region, loadEstimatesData, loadTimetableDataAsync]);
 
   const toggleFavourite = () => {
@@ -272,7 +289,9 @@ export default function Estimates() {
             disabled={isManualRefreshing || estimatesLoading}
             title={t("estimates.reload", "Recargar estimaciones")}
           >
-            <RefreshCw className={`refresh-icon ${isManualRefreshing ? 'spinning' : ''}`} />
+            <RefreshCw
+              className={`refresh-icon ${isManualRefreshing ? "spinning" : ""}`}
+            />
           </button>
         </div>
 
@@ -287,13 +306,24 @@ export default function Estimates() {
             <ErrorDisplay
               error={estimatesError}
               onRetry={loadEstimatesData}
-              title={t("errors.estimates_title", "Error al cargar estimaciones")}
+              title={t(
+                "errors.estimates_title",
+                "Error al cargar estimaciones",
+              )}
             />
           ) : data ? (
             tableStyle === "grouped" ? (
-              <GroupedTable data={data} dataDate={dataDate} regionConfig={regionConfig} />
+              <GroupedTable
+                data={data}
+                dataDate={dataDate}
+                regionConfig={regionConfig}
+              />
             ) : (
-              <RegularTable data={data} dataDate={dataDate} regionConfig={regionConfig} />
+              <RegularTable
+                data={data}
+                dataDate={dataDate}
+                regionConfig={regionConfig}
+              />
             )
           ) : null}
         </div>
@@ -315,10 +345,7 @@ export default function Estimates() {
                 currentTime={new Date().toTimeString().slice(0, 8)} // HH:MM:SS
               />
               <div className="timetable-actions">
-                <Link
-                  to={`/timetable/${params.id}`}
-                  className="view-all-link"
-                >
+                <Link to={`/timetable/${params.id}`} className="view-all-link">
                   <ExternalLink className="external-icon" />
                   {t("timetable.viewAll", "Ver todos los horarios")}
                 </Link>

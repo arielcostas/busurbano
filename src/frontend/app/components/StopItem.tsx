@@ -17,7 +17,9 @@ const StopItem: React.FC<StopItemProps> = ({ stop }) => {
         {stop.favourite && <span className="favourite-icon">★</span>} (
         {stop.stopId}) {StopDataProvider.getDisplayName(region, stop)}
         <div className="line-icons">
-          {stop.lines?.map((line) => <LineIcon key={line} line={line} region={region} />)}
+          {stop.lines?.map((line) => (
+            <LineIcon key={line} line={line} region={region} />
+          ))}
         </div>
       </Link>
     </li>

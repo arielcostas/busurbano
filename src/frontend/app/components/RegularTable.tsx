@@ -24,7 +24,7 @@ export const RegularTable: React.FC<RegularTableProps> = ({
       {
         hour: "2-digit",
         minute: "2-digit",
-      }
+      },
     ).format(arrival);
   };
 

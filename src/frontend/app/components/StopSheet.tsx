@@ -19,12 +19,15 @@ interface StopSheetProps {
 }
 
 interface ErrorInfo {
-  type: 'network' | 'server' | 'unknown';
+  type: "network" | "server" | "unknown";
   status?: number;
   message?: string;
 }
 
-const loadStopData = async (region: RegionId, stopId: number): Promise<Estimate[]> => {
+const loadStopData = async (
+  region: RegionId,
+  stopId: number,
+): Promise<Estimate[]> => {
   const regionConfig = getRegionConfig(region);
   const resp = await fetch(`${regionConfig.estimatesEndpoint}?id=${stopId}`, {
     headers: {
@@ -42,7 +45,7 @@ const loadStopData = async (region: RegionId, stopId: number): Promise<Estimate[
 export const StopSheet: React.FC<StopSheetProps> = ({
   isOpen,
   onClose,
-  stop
+  stop,
 }) => {
   const { t } = useTranslation();
   const { region } = useApp();
@@ -54,20 +57,23 @@ export const StopSheet: React.FC<StopSheetProps> = ({
 
   const parseError = (error: any): ErrorInfo => {
     if (!navigator.onLine) {
-      return { type: 'network', message: 'No internet connection' };
+      return { type: "network", message: "No internet connection" };
     }
 
-    if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError')) {
-      return { type: 'network' };
+    if (
+      error.message?.includes("Failed to fetch") ||
+      error.message?.includes("NetworkError")
+    ) {
+      return { type: "network" };
     }
 
-    if (error.message?.includes('HTTP')) {
+    if (error.message?.includes("HTTP")) {
       const statusMatch = error.message.match(/HTTP (\d+):/);
       const status = statusMatch ? parseInt(statusMatch[1]) : undefined;
-      return { type: 'server', status };
+      return { type: "server", status };
     }
 
-    return { type: 'unknown', message: error.message };
+    return { type: "unknown", message: error.message };
   };
 
   const loadData = async () => {
@@ -102,7 +108,7 @@ export const StopSheet: React.FC<StopSheetProps> = ({
         {
           hour: "2-digit",
           minute: "2-digit",
-        }
+        },
       ).format(arrival);
     } else {
       return `${minutes} ${t("estimates.minutes", "min")}`;
@@ -122,11 +128,7 @@ export const StopSheet: React.FC<StopSheetProps> = ({
     data?.sort((a, b) => a.minutes - b.minutes).slice(0, 4) || [];
 
   return (
-    <Sheet
-      isOpen={isOpen}
-      onClose={onClose}
-      detent={"content-height" as any}
-    >
+    <Sheet isOpen={isOpen} onClose={onClose} detent={"content-height" as any}>
       <Sheet.Container>
         <Sheet.Header />
         <Sheet.Content>
@@ -150,7 +152,10 @@ export const StopSheet: React.FC<StopSheetProps> = ({
               <ErrorDisplay
                 error={error}
                 onRetry={loadData}
-                title={t("errors.estimates_title", "Error al cargar estimaciones")}
+                title={t(
+                  "errors.estimates_title",
+                  "Error al cargar estimaciones",
+                )}
                 className="compact"
               />
             ) : data ? (
@@ -177,7 +182,9 @@ export const StopSheet: React.FC<StopSheetProps> = ({
                             </div>
                           </div>
                           <div className="stop-sheet-estimate-arrival">
-                            <div className={`stop-sheet-estimate-time ${estimate.minutes <= 15 ? 'is-minutes' : ''}`}>
+                            <div
+                              className={`stop-sheet-estimate-time ${estimate.minutes <= 15 ? "is-minutes" : ""}`}
+                            >
                               <Clock />
                               {formatTime(estimate.minutes)}
                             </div>
@@ -200,7 +207,7 @@ export const StopSheet: React.FC<StopSheetProps> = ({
                       {lastUpdated.toLocaleTimeString(undefined, {
                         hour: "2-digit",
                         minute: "2-digit",
-                        second: "2-digit"
+                        second: "2-digit",
                       })}
                     </div>
                   )}
@@ -212,7 +219,9 @@ export const StopSheet: React.FC<StopSheetProps> = ({
                       disabled={loading}
                       title={t("estimates.reload", "Recargar estimaciones")}
                     >
-                      <RefreshCw className={`reload-icon ${loading ? 'spinning' : ''}`} />
+                      <RefreshCw
+                        className={`reload-icon ${loading ? "spinning" : ""}`}
+                      />
                       {t("estimates.reload", "Recargar")}
                     </button>
 
@@ -221,7 +230,10 @@ export const StopSheet: React.FC<StopSheetProps> = ({
                       className="stop-sheet-view-all"
                       onClick={onClose}
                     >
-                      {t("map.view_all_estimates", "Ver todas las estimaciones")}
+                      {t(
+                        "map.view_all_estimates",
+                        "Ver todas las estimaciones",
+                      )}
                     </Link>
                   </div>
                 </div>
