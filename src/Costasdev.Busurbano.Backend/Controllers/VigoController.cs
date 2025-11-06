@@ -102,9 +102,10 @@ public class VigoController : ControllerBase
         var timetable = timetableTask.Result;
 
         var now = DateTime.Now.AddSeconds(60 - DateTime.Now.Second);
-        var endOfScope = now.AddMinutes(
-            realTimeEstimates.OrderByDescending(e => e.Minutes).First().Minutes + 10
-        );
+        // Define the scope end as the time of the last realtime arrival (no extra buffer)
+        var scopeEnd = realTimeEstimates.Count > 0
+            ? now.AddMinutes(realTimeEstimates.Max(e => e.Minutes))
+            : now;
 
         List<ConsolidatedCirculation> consolidatedCirculations = [];
 
@@ -161,11 +162,24 @@ public class VigoController : ControllerBase
 
             if (closestCirculation == null)
             {
-                _logger.LogError("No stop arrival merged for line {Line} towards {Route} in {Minutes} minutes", estimate.Line, estimate.Route, estimate.Minutes);
+                // No scheduled match: include realtime-only entry
+                _logger.LogWarning("No schedule match for realtime line {Line} towards {Route} in {Minutes} minutes", estimate.Line, estimate.Route, estimate.Minutes);
+                consolidatedCirculations.Add(new ConsolidatedCirculation
+                {
+                    Line = estimate.Line,
+                    Route = estimate.Route,
+                    Schedule = null,
+                    RealTime = new RealTimeData
+                    {
+                        Minutes = estimate.Minutes,
+                        Distance = estimate.Meters
+                    }
+                });
+
+                // Also capture details in debug buffer for diagnostics
                 outputBuffer.AppendLine("**No circulation matched. List of all of them:**");
                 foreach (var circulation in possibleCirculations)
                 {
-                    // Circulation A  03LP000_008003_16 stopping at 05/11/2025 22:06:00 (diff: -03:29:59.2644092)
                     outputBuffer.AppendLine(
                         $"Circulation {circulation.TripId} stopping at {circulation.CallingDateTime()} (diff: {estimatedArrivalTime - circulation.CallingDateTime():HH:mm})");
                 }
@@ -189,12 +203,45 @@ public class VigoController : ControllerBase
                 RealTime = new RealTimeData
                 {
                     Minutes = estimate.Minutes,
-                    Distance = estimate.Meters,
-                    Confidence = closestCirculation.StartingDateTime() <= now
-                        ? RealTimeConfidence.High
-                        : RealTimeConfidence.Low
+                    Distance = estimate.Meters
                 }
             });
+        }
+
+        // Add scheduled-only circulations between now and the last realtime arrival
+        if (scopeEnd > now)
+        {
+            var matchedTripIds = new HashSet<string>(
+                consolidatedCirculations
+                    .Where(c => c.Schedule != null)
+                    .Select(c => c.Schedule!.TripId)
+            );
+
+            var scheduledWindow = timetable
+                .Where(c => c.CallingDateTime() >= now && c.CallingDateTime() <= scopeEnd)
+                .OrderBy(c => c.CallingDateTime());
+
+            foreach (var sched in scheduledWindow)
+            {
+                if (matchedTripIds.Contains(sched.TripId))
+                {
+                    continue; // already represented via a matched realtime
+                }
+
+                consolidatedCirculations.Add(new ConsolidatedCirculation
+                {
+                    Line = sched.Line,
+                    Route = sched.Route,
+                    Schedule = new ScheduleData
+                    {
+                        Running = sched.StartingDateTime() <= now,
+                        Minutes = (int)(sched.CallingDateTime() - now).TotalMinutes,
+                        TripId = sched.TripId,
+                        ServiceId = sched.ServiceId,
+                    },
+                    RealTime = null
+                });
+            }
         }
 
         return Ok(consolidatedCirculations);

@@ -13,7 +13,6 @@ public class RealTimeData
 {
     public required int Minutes { get; set; }
     public required int Distance { get; set; }
-    public required RealTimeConfidence Confidence { get; set; }
 }
 
 public class ScheduleData
@@ -22,11 +21,4 @@ public class ScheduleData
     public required int Minutes { get; set; }
     public required string ServiceId { get; set; }
     public required string TripId { get; set; }
-}
-
-public enum RealTimeConfidence
-{
-    NotApplicable = 0,
-    Low = 1,
-    High = 2
 }
