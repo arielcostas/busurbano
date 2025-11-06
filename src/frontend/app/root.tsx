@@ -76,6 +76,18 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
         <title>Busurbano</title>
         <Meta />
+        {/* Set theme early to avoid flash of wrong theme (especially skeletons) */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(() => { try { 
+              var saved = localStorage.getItem('theme');
+              var system = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+              var resolved = (saved === 'light' || saved === 'dark') ? saved : system;
+              document.documentElement.setAttribute('data-theme', resolved);
+              document.documentElement.style.colorScheme = resolved;
+            } catch (e) {} })();`,
+          }}
+        />
         <Links />
       </head>
       <body>

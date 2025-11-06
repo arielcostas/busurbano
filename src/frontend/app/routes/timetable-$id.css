@@ -38,8 +38,6 @@
 
 .timetable-full-content {
   margin-top: 1rem;
-  overflow-y: auto;
-  max-height: calc(100vh - 250px);
   position: relative;
   padding-bottom: 80px; /* Space for FAB */
 }

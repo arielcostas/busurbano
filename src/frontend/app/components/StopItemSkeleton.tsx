@@ -12,7 +12,7 @@ const StopItemSkeleton: React.FC<StopItemSkeletonProps> = ({
     stopId
 }) => {
     return (
-        <SkeletonTheme baseColor="#f0f0f0" highlightColor="#e0e0e0">
+        <SkeletonTheme baseColor="var(--skeleton-base)" highlightColor="var(--skeleton-highlight)">
             <li className="list-item">
                 <div className="list-item-link">
                     <span>

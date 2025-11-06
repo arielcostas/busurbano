@@ -13,7 +13,7 @@ export const TimetableSkeleton: React.FC<TimetableSkeletonProps> = ({
   const { t } = useTranslation();
 
   return (
-    <SkeletonTheme baseColor="#f0f0f0" highlightColor="#e0e0e0">
+    <SkeletonTheme baseColor="var(--skeleton-base)" highlightColor="var(--skeleton-highlight)">
       <div className="timetable-container">
         <div className="timetable-caption">
           <Skeleton width="250px" height="1.1rem" />

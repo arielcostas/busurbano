@@ -1,3 +1,25 @@
+/* Alert color variables */
+:root {
+  --alert-info-bg: rgba(59, 130, 246, 0.1);
+  --alert-info-border: rgba(59, 130, 246, 0.5);
+  --alert-info-text: #1e40af;
+
+  --alert-error-bg: rgba(239, 68, 68, 0.1);
+  --alert-error-border: rgba(239, 68, 68, 0.5);
+  --alert-error-text: #991b1b;
+}
+
+/* Dark mode overrides use data-mode */
+[data-mode="dark"] {
+  --alert-info-bg: rgba(59, 130, 246, 0.15);
+  --alert-info-border: rgba(59, 130, 246, 0.4);
+  --alert-info-text: #93c5fd;
+
+  --alert-error-bg: rgba(239, 68, 68, 0.15);
+  --alert-error-border: rgba(239, 68, 68, 0.4);
+  --alert-error-text: #fca5a5;
+}
+
 .stop-alert {
   display: flex;
   align-items: flex-start;
@@ -9,20 +31,20 @@
 }
 
 .stop-alert-info {
-  background-color: rgba(59, 130, 246, 0.1);
-  border-color: rgba(59, 130, 246, 0.3);
-  color: #1e40af;
+  background-color: var(--alert-info-bg);
+  border-color: var(--alert-info-border);
+  color: var(--alert-info-text);
 }
 
 .stop-alert-error {
-  background-color: rgba(239, 68, 68, 0.1);
-  border-color: rgba(239, 68, 68, 0.3);
-  color: #991b1b;
+  background-color: var(--alert-error-bg);
+  border-color: var(--alert-error-border);
+  color: var(--alert-error-text);
 }
 
 .stop-alert-compact {
   padding: 0.5rem;
-  margin: 0.5rem 0;
+  margin: 1.5rem 0 0.5rem 0;
   font-size: 0.875rem;
 }
 
@@ -73,17 +95,3 @@
   font-size: 0.75rem;
 }
 
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  .stop-alert-info {
-    background-color: rgba(59, 130, 246, 0.15);
-    border-color: rgba(59, 130, 246, 0.4);
-    color: #93c5fd;
-  }
-
-  .stop-alert-error {
-    background-color: rgba(239, 68, 68, 0.15);
-    border-color: rgba(239, 68, 68, 0.4);
-    color: #fca5a5;
-  }
-}

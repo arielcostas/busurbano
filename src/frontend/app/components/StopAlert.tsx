@@ -19,17 +19,10 @@ export const StopAlert: React.FC<StopAlertProps> = ({ stop, compact = false }) =
 
   return (
     <div className={`stop-alert ${isError ? 'stop-alert-error' : 'stop-alert-info'} ${compact ? 'stop-alert-compact' : ''}`}>
-      <div className="stop-alert-icon">
-        {isError ? <AlertCircle /> : <Info />}
-      </div>
+      {isError ? <AlertCircle /> : <Info />}
       <div className="stop-alert-content">
         {stop.title && <div className="stop-alert-title">{stop.title}</div>}
         {stop.message && <div className="stop-alert-message">{stop.message}</div>}
-        {stop.alternateCodes && stop.alternateCodes.length > 0 && (
-          <div className="stop-alert-alternate-codes">
-            Alternative stops: {stop.alternateCodes.join(", ")}
-          </div>
-        )}
       </div>
     </div>
   );

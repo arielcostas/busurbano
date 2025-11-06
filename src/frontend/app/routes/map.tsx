@@ -32,7 +32,10 @@ const defaultStyle: StyleSpecification = {
 export default function StopMap() {
   const { t } = useTranslation();
   const [stops, setStops] = useState<
-    GeoJsonFeature<Point, { stopId: number; name: string; lines: string[] }>[]
+    GeoJsonFeature<
+      Point,
+      { stopId: number; name: string; lines: string[]; cancelled?: boolean }
+    >[]
   >([]);
   const [selectedStop, setSelectedStop] = useState<Stop | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -57,14 +60,19 @@ export default function StopMap() {
     StopDataProvider.getStops(region).then((data) => {
       const features: GeoJsonFeature<
         Point,
-        { stopId: number; name: string; lines: string[] }
+        { stopId: number; name: string; lines: string[]; cancelled?: boolean }
       >[] = data.map((s) => ({
         type: "Feature",
         geometry: {
           type: "Point",
           coordinates: [s.longitude as number, s.latitude as number],
         },
-        properties: { stopId: s.stopId, name: s.name.original, lines: s.lines },
+        properties: {
+          stopId: s.stopId,
+          name: s.name.original,
+          lines: s.lines,
+          cancelled: s.cancelled,
+        },
       }));
       setStops(features);
     });
@@ -157,7 +165,12 @@ export default function StopMap() {
         type="symbol"
         source="stops-source"
         layout={{
-          "icon-image": `stop-${region}`,
+          "icon-image": [
+            "case",
+            ["boolean", ["get", "cancelled"], false],
+            `stop-${region}-cancelled`,
+            `stop-${region}`,
+          ],
           "icon-size": ["interpolate", ["linear"], ["zoom"], 11, 0.7, 18, 1.0],
           "icon-allow-overlap": true,
           "icon-ignore-placement": true,

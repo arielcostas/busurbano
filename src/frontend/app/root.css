@@ -10,6 +10,22 @@
   --star-color: #ffcc00;
   --message-background-color: #f8f9fa;
 
+  /* Skeletons */
+  --skeleton-base: #f0f0f0;
+  --skeleton-highlight: #e0e0e0;
+
+  /* Timetable component variables */
+  --text-primary: var(--text-color);
+  --text-secondary: #666666;
+  --surface-future: var(--background-color);
+  --surface-next: #eef6ff; /* slightly accented surface for next card */
+  --surface-past: hsl(0 0% 25% / 1);
+  --accent-next: #1e88e5; /* accent color for next card left border */
+  --card-border: var(--border-color);
+  --card-background: #f8f9fa;
+  --service-background: #f0f0f0;
+  --service-background-past: #e8e8e8;
+
   color-scheme: light;
   font-family: "Roboto Variable", Roboto, Arial, sans-serif;
 }
@@ -25,6 +41,22 @@
   --button-disabled-background-color: #555555;
   --star-color: #ffcc00;
   --message-background-color: #333333;
+
+  /* Skeletons (dark) */
+  --skeleton-base: #2a2a2a;
+  --skeleton-highlight: #3a3a3a;
+
+  /* Timetable component dark overrides */
+  --text-primary: var(--text-color);
+  --text-secondary: #bbbbbb;
+  --surface-future: #1e1e1e;
+  --surface-next: #17212b;
+  --surface-past: #1a1a1a;
+  --accent-next: #64b5f6;
+  --card-border: var(--border-color);
+  --card-background: #1e1e1e;
+  --service-background: #222222;
+  --service-background-past: #1f1f1f;
 
   color-scheme: dark;
 }

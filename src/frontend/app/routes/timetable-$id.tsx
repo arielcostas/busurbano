@@ -153,9 +153,6 @@ export default function Timetable() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<ErrorInfo | null>(null);
   const [showPastEntries, setShowPastEntries] = useState(false);
-  const [showScrollTop, setShowScrollTop] = useState(false);
-  const [showScrollBottom, setShowScrollBottom] = useState(false);
-  const [showGoToNow, setShowGoToNow] = useState(false);
   const nextEntryRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const regionConfig = getRegionConfig(region);
@@ -242,73 +239,7 @@ export default function Timetable() {
     setCustomName(StopDataProvider.getCustomName(region, stopIdNum));
   }, [params.id, region]);
 
-  // Handle scroll events to update FAB visibility
-  useEffect(() => {
-    const handleScroll = () => {
-      if (
-        !containerRef.current ||
-        loading ||
-        error ||
-        timetableData.length === 0
-      ) {
-        return;
-      }
-
-      const container = containerRef.current;
-      const scrollTop = container.scrollTop;
-      const scrollHeight = container.scrollHeight;
-      const clientHeight = container.clientHeight;
-      const scrollBottom = scrollHeight - scrollTop - clientHeight;
-
-      // Threshold for showing scroll buttons (in pixels)
-      const threshold = 100;
-
-      // Show scroll top button when scrolled down
-      setShowScrollTop(scrollTop > threshold);
-
-      // Show scroll bottom button when not at bottom
-      setShowScrollBottom(scrollBottom > threshold);
-
-      // Check if next entry (current time) is visible
-      if (nextEntryRef.current) {
-        const rect = nextEntryRef.current.getBoundingClientRect();
-        const containerRect = container.getBoundingClientRect();
-        const isNextVisible =
-          rect.top >= containerRect.top && rect.bottom <= containerRect.bottom;
-
-        setShowGoToNow(!isNextVisible);
-      }
-    };
-
-    const container = containerRef.current;
-    if (container) {
-      container.addEventListener("scroll", handleScroll);
-      // Initial check
-      handleScroll();
-
-      return () => {
-        container.removeEventListener("scroll", handleScroll);
-      };
-    }
-  }, [loading, error, timetableData]);
-
-  const scrollToTop = () => {
-    containerRef.current?.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const scrollToBottom = () => {
-    containerRef.current?.scrollTo({
-      top: containerRef.current.scrollHeight,
-      behavior: "smooth",
-    });
-  };
-
-  const scrollToNow = () => {
-    nextEntryRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "center",
-    });
-  };
+  // Scroll FABs moved to ScrollFabManager component
 
   if (loading) {
     return (
@@ -401,40 +332,13 @@ export default function Timetable() {
           />
 
           {/* Floating Action Button */}
-          {(showGoToNow || showScrollTop || showScrollBottom) && (
-            <div className="fab-container">
-              {showGoToNow && !showScrollTop && !showScrollBottom && (
-                <button
-                  className="fab fab-now"
-                  onClick={scrollToNow}
-                  title={t("timetable.goToNow", "Ir a ahora")}
-                  aria-label={t("timetable.goToNow", "Ir a ahora")}
-                >
-                  <Clock className="fab-icon" />
-                </button>
-              )}
-              {showScrollTop && (
-                <button
-                  className="fab fab-up"
-                  onClick={scrollToTop}
-                  title={t("timetable.scrollUp", "Subir")}
-                  aria-label={t("timetable.scrollUp", "Subir")}
-                >
-                  <ChevronUp className="fab-icon" />
-                </button>
-              )}
-              {showScrollBottom && !showScrollTop && (
-                <button
-                  className="fab fab-down"
-                  onClick={scrollToBottom}
-                  title={t("timetable.scrollDown", "Bajar")}
-                  aria-label={t("timetable.scrollDown", "Bajar")}
-                >
-                  <ChevronDown className="fab-icon" />
-                </button>
-              )}
-            </div>
-          )}
+          <ScrollFabManager
+            containerRef={containerRef}
+            nextEntryRef={nextEntryRef}
+            currentTime={currentTime}
+            data={filteredData}
+            disabled={loading || !!error || timetableData.length === 0}
+          />
         </div>
       )}
     </div>
@@ -521,6 +425,129 @@ const TimetableTableWithScroll: React.FC<{
         <p className="no-data">
           {t("timetable.noData", "No hay datos de horarios disponibles")}
         </p>
+      )}
+    </div>
+  );
+};
+
+// Component to manage scroll-based FAB visibility globally within timetable
+const ScrollFabManager: React.FC<{
+  containerRef: React.RefObject<HTMLDivElement | null>;
+  nextEntryRef: React.RefObject<HTMLDivElement | null>;
+  currentTime: string;
+  data: ScheduledTable[];
+  disabled?: boolean;
+}> = ({ containerRef, nextEntryRef, currentTime, data, disabled = false }) => {
+  const { t } = useTranslation();
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [showScrollBottom, setShowScrollBottom] = useState(false);
+  const [showGoToNow, setShowGoToNow] = useState(false);
+
+  // Find the actual scrollable ancestor (.main-content) if our container isn't scrollable
+  const getScrollContainer = () => {
+    let el: HTMLElement | null = containerRef.current;
+    while (el) {
+      const style = getComputedStyle(el);
+      const hasScroll = el.scrollHeight > el.clientHeight + 8;
+      const overflowY = style.overflowY;
+      if (hasScroll && (overflowY === 'auto' || overflowY === 'scroll')) {
+        return el;
+      }
+      el = el.parentElement;
+    }
+    return null;
+  };
+
+  useEffect(() => {
+    if (disabled) return;
+    const scrollEl = getScrollContainer();
+    const useWindowScroll = !scrollEl;
+
+    const handleScroll = () => {
+      const scrollTop = useWindowScroll
+        ? (window.scrollY || document.documentElement.scrollTop || 0)
+        : scrollEl!.scrollTop;
+      const scrollHeight = useWindowScroll
+        ? document.documentElement.scrollHeight
+        : scrollEl!.scrollHeight;
+      const clientHeight = useWindowScroll ? window.innerHeight : scrollEl!.clientHeight;
+
+      const scrollBottom = scrollHeight - scrollTop - clientHeight;
+      const threshold = 80; // slightly smaller threshold for responsiveness
+      setShowScrollTop(scrollTop > threshold);
+      setShowScrollBottom(scrollBottom > threshold);
+
+      if (nextEntryRef.current) {
+        const rect = nextEntryRef.current.getBoundingClientRect();
+        const isNextVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
+        setShowGoToNow(!isNextVisible);
+      }
+    };
+
+    const target: any = useWindowScroll ? window : scrollEl!;
+    target.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll);
+    handleScroll();
+    return () => {
+      target.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+    };
+  }, [containerRef, nextEntryRef, disabled, data, currentTime]);
+
+  const scrollToTop = () => {
+    const scrollEl = getScrollContainer();
+    if (!scrollEl) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      scrollEl.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+  const scrollToBottom = () => {
+    const scrollEl = getScrollContainer();
+    if (!scrollEl) {
+      window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
+    } else {
+      scrollEl.scrollTo({ top: scrollEl.scrollHeight, behavior: 'smooth' });
+    }
+  };
+  const scrollToNow = () => {
+    nextEntryRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+
+  if (disabled) return null;
+  if (!(showGoToNow || showScrollTop || showScrollBottom)) return null;
+
+  return (
+    <div className="fab-container">
+      {showGoToNow && !showScrollTop && !showScrollBottom && (
+        <button
+          className="fab fab-now"
+          onClick={scrollToNow}
+          title={t("timetable.goToNow", "Ir a ahora")}
+          aria-label={t("timetable.goToNow", "Ir a ahora")}
+        >
+          <Clock className="fab-icon" />
+        </button>
+      )}
+      {showScrollTop && (
+        <button
+          className="fab fab-up"
+          onClick={scrollToTop}
+          title={t("timetable.scrollUp", "Subir")}
+          aria-label={t("timetable.scrollUp", "Subir")}
+        >
+          <ChevronUp className="fab-icon" />
+        </button>
+      )}
+      {showScrollBottom && !showScrollTop && (
+        <button
+          className="fab fab-down"
+          onClick={scrollToBottom}
+          title={t("timetable.scrollDown", "Bajar")}
+          aria-label={t("timetable.scrollDown", "Bajar")}
+        >
+          <ChevronDown className="fab-icon" />
+        </button>
       )}
     </div>
   );
