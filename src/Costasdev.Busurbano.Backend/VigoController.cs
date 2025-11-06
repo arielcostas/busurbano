@@ -26,12 +26,12 @@ public class VigoController : ControllerBase
 
     [HttpGet("GetStopEstimates")]
     public async Task<IActionResult> Run(
-        [FromQuery] int stopId
+        [FromQuery] int id
     )
     {
         try
         {
-            var response = await _api.GetStopEstimates(stopId);
+            var response = await _api.GetStopEstimates(id);
             // Return only the estimates array, not the stop metadata
             return new OkObjectResult(response.Estimates);
         }
@@ -130,7 +130,7 @@ public class VigoController : ControllerBase
 
         foreach (var estimate in realTimeEstimates)
         {
-            outputBuffer.AppendLine($"Parsing estimate with line={estimate.Line}, route={estimate.Route} and minutes={estimate.Minutes} - Arrives at {now.AddMinutes(estimate.Minutes)}");
+            outputBuffer.AppendLine($"Parsing estimate with line={estimate.Line}, route={estimate.Route} and minutes={estimate.Minutes} - Arrives at {now.AddMinutes(estimate.Minutes):HH:mm}");
             var fullArrivalTime = now.AddMinutes(estimate.Minutes);
 
             var possibleCirculations = timetable
@@ -178,7 +178,8 @@ public class VigoController : ControllerBase
             if (closestCirculationTime > 0)
             {
                 outputBuffer.Append($"Closest circulation is {closestCirculation.Trip.Id} and arriving {closestCirculationTime} minutes LATE");
-            } else if (closestCirculationTime == 0)
+            }
+            else if (closestCirculationTime == 0)
             {
                 outputBuffer.Append($"Closest circulation is {closestCirculation.Trip.Id} and arriving ON TIME");
             }
