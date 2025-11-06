@@ -1,0 +1,22 @@
+# Example overrides demonstrating new features
+# This file shows how to use the new cancelled, title, message, and alternateCodes fields
+
+# Example: Stop temporarily out of service
+# 12345:
+#   cancelled: true
+#   title: "Stop Temporarily Closed"
+#   message: "This stop is closed for construction until December 2025. Please use stop 12346 located 100m north."
+#   alternateCodes:
+#     - "12346"
+
+# Example: Stop with informational message
+# 23456:
+#   title: "Stop Relocated"
+#   message: "This stop has been permanently moved 50 meters to the east to improve accessibility."
+
+# Example: Override with title and alternate codes
+# 34567:
+#   title: "Service Change"
+#   message: "Lines 5 and 12 now stop here. Line 8 has been rerouted to stop 34568."
+#   alternateCodes:
+#     - "34568"

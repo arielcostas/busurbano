@@ -1,0 +1,15 @@
+# Manual stops for Vigo
+# This file defines manually added stops that don't exist in the transit API
+# See ../README.md for format documentation
+
+# Example manual stop (commented out - uncomment and modify to add real stops):
+# 99999:
+#   name: "Example Manual Stop"
+#   location:
+#     latitude: 42.229188
+#     longitude: -8.722469
+#   lines:
+#     - "5"
+#     - "12"
+#   amenities:
+#     - shelter

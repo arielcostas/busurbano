@@ -14,6 +14,7 @@ import { ErrorDisplay } from "~/components/ErrorDisplay";
 import { PullToRefresh } from "~/components/PullToRefresh";
 import { useAutoRefresh } from "~/hooks/useAutoRefresh";
 import { type RegionId, getRegionConfig } from "~/data/RegionConfig";
+import { StopAlert } from "~/components/StopAlert";
 
 export interface Estimate {
   line: string;
@@ -275,6 +276,8 @@ export default function Estimates() {
             <RefreshCw className={`refresh-icon ${isManualRefreshing ? 'spinning' : ''}`} />
           </button>
         </div>
+
+        {stopData && <StopAlert stop={stopData} />}
 
         <div className="table-responsive">
           {estimatesLoading ? (

@@ -1,8 +1,10 @@
-# Bus Stop Overrides
+# Bus Stop Overrides and Manual Stops
 
-This file defines custom overrides for specific bus stops in YAML format.
+This directory contains YAML files for overriding properties of existing bus stops and manually adding new stops.
 
-## Format
+## Overrides Format
+
+Overrides modify or extend properties of existing stops from the transit API.
 
 ```yaml
 stopId:            # Numeric ID of the stop to override
@@ -16,20 +18,54 @@ stopId:            # Numeric ID of the stop to override
     amenities:       # List of amenities available at this stop (list)
         - shelter
         - display
+    cancelled:       # Mark stop as cancelled/out of service (boolean)
+    title:           # Alert title shown to users (string)
+    message:         # Alert message shown to users (string)
+    alternateCodes:  # Alternative stop codes (list of strings)
+        - "ALT-123"
+```
+
+## Manual Stops Format
+
+Manual stops allow adding completely new stops that don't exist in the transit API. These are defined in `manual-stops.yaml` files.
+
+```yaml
+stopId:            # Numeric ID for the new stop (must not conflict with existing stops)
+    name:            # Name of the stop (string)
+    location:        # Location coordinates (required for manual stops)
+        latitude:      # Latitude coordinate (float)
+        longitude:     # Longitude coordinate (float)
+    lines:           # List of lines serving this stop (list of strings)
+        - "1"
+        - "2"
+    amenities:       # Optional: List of amenities (list)
+        - shelter
+    title:           # Optional: Alert title (string)
+    message:         # Optional: Alert message (string)
+    cancelled:       # Optional: Mark as cancelled (boolean)
+    alternateCodes:  # Optional: Alternative stop codes (list)
 ```
 
 ## Field Descriptions
 
 - **stopId** (integer): Unique identifier of the bus stop.  
+- **name** (string): Override or set the stop name.
 - **alternateNames** (object): Other names used in different contexts.
     - **key** (string): Name used in a specific context, such as `metro`.
 - **location** (object):
-    - **latitude** (float): Override latitude coordinate.  
-    - **longitude** (float): Override longitude coordinate.  
+    - **latitude** (float): Override/set latitude coordinate.  
+    - **longitude** (float): Override/set longitude coordinate.  
+- **lines** (array of strings): List of line numbers serving this stop (required for manual stops).
 - **hide** (boolean): Set to `true` to exclude the stop from maps and listings.  
-- **amenities** (array of strings): Amenities available at this stop, such as `shelter` or `display`. For now, only those two will be supported in the app.
+- **cancelled** (boolean): Set to `true` to mark the stop as cancelled or out of service.
+- **title** (string): Alert title displayed to users (e.g., "Stop Temporarily Closed").
+- **message** (string): Detailed message about the stop status or alert.
+- **alternateCodes** (array of strings): Alternative stop codes or identifiers.
+- **amenities** (array of strings): Amenities available at this stop, such as `shelter` or `display`.
 
-## Example
+## Examples
+
+### Override Example
 
 ```yaml
 12345:
@@ -42,5 +78,33 @@ stopId:            # Numeric ID of the stop to override
     hide: false
     amenities:
         - shelter
-        - real-time display
+        - display
+    title: "Stop Relocated"
+    message: "This stop has been temporarily moved 50 meters north."
+```
+
+### Manual Stop Example
+
+```yaml
+99999:
+    name: "New Development Stop"
+    location:
+        latitude: 42.229188
+        longitude: -8.722469
+    lines:
+        - "5"
+        - "12"
+    amenities:
+        - shelter
+```
+
+### Cancelled Stop Example
+
+```yaml
+54321:
+    cancelled: true
+    title: "Stop Out of Service"
+    message: "This stop is temporarily closed for construction. Use stop 54322 (100m south) instead."
+    alternateCodes:
+        - "54322"
 ```

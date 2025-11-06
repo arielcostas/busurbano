@@ -35,6 +35,10 @@ def apply_overrides(stops, overrides):
         if stop_id in overrides:
             override = overrides[stop_id]
 
+            # Override name if provided
+            if "name" in override:
+                stop["name"]["original"] = override["name"]
+
             # Apply or add alternate names
             if "alternateNames" in override:
                 for key, value in override["alternateNames"].items():
@@ -55,7 +59,71 @@ def apply_overrides(stops, overrides):
             if "hide" in override:
                 stop["hide"] = override["hide"]
 
+            # Mark stop as cancelled
+            if "cancelled" in override:
+                stop["cancelled"] = override["cancelled"]
+
+            # Add alert title
+            if "title" in override:
+                stop["title"] = override["title"]
+
+            # Add alert message
+            if "message" in override:
+                stop["message"] = override["message"]
+
+            # Add alternate codes
+            if "alternateCodes" in override:
+                stop["alternateCodes"] = override["alternateCodes"]
+
     return stops
+
+def load_manual_stops(file_path):
+    """Load manually defined stops from a YAML file"""
+    if not os.path.exists(file_path):
+        print(f"No manual stops file found at {file_path}")
+        return []
+
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            manual_data = yaml.safe_load(f)
+            if not manual_data:
+                return []
+            
+            manual_stops = []
+            for stop_id, stop_def in manual_data.items():
+                # Build the stop object from the manual definition
+                stop = {
+                    "stopId": stop_id,
+                    "name": {
+                        "original": stop_def.get("name", f"Stop {stop_id}")
+                    },
+                    "latitude": stop_def.get("location", {}).get("latitude"),
+                    "longitude": stop_def.get("location", {}).get("longitude"),
+                    "lines": stop_def.get("lines", [])
+                }
+                
+                # Add optional fields
+                if "amenities" in stop_def:
+                    stop["amenities"] = stop_def["amenities"]
+                if "cancelled" in stop_def:
+                    stop["cancelled"] = stop_def["cancelled"]
+                if "title" in stop_def:
+                    stop["title"] = stop_def["title"]
+                if "message" in stop_def:
+                    stop["message"] = stop_def["message"]
+                if "alternateCodes" in stop_def:
+                    stop["alternateCodes"] = stop_def["alternateCodes"]
+                if "alternateNames" in stop_def:
+                    for key, value in stop_def["alternateNames"].items():
+                        stop["name"][key] = value
+                
+                manual_stops.append(stop)
+            
+            print(f"Loaded {len(manual_stops)} manual stops")
+            return manual_stops
+    except Exception as e:
+        print(f"Error loading manual stops: {e}", file=sys.stderr)
+        return []
 
 def main():
     print("Fetching stop list data...")
@@ -102,6 +170,11 @@ def main():
             overrides_file = os.path.join(overrides_dir, filename)
             overrides = load_stop_overrides(overrides_file)
             processed_stops = apply_overrides(processed_stops, overrides)
+
+        # Load and add manual stops
+        manual_stops_file = os.path.join(script_dir, OVERRIDES_DIR, "manual-stops.yaml")
+        manual_stops = load_manual_stops(manual_stops_file)
+        processed_stops.extend(manual_stops)
 
         # Filter out hidden stops
         visible_stops = [stop for stop in processed_stops if not stop.get("hide")]

@@ -17,6 +17,11 @@ export interface Stop {
   longitude?: number;
   lines: string[];
   favourite?: boolean;
+  amenities?: string[];
+  cancelled?: boolean;
+  title?: string;
+  message?: string;
+  alternateCodes?: string[];
 }
 
 // In-memory cache and lookup map per region
