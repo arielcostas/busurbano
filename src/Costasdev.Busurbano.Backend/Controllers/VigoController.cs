@@ -121,7 +121,7 @@ public class VigoController : ControllerBase
                     c.Line.Trim() == estimate.Line.Trim() &&
                     c.Route.Trim() == estimate.Route.Trim()
                 )
-                .OrderBy(c => c.CallingDateTime())
+                .OrderBy(c => c.CallingDateTime()!.Value)
                 .ToArray();
 
             ScheduledStop? closestCirculation = null;
@@ -222,7 +222,7 @@ public class VigoController : ControllerBase
 
             var scheduledWindow = timetable
                 .Where(c => c.CallingDateTime()!.Value >= now && c.CallingDateTime()!.Value <= scopeEnd)
-                .OrderBy(c => c.CallingDateTime());
+                .OrderBy(c => c.CallingDateTime()!.Value);
 
             foreach (var sched in scheduledWindow)
             {
