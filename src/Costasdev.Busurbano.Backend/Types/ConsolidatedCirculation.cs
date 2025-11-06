@@ -1,4 +1,4 @@
-﻿namespace Costasdev.Busurbano.Backend.Types;
+namespace Costasdev.Busurbano.Backend.Types;
 
 public class ConsolidatedCirculation
 {

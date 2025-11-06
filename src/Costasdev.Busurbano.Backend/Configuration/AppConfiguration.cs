@@ -1,4 +1,4 @@
-﻿namespace Costasdev.Busurbano.Backend.Configuration;
+namespace Costasdev.Busurbano.Backend.Configuration;
 
 public class AppConfiguration
 {
