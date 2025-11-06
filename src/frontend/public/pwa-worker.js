@@ -1,4 +1,4 @@
-const CACHE_VERSION = "20251022a";
+const CACHE_VERSION = "20251106a";
 const STATIC_CACHE_NAME = `static-cache-${CACHE_VERSION}`;
 const STATIC_CACHE_ASSETS = [
   "/favicon.ico",
