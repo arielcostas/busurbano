@@ -2,13 +2,13 @@ import { useEffect, useState, useRef } from "react";
 import { useParams, Link } from "react-router";
 import StopDataProvider from "../data/StopDataProvider";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
-import { TimetableTable, type TimetableEntry } from "../components/TimetableTable";
-import { TimetableSkeleton } from "../components/TimetableSkeleton";
-import { ErrorDisplay } from "../components/ErrorDisplay";
+import { type ScheduledTable } from "~/components/SchedulesTable";
+import { TimetableSkeleton } from "~/components/TimetableSkeleton";
+import { ErrorDisplay } from "~/components/ErrorDisplay";
 import LineIcon from "../components/LineIcon";
 import { useTranslation } from "react-i18next";
-import { type RegionId, getRegionConfig } from "../data/RegionConfig";
-import { useApp } from "../AppContext";
+import { type RegionId, getRegionConfig } from "~/data/RegionConfig";
+import { useApp } from "~/AppContext";
 import "./timetable-$id.css";
 
 interface ErrorInfo {
@@ -17,7 +17,7 @@ interface ErrorInfo {
   message?: string;
 }
 
-const loadTimetableData = async (region: RegionId, stopId: string): Promise<TimetableEntry[]> => {
+const loadTimetableData = async (region: RegionId, stopId: string): Promise<ScheduledTable[]> => {
   const regionConfig = getRegionConfig(region);
 
   // Check if timetable is available for this region
@@ -49,7 +49,7 @@ const timeToMinutes = (time: string): number => {
 };
 
 // Filter past entries (keep only a few recent past ones)
-const filterTimetableData = (data: TimetableEntry[], currentTime: string, showPast: boolean = false): TimetableEntry[] => {
+const filterTimetableData = (data: ScheduledTable[], currentTime: string, showPast: boolean = false): ScheduledTable[] => {
   if (showPast) return data;
 
   const currentMinutes = timeToMinutes(currentTime);
@@ -111,7 +111,7 @@ export default function Timetable() {
   const { region } = useApp();
   const params = useParams();
   const stopIdNum = parseInt(params.id ?? "");
-  const [timetableData, setTimetableData] = useState<TimetableEntry[]>([]);
+  const [timetableData, setTimetableData] = useState<ScheduledTable[]>([]);
   const [customName, setCustomName] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<ErrorInfo | null>(null);
@@ -282,7 +282,7 @@ export default function Timetable() {
 
 // Custom component for the full timetable with scroll reference
 const TimetableTableWithScroll: React.FC<{
-  data: TimetableEntry[];
+  data: ScheduledTable[];
   showAll: boolean;
   currentTime: string;
   nextEntryRef: React.RefObject<HTMLDivElement | null>;

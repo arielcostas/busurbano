@@ -1,9 +1,9 @@
 import { useTranslation } from "react-i18next";
 import LineIcon from "./LineIcon";
-import "./TimetableTable.css";
-import { useApp } from "../AppContext";
+import "./SchedulesTable.css";
+import { useApp } from "~/AppContext";
 
-export interface TimetableEntry {
+export interface ScheduledTable {
   line: {
     name: string;
     colour: string;
@@ -23,7 +23,7 @@ export interface TimetableEntry {
 }
 
 interface TimetableTableProps {
-  data: TimetableEntry[];
+  data: ScheduledTable[];
   showAll?: boolean;
   currentTime?: string; // HH:MM:SS format
 }
@@ -69,7 +69,7 @@ const timeToMinutes = (time: string): number => {
 };
 
 // Utility function to find nearby entries
-const findNearbyEntries = (entries: TimetableEntry[], currentTime: string, before: number = 4, after: number = 4): TimetableEntry[] => {
+const findNearbyEntries = (entries: ScheduledTable[], currentTime: string, before: number = 4, after: number = 4): ScheduledTable[] => {
   if (!currentTime) return entries.slice(0, before + after);
 
   const currentMinutes = timeToMinutes(currentTime);
@@ -92,7 +92,7 @@ const findNearbyEntries = (entries: TimetableEntry[], currentTime: string, befor
   return sortedEntries.slice(startIndex, endIndex);
 };
 
-export const TimetableTable: React.FC<TimetableTableProps> = ({
+export const SchedulesTable: React.FC<TimetableTableProps> = ({
   data,
   showAll = false,
   currentTime

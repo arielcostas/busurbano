@@ -7,7 +7,7 @@ interface EstimatesTableSkeletonProps {
   rows?: number;
 }
 
-export const EstimatesTableSkeleton: React.FC<EstimatesTableSkeletonProps> = ({
+export const SchedulesTableSkeleton: React.FC<EstimatesTableSkeletonProps> = ({
   rows = 3
 }) => {
   const { t } = useTranslation();

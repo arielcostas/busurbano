@@ -7,13 +7,13 @@ import { RegularTable } from "../components/RegularTable";
 import { useApp } from "../AppContext";
 import { GroupedTable } from "../components/GroupedTable";
 import { useTranslation } from "react-i18next";
-import { TimetableTable, type TimetableEntry } from "../components/TimetableTable";
-import { EstimatesTableSkeleton, EstimatesGroupedSkeleton } from "../components/EstimatesTableSkeleton";
-import { TimetableSkeleton } from "../components/TimetableSkeleton";
-import { ErrorDisplay } from "../components/ErrorDisplay";
-import { PullToRefresh } from "../components/PullToRefresh";
-import { useAutoRefresh } from "../hooks/useAutoRefresh";
-import { type RegionId, getRegionConfig } from "../data/RegionConfig";
+import { SchedulesTable, type ScheduledTable } from "~/components/SchedulesTable";
+import { SchedulesTableSkeleton, EstimatesGroupedSkeleton } from "~/components/SchedulesTableSkeleton";
+import { TimetableSkeleton } from "~/components/TimetableSkeleton";
+import { ErrorDisplay } from "~/components/ErrorDisplay";
+import { PullToRefresh } from "~/components/PullToRefresh";
+import { useAutoRefresh } from "~/hooks/useAutoRefresh";
+import { type RegionId, getRegionConfig } from "~/data/RegionConfig";
 
 export interface Estimate {
   line: string;
@@ -43,7 +43,7 @@ const loadData = async (region: RegionId, stopId: string): Promise<Estimate[]> =
   return await resp.json();
 };
 
-const loadTimetableData = async (region: RegionId, stopId: string): Promise<TimetableEntry[]> => {
+const loadTimetableData = async (region: RegionId, stopId: string): Promise<ScheduledTable[]> => {
   const regionConfig = getRegionConfig(region);
 
   // Check if timetable is available for this region
@@ -79,7 +79,7 @@ export default function Estimates() {
   const [estimatesError, setEstimatesError] = useState<ErrorInfo | null>(null);
 
   // Timetable data state
-  const [timetableData, setTimetableData] = useState<TimetableEntry[]>([]);
+  const [timetableData, setTimetableData] = useState<ScheduledTable[]>([]);
   const [timetableLoading, setTimetableLoading] = useState(true);
   const [timetableError, setTimetableError] = useState<ErrorInfo | null>(null);
 
@@ -114,7 +114,7 @@ export default function Estimates() {
       const body = await loadData(region, params.id!);
       setData(body);
       setDataDate(new Date());
-      
+
       // Load stop data from StopDataProvider
       const stop = await StopDataProvider.getStopById(region, stopIdNum);
       setStopData(stop);
@@ -237,7 +237,7 @@ export default function Estimates() {
             {tableStyle === "grouped" ? (
               <EstimatesGroupedSkeleton />
             ) : (
-              <EstimatesTableSkeleton />
+              <SchedulesTableSkeleton />
             )}
           </div>
 
@@ -281,7 +281,7 @@ export default function Estimates() {
             tableStyle === "grouped" ? (
               <EstimatesGroupedSkeleton />
             ) : (
-              <EstimatesTableSkeleton />
+              <SchedulesTableSkeleton />
             )
           ) : estimatesError ? (
             <ErrorDisplay
@@ -310,7 +310,7 @@ export default function Estimates() {
             />
           ) : timetableData.length > 0 ? (
             <>
-              <TimetableTable
+              <SchedulesTable
                 data={timetableData}
                 currentTime={new Date().toTimeString().slice(0, 8)} // HH:MM:SS
               />
