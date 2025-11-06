@@ -2,6 +2,12 @@
 .tsbuildinfo
 *.tsbuildinfo
 
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
 # Logs
 logs
 *.log
