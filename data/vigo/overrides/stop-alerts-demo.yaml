@@ -1,0 +1,20 @@
+# Example: Stop with a service change notification (using real stop ID from Vigo)
+5520:
+  title: "Bus Stop Upgrade"
+  message: "This stop has been upgraded with a new shelter and real-time display. Service continues as normal."
+
+# Note: The following examples are commented out to avoid affecting production data
+# Uncomment and modify these examples to test the new features:
+
+# Example: Temporarily cancelled stop
+# 5530:
+#   cancelled: true
+#   title: "Stop Temporarily Closed"
+#   message: "This stop is closed for street repairs until January 15, 2026. Please use alternative stop 6620."
+#   alternateCodes:
+#     - "6620"
+
+# Example: Stop relocation notice
+# 6620:
+#   title: "Stop Relocated"
+#   message: "This stop has been moved 30 meters north to improve safety. Look for the new shelter with updated signage."
