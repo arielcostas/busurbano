@@ -19,7 +19,7 @@
   --text-secondary: #666666;
   --surface-future: var(--background-color);
   --surface-next: #eef6ff; /* slightly accented surface for next card */
-  --surface-past: hsl(0 0% 25% / 1);
+  --surface-past: hsl(0 0% 90% / 1);
   --accent-next: #1e88e5; /* accent color for next card left border */
   --card-border: var(--border-color);
   --card-background: #f8f9fa;
