@@ -209,3 +209,31 @@
   width: 1rem;
   height: 1rem;
 }
+
+.estimates-lines-container {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.estimates-lines-container.scrollable {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  max-height: calc(2 * (var(--line-icon-height, 2rem) + 0.5rem));
+  align-content: flex-start;
+  scrollbar-width: thin;
+}
+
+.estimates-lines-container.scrollable::-webkit-scrollbar {
+  height: 6px;
+}
+
+.estimates-lines-container.scrollable::-webkit-scrollbar-thumb {
+  background-color: var(--border-color);
+  border-radius: 3px;
+}
+
+.estimates-line-icon {
+  flex-shrink: 0;
+}
