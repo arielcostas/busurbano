@@ -129,8 +129,8 @@ export const StopSheet: React.FC<StopSheetProps> = ({
     data?.sort((a, b) => a.minutes - b.minutes).slice(0, 4) || [];
 
   return (
-    <Sheet isOpen={isOpen} onClose={onClose} detent={"content-height" as any}>
-      <Sheet.Container>
+    <Sheet isOpen={isOpen} onClose={onClose} detent={"content-height" as any} >
+      <Sheet.Container drag="y">
         <Sheet.Header />
         <Sheet.Content>
           <div className="stop-sheet-content">
@@ -193,7 +193,7 @@ export const StopSheet: React.FC<StopSheetProps> = ({
                               <Clock />
                               {formatTime(estimate.minutes)}
                             </div>
-                            {REGIONS[region].showMeters && (
+                            {REGIONS[region].showMeters && estimate.meters >= 0 && (
                               <div className="stop-sheet-estimate-distance">
                                 {formatDistance(estimate.meters)}
                               </div>
@@ -247,7 +247,7 @@ export const StopSheet: React.FC<StopSheetProps> = ({
           </div>
         </Sheet.Content>
       </Sheet.Container>
-      <Sheet.Backdrop />
+      <Sheet.Backdrop onTap={onClose} />
     </Sheet>
   );
 };
