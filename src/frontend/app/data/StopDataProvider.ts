@@ -18,10 +18,11 @@ export interface Stop {
   lines: string[];
   favourite?: boolean;
   amenities?: string[];
-  cancelled?: boolean;
+
   title?: string;
   message?: string;
-  alternateCodes?: string[];
+  alert?: "info"|"warning"|"error";
+  cancelled?: boolean;
 }
 
 // In-memory cache and lookup map per region

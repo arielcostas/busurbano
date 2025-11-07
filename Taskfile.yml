@@ -37,3 +37,9 @@ tasks:
     desc: Generate stop-based JSON reports for specified dates or date ranges.
     cmds:
       - uv --directory ./src/gtfs_vigo_stops run ./stop_report.py --output-dir ./output --feed-url https://datos.vigo.org/data/transporte/gtfs_vigo.zip --force
+
+  gen-stop-json:
+    desc: Generate stop-based JSON files for specified dates or date ranges.
+    cmds:
+      - uv --directory ./data/vigo run ./download-stops.py
+      - uv --directory ./data/santiago run ./download-stops.py

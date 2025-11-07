@@ -1140,6 +1140,7 @@
       "6",
       "9B",
       "15B",
+      "15C",
       "28"
     ]
   },
@@ -1154,6 +1155,7 @@
       "6",
       "9B",
       "15B",
+      "15C",
       "28"
     ]
   },
@@ -3518,7 +3520,10 @@
       "15C",
       "16",
       "17"
-    ]
+    ],
+    "alert": "warning",
+    "title": "L17 no realiza parada",
+    "message": "Con motivo de las atracciones navideñas, la línea 17 no realiza parada en esta ubicación.\nSe puede tomar en Urzaiz, 13 (cruce República Argentina).\n"
   },
   {
     "stopId": 3240,
@@ -3564,7 +3569,8 @@
     "latitude": 42.226287696,
     "longitude": -8.737475832,
     "lines": [
-      "15B"
+      "15B",
+      "15C"
     ]
   },
   {
@@ -6039,7 +6045,11 @@
     "amenities": [
       "shelter",
       "display"
-    ]
+    ],
+    "cancelled": true,
+    "alert": "error",
+    "title": "Cerrada por navidad",
+    "message": "Con motivo de las atracciones navideñas, esta parada queda anulada.\nLíneas C3, 10, N1, 5B, 16 y 17 en García Barbón, 43 (restaurante Porto Santo).\nLíneas 4A y 4C (dir. Coia), 7, 12B, 16 y 17 se pueden tomar en Colón, 26 (oficina Banco Sabadell).\n"
   },
   {
     "stopId": 5530,
@@ -6059,7 +6069,11 @@
     "amenities": [
       "shelter",
       "display"
-    ]
+    ],
+    "cancelled": true,
+    "alert": "error",
+    "title": "Cerrada por navidad",
+    "message": "Con motivo de las atracciones navideñas, esta parada queda anulada.\nLíneas C3 y 10 se pueden tomar en Rosalía de Castro 4 (detrás de ABANCA).\nResto de líneas en García Barbón 28 (pasando Alfonso XIII)\n"
   },
   {
     "stopId": 5540,
@@ -6078,7 +6092,10 @@
       "24",
       "H2",
       "PSA 1"
-    ]
+    ],
+    "alert": "warning",
+    "title": "Líneas C3 y 10 no realizan parada",
+    "message": "Con motivo de las atracciones navideñas, las líneas C3 y 10 realizan\nprovisionalmente la parada en Rúa Oporto 28 (calle perpendicular a la parada).\n"
   },
   {
     "stopId": 5560,
@@ -7362,19 +7379,15 @@
       "9B",
       "15B",
       "15C",
-      "24",
-      "28",
-      "N4"
-    ],
-    "cancelled": true,
-    "title": "Parada movida a Colón 12",
-    "alternateCodes": [
-      20208
+      "24"
     ],
     "amenities": [
       "shelter",
       "display"
-    ]
+    ],
+    "cancelled": true,
+    "title": "Parada movida a Colón 12",
+    "message": "Con motivo del corte por las atracciones navideñas, las líneas se deben coger en Colón 12 (20208), excepto la línea 9B que arranca en Urzaiz-Príncipe."
   },
   {
     "stopId": 6640,
@@ -7604,7 +7617,10 @@
       "N4",
       "H1",
       "VTS"
-    ]
+    ],
+    "alert": "warning",
+    "title": "L24 no realiza parada",
+    "message": "Con motivo de las atracciones navideñas, la línea 24 no realiza parada en esta ubicación.\nSe puede tomar en Areal (aduana), antes del semáforo de Colón.\n"
   },
   {
     "stopId": 6880,
@@ -9787,7 +9803,8 @@
     "latitude": 42.169776602,
     "longitude": -8.678942156,
     "lines": [
-      "A"
+      "A",
+      "15C"
     ]
   },
   {
@@ -10145,6 +10162,17 @@
     ]
   },
   {
+    "stopId": 9030,
+    "name": {
+      "original": "Xestoso (B)"
+    },
+    "latitude": 42.207537397,
+    "longitude": -8.670071905,
+    "lines": [
+      "15B"
+    ]
+  },
+  {
     "stopId": 9040,
     "name": {
       "original": "Estrada das Plantas (cruce Camiño Monte Vello)"
@@ -10325,10 +10353,12 @@
       "10",
       "15B",
       "15C",
-      "24",
-      "28",
-      "N4"
-    ]
+      "24"
+    ],
+    "cancelled": true,
+    "alert": "error",
+    "title": "Cerrada por navidad",
+    "message": "Con motivo de las atracciones navideñas, esta parada queda anulada.\nLínea 9B comienza en Urzaiz-Príncipe.\nLínea 24 se puede tomar en Colón 12 (provisional).\nResto de líneas en Marqués de Valladares (fronte 19) - subiendo Reconquista, primera calle a la derecha.\n"
   },
   {
     "stopId": 14122,
@@ -14950,10 +14980,12 @@
       "9B",
       "10",
       "15B",
-      "15C",
-      "28",
-      "N4"
-    ]
+      "15C"
+    ],
+    "cancelled": true,
+    "alert": "error",
+    "title": "Cerrada por navidad",
+    "message": "Con motivo de las atracciones navideñas, esta parada queda anulada.\nLa parada más cercana es Cánovas del Castillo, 18 (frente CC A Laxe).\n"
   },
   {
     "stopId": 20195,
@@ -15019,18 +15051,15 @@
       "10",
       "15B",
       "15C",
-      "24",
-      "28",
-      "N4"
-    ],
-    "cancelled": true,
-    "title": "Parada movida a Marqués de Valladares (fronte 19)",
-    "alternateCodes": [
-      20206
+      "24"
     ],
     "amenities": [
       "shelter"
-    ]
+    ],
+    "cancelled": true,
+    "alert": "error",
+    "title": "Parada movida a Marqués de Valladares (fronte 19)",
+    "message": "Con motivo del corte por las atracciones navideñas, las líneas se deben coger en Marqués de Valladares (fronte 19), excepto la línea 9B que arranca en Urzaiz-Príncipe y la 24 que para en Colón 12 (provisional)."
   },
   {
     "stopId": 20199,
@@ -15068,8 +15097,16 @@
     "latitude": 42.238271922,
     "longitude": -8.723353532,
     "lines": [
+      "C1",
       "C3d",
-      "10"
+      "A",
+      "5A",
+      "9B",
+      "10",
+      "15B",
+      "15C",
+      "28",
+      "N4"
     ]
   },
   {
@@ -15090,7 +15127,8 @@
       "28",
       "N4"
     ],
-    "title": "Parada provisional sin datos"
+    "title": "Parada provisional sin datos",
+    "message": "Parada provisional donde paran las líneas de Policarpo Sanz 40 *exceptuando 9B*"
   },
   {
     "stopId": 20209,

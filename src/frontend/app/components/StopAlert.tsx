@@ -1,5 +1,5 @@
-import React from "react";
-import { AlertCircle, Info } from "lucide-react";
+import React, { useMemo } from "react";
+import { AlertCircle, AlertOctagon, Info, TriangleAlert } from "lucide-react";
 import type { Stop } from "~/data/StopDataProvider";
 import "./StopAlert.css";
 
@@ -15,11 +15,21 @@ export const StopAlert: React.FC<StopAlertProps> = ({ stop, compact = false }) =
     return null;
   }
 
-  const isError = stop.cancelled === true;
+  const alertType = useMemo(() => {
+    if (stop.alert === "error") return "stop-alert-error";
+    if (stop.alert === "warning") return "stop-alert-warning";
+    return "stop-alert-info";
+  }, [stop.alert]);
+
+  const alertIcon = useMemo(() => {
+    if (stop.alert === "error") return <AlertOctagon />;
+    if (stop.alert === "warning") return <TriangleAlert />;
+    return <Info />;
+  }, [stop.alert]);
 
   return (
-    <div className={`stop-alert ${isError ? 'stop-alert-error' : 'stop-alert-info'} ${compact ? 'stop-alert-compact' : ''}`}>
-      {isError ? <AlertCircle /> : <Info />}
+    <div className={`stop-alert ${alertType} ${compact ? 'stop-alert-compact' : ''}`}>
+      {alertIcon}
       <div className="stop-alert-content">
         {stop.title && <div className="stop-alert-title">{stop.title}</div>}
         {stop.message && <div className="stop-alert-message">{stop.message}</div>}
