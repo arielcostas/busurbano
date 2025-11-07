@@ -124,9 +124,19 @@ public class VigoController : ControllerBase
 
             var possibleCirculations = timetable
                 .Where(c =>
-                    c.Line.Trim() == estimate.Line.Trim() &&
-                    c.Route.Trim() == estimate.Route.Trim()
-                )
+                {
+                    // Match by line number
+                    if (c.Line.Trim() != estimate.Line.Trim())
+                        return false;
+
+                    // Match by route (destination) - compare with both Route field and Terminus stop name
+                    // Normalize both sides: remove non-ASCII-alnum characters and lowercase
+                    var estimateRoute = NormalizeRouteName(estimate.Route);
+                    var scheduleRoute = NormalizeRouteName(c.Route);
+                    var scheduleTerminus = NormalizeRouteName(c.TerminusName);
+
+                    return scheduleRoute == estimateRoute || scheduleTerminus == estimateRoute;
+                })
                 .OrderBy(c => c.CallingDateTime()!.Value)
                 .ToArray();
 
@@ -135,15 +145,18 @@ public class VigoController : ControllerBase
             // Matching strategy:
             // 1) Prefer a started trip whose scheduled calling time is close to the estimated arrival.
             // 2) If no good started match, pick the next not-started trip (soonest in the future).
-            // 3) Fallbacks: if no future trips, use the best started one even if far.
+            // 3) Reject matches where scheduled time is >10 minutes AFTER realtime (data inconsistency).
+            // 4) Fallbacks: if no future trips, use the best started one even if far.
             const int startedMatchToleranceMinutes = 15; // how close a started trip must be to consider it a match
+            const int maxScheduleDelayMinutes = 10; // reject if scheduled is this much later than realtime
 
             var startedCandidates = possibleCirculations
                 .Where(c => c.StartingDateTime()!.Value <= now)
                 .Select(c => new
                 {
                     Circulation = c,
-                    AbsDiff = Math.Abs((estimatedArrivalTime - c.CallingDateTime()!.Value).TotalMinutes)
+                    AbsDiff = Math.Abs((estimatedArrivalTime - c.CallingDateTime()!.Value).TotalMinutes),
+                    TimeDiff = (c.CallingDateTime()!.Value - estimatedArrivalTime).TotalMinutes // positive if scheduled is later
                 })
                 .OrderBy(x => x.AbsDiff)
                 .ToList();
@@ -152,20 +165,33 @@ public class VigoController : ControllerBase
 
             var futureCandidates = possibleCirculations
                 .Where(c => c.StartingDateTime()!.Value > now)
+                .Select(c => new
+                {
+                    Circulation = c,
+                    TimeDiff = (c.CallingDateTime()!.Value - estimatedArrivalTime).TotalMinutes
+                })
                 .ToList();
 
-            if (bestStarted != null && bestStarted.AbsDiff <= startedMatchToleranceMinutes)
+            // Check best started candidate
+            if (bestStarted != null &&
+                bestStarted.AbsDiff <= startedMatchToleranceMinutes &&
+                bestStarted.TimeDiff <= maxScheduleDelayMinutes) // reject if scheduled too far after realtime
             {
                 closestCirculation = bestStarted.Circulation;
             }
             else if (futureCandidates.Count > 0)
             {
-                // pick the soonest upcoming trip for this line/route
-                closestCirculation = futureCandidates.First();
+                // Pick the soonest upcoming trip, but reject if it's scheduled too far after realtime
+                var soonest = futureCandidates.First();
+                if (soonest.TimeDiff <= maxScheduleDelayMinutes)
+                {
+                    closestCirculation = soonest.Circulation;
+                }
+                // Otherwise, leave it null (no valid match)
             }
-            else if (bestStarted != null)
+            else if (bestStarted != null && bestStarted.TimeDiff <= maxScheduleDelayMinutes)
             {
-                // nothing upcoming today; fallback to the closest started one (even if far)
+                // nothing upcoming today; fallback to the closest started one (if timing is reasonable)
                 closestCirculation = bestStarted.Circulation;
             }
 
@@ -276,5 +302,30 @@ public class VigoController : ControllerBase
 
         var contents = await SysFile.ReadAllTextAsync(file);
         return JsonSerializer.Deserialize<List<ScheduledStop>>(contents)!;
+    }
+
+    private static string NormalizeRouteName(string route)
+    {
+        var normalized = route.Trim().ToLowerInvariant();
+        // Remove diacritics/accents first, then filter to alphanumeric
+        normalized = RemoveDiacritics(normalized);
+        return new string(normalized.Where(char.IsLetterOrDigit).ToArray());
+    }
+
+    private static string RemoveDiacritics(string text)
+    {
+        var normalizedString = text.Normalize(NormalizationForm.FormD);
+        var stringBuilder = new StringBuilder();
+
+        foreach (var c in normalizedString)
+        {
+            var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+            if (unicodeCategory != UnicodeCategory.NonSpacingMark)
+            {
+                stringBuilder.Append(c);
+            }
+        }
+
+        return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
     }
 }
