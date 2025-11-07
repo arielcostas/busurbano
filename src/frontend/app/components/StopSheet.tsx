@@ -50,7 +50,6 @@ export const StopSheet: React.FC<StopSheetProps> = ({
 }) => {
   const { t } = useTranslation();
   const { region } = useApp();
-  const regionConfig = getRegionConfig(region);
   const [data, setData] = useState<Estimate[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<ErrorInfo | null>(null);
@@ -100,6 +99,29 @@ export const StopSheet: React.FC<StopSheetProps> = ({
     }
   }, [isOpen, stop.stopId, region]);
 
+  // Handle browser back button to close the sheet
+  useEffect(() => {
+    if (isOpen) {
+      // Push a dummy state when sheet opens
+      window.history.pushState({ stopSheetOpen: true }, "");
+
+      const handlePopState = () => {
+        // Close the sheet when back button is pressed
+        onClose();
+      };
+
+      window.addEventListener("popstate", handlePopState);
+
+      return () => {
+        window.removeEventListener("popstate", handlePopState);
+        // Clean up: if the sheet is still open when unmounting, go back
+        if (window.history.state?.stopSheetOpen) {
+          window.history.back();
+        }
+      };
+    }
+  }, [isOpen, onClose]);
+
   const formatTime = (minutes: number) => {
     if (minutes > 15) {
       const now = new Date();
@@ -129,10 +151,16 @@ export const StopSheet: React.FC<StopSheetProps> = ({
     data?.sort((a, b) => a.minutes - b.minutes).slice(0, 4) || [];
 
   return (
-    <Sheet isOpen={isOpen} onClose={onClose} detent="content">
+    <Sheet
+      isOpen={isOpen}
+      onClose={onClose}
+      detent="content"
+      dragCloseThreshold={0.5}
+      dragVelocityThreshold={300}
+    >
       <Sheet.Container>
         <Sheet.Header />
-        <Sheet.Content drag="y">
+        <Sheet.Content>
           <div className="stop-sheet-content">
             <div className="stop-sheet-header">
               <h2 className="stop-sheet-title">{stop.name.original}</h2>
