@@ -58,6 +58,49 @@ TODO: Update instructions
 
 2. Open your browser and navigate to `http://localhost:5173`.
 
+## Code Formatting and Linting
+
+This project uses automated formatting and linting tools to ensure code consistency.
+
+### Frontend (TypeScript/JavaScript)
+
+- **Prettier**: Code formatting
+- **ESLint**: Code linting
+
+```sh
+cd src/frontend
+npm run format        # Auto-format all files
+npm run checkformat   # Check formatting without making changes
+npm run lint          # Run ESLint
+npm run lint:fix      # Auto-fix ESLint issues
+```
+
+### Python
+
+- **Ruff**: Formatting and linting (configured in `pyproject.toml`)
+
+```sh
+cd src/gtfs_vigo_stops
+ruff format .         # Format Python files
+ruff check .          # Check for linting issues
+```
+
+### C#
+
+- **EditorConfig**: Formatting rules (configured in `.editorconfig`)
+- Format on save is enabled in VSCode
+
+### VSCode Setup
+
+When you open this project in VSCode, you'll be prompted to install recommended extensions. These include:
+- Prettier
+- ESLint
+- Ruff
+- C# Dev Kit
+- EditorConfig
+
+The project is configured to auto-format on save.
+
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request.
