@@ -11,7 +11,7 @@ import urllib.request
 import yaml  # Add YAML support for overrides
 
 OVERRIDES_DIR = "overrides"
-OUTPUT_FILE = "../../src/frontend/public/stops/vigo.json"
+OUTPUT_FILE = "../../frontend/public/stops/santiago.json"
 
 def load_stop_overrides(file_path):
     """Load stop overrides from a YAML file"""
@@ -67,14 +67,17 @@ def apply_overrides(stops, overrides):
             if "cancelled" in override:
                 stop["cancelled"] = override["cancelled"]
 
-            if "alert" in override:
-                stop["alert"] = override["alert"]
-
+            # Add alert title
             if "title" in override:
                 stop["title"] = override["title"]
 
+            # Add alert message
             if "message" in override:
                 stop["message"] = override["message"]
+
+            # Add alternate codes
+            if "alternateCodes" in override:
+                stop["alternateCodes"] = override["alternateCodes"]
 
     # Add new stops (those with "new: true" parameter)
     new_stops_added = 0
@@ -122,13 +125,13 @@ def main():
     print("Fetching stop list data...")
 
     # Download stop list data
-    url = "https://datos.vigo.org/vci_api_app/api2.jsp?tipo=TRANSPORTE_PARADAS"
-    req = urllib.request.Request(url)
+    url = "https://app.tussa.org/tussa/api/paradas"
+    body = json.dumps({ "nombre": "" }).encode('utf-8')
+    req = urllib.request.Request(url, data=body, headers={'Content-Type': 'application/json'}, method='POST')
 
     try:
         with urllib.request.urlopen(req) as response:
-            # Read the response and decode from ISO-8859-1 to UTF-8
-            content = response.read().decode('iso-8859-1')
+            content = response.read().decode('utf-8')
             data = json.loads(content)
 
         print(f"Downloaded {len(data)} stops")
@@ -137,17 +140,23 @@ def main():
         processed_stops = []
         for stop in data:
             name = stop.get("nombre", "").strip()
-            # Fix double space equals comma-space: "Castrelos  202" -> "Castrelos, 202"; and remove quotes
-            name = name.replace("  ", ", ").replace('"', '').replace("'", "")
+
+            lines_sinoptic: list[str] = [line.get("sinoptico").strip() for line in stop.get("lineas", [])] if stop.get("lineas") else []
+            lines_id: list[str] = []
+
+            for line in lines_sinoptic:
+                line_code = line.lstrip('L')
+                lines_id.append(line_code)
 
             processed_stop = {
                 "stopId": stop.get("id"),
                 "name": {
                     "original": name
                 },
-                "latitude": stop.get("lat"),
-                "longitude": stop.get("lon"),
-                "lines": [line.strip() for line in stop.get("lineas", "").split(",")] if stop.get("lineas") else []
+                "latitude": stop.get("coordenadas").get("latitud"),
+                "longitude": stop.get("coordenadas").get("longitud"),
+                "lines": lines_id,
+                "hide": len(lines_id) == 0
             }
             processed_stops.append(processed_stop)
 

@@ -11,7 +11,7 @@ import urllib.request
 import yaml  # Add YAML support for overrides
 
 OVERRIDES_DIR = "overrides"
-OUTPUT_FILE = "../../src/frontend/public/stops/santiago.json"
+OUTPUT_FILE = "../../frontend/public/stops/vigo.json"
 
 def load_stop_overrides(file_path):
     """Load stop overrides from a YAML file"""
@@ -32,7 +32,7 @@ def apply_overrides(stops, overrides):
     """Apply overrides to the stop data and add new stops"""
     # Track existing stop IDs
     existing_stop_ids = {stop.get("stopId") for stop in stops}
-    
+
     # Apply overrides to existing stops
     for stop in stops:
         stop_id = stop.get("stopId")
@@ -67,18 +67,15 @@ def apply_overrides(stops, overrides):
             if "cancelled" in override:
                 stop["cancelled"] = override["cancelled"]
 
-            # Add alert title
+            if "alert" in override:
+                stop["alert"] = override["alert"]
+
             if "title" in override:
                 stop["title"] = override["title"]
 
-            # Add alert message
             if "message" in override:
                 stop["message"] = override["message"]
 
-            # Add alternate codes
-            if "alternateCodes" in override:
-                stop["alternateCodes"] = override["alternateCodes"]
-    
     # Add new stops (those with "new: true" parameter)
     new_stops_added = 0
     for stop_id, override in overrides.items():
@@ -86,7 +83,7 @@ def apply_overrides(stops, overrides):
         if override.get("new") and stop_id not in existing_stop_ids:
             # Ensure stop_id is an integer for consistency
             stop_id_int = int(stop_id) if isinstance(stop_id, str) else stop_id
-            
+
             # Create the new stop
             new_stop = {
                 "stopId": stop_id_int,
@@ -97,7 +94,7 @@ def apply_overrides(stops, overrides):
                 "longitude": override.get("location", {}).get("longitude"),
                 "lines": override.get("lines", [])
             }
-            
+
             # Add optional fields (excluding the 'new' parameter)
             if "alternateNames" in override:
                 for key, value in override["alternateNames"].items():
@@ -112,10 +109,10 @@ def apply_overrides(stops, overrides):
                 new_stop["message"] = override["message"]
             if "alternateCodes" in override:
                 new_stop["alternateCodes"] = override["alternateCodes"]
-            
+
             stops.append(new_stop)
             new_stops_added += 1
-    
+
     if new_stops_added > 0:
         print(f"Added {new_stops_added} new stops from overrides")
 
@@ -125,13 +122,13 @@ def main():
     print("Fetching stop list data...")
 
     # Download stop list data
-    url = "https://app.tussa.org/tussa/api/paradas"
-    body = json.dumps({ "nombre": "" }).encode('utf-8')
-    req = urllib.request.Request(url, data=body, headers={'Content-Type': 'application/json'}, method='POST')
+    url = "https://datos.vigo.org/vci_api_app/api2.jsp?tipo=TRANSPORTE_PARADAS"
+    req = urllib.request.Request(url)
 
     try:
         with urllib.request.urlopen(req) as response:
-            content = response.read().decode('utf-8')
+            # Read the response and decode from ISO-8859-1 to UTF-8
+            content = response.read().decode('iso-8859-1')
             data = json.loads(content)
 
         print(f"Downloaded {len(data)} stops")
@@ -140,23 +137,17 @@ def main():
         processed_stops = []
         for stop in data:
             name = stop.get("nombre", "").strip()
-
-            lines_sinoptic: list[str] = [line.get("sinoptico").strip() for line in stop.get("lineas", [])] if stop.get("lineas") else []
-            lines_id: list[str] = []
-
-            for line in lines_sinoptic:
-                line_code = line.lstrip('L')
-                lines_id.append(line_code)
+            # Fix double space equals comma-space: "Castrelos  202" -> "Castrelos, 202"; and remove quotes
+            name = name.replace("  ", ", ").replace('"', '').replace("'", "")
 
             processed_stop = {
                 "stopId": stop.get("id"),
                 "name": {
                     "original": name
                 },
-                "latitude": stop.get("coordenadas").get("latitud"),
-                "longitude": stop.get("coordenadas").get("longitud"),
-                "lines": lines_id,
-                "hide": len(lines_id) == 0
+                "latitude": stop.get("lat"),
+                "longitude": stop.get("lon"),
+                "lines": [line.strip() for line in stop.get("lineas", "").split(",")] if stop.get("lineas") else []
             }
             processed_stops.append(processed_stop)
 

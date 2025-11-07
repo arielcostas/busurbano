@@ -5,6 +5,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Costasdev.Busurbano.Backend</RootNamespace>
     <UserSecretsId>0eff397c-f98e-4c3a-95ec-9d900f1b938c</UserSecretsId>
+
+    <NeutralLanguage>es</NeutralLanguage>
+    <Deterministic>true</Deterministic>
+    <PathMap>$(MSBuildProjectDirectory)=.</PathMap>
   </PropertyGroup>
 
   <ItemGroup>

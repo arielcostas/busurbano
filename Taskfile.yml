@@ -41,5 +41,5 @@ tasks:
   gen-stop-json:
     desc: Generate stop-based JSON files for specified dates or date ranges.
     cmds:
-      - uv --directory ./data/vigo run ./download-stops.py
-      - uv --directory ./data/santiago run ./download-stops.py
+      - uv --directory ./src/stop_downloader/vigo run ./download-stops.py
+      - uv --directory ./src/stop_downloader/santiago run ./download-stops.py
