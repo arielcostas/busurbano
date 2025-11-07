@@ -8,6 +8,8 @@
     "dev": "react-router dev --host",
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "checkformat": "prettier --check ."
   },
@@ -46,6 +48,7 @@
     "jiti": "^2.6.1",
     "maplibre-gl": "^5.9.0",
     "pmtiles": "^4.3.0",
+    "prettier": "^3.6.2",
     "react-map-gl": "^8.1.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.0",
