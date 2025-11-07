@@ -83,22 +83,6 @@ export default function Settings() {
           </select>
         </div>
         <div className="settings-content-inline">
-          <label htmlFor="tableStyle" className="form-label-inline">
-            {t("about.table_style")}
-          </label>
-          <select
-            id="tableStyle"
-            className="form-select-inline"
-            value={tableStyle}
-            onChange={(e) =>
-              setTableStyle(e.target.value as "regular" | "grouped")
-            }
-          >
-            <option value="regular">{t("about.table_style_regular")}</option>
-            <option value="grouped">{t("about.table_style_grouped")}</option>
-          </select>
-        </div>
-        <div className="settings-content-inline">
           <label htmlFor="mapPositionMode" className="form-label-inline">
             {t("about.map_position_mode")}
           </label>
@@ -129,6 +113,24 @@ export default function Settings() {
             <option value="en-GB">English</option>
           </select>
         </div>
+
+        <div className="settings-content-inline">
+          <label htmlFor="tableStyle" className="form-label-inline">
+            {t("about.table_style")}
+          </label>
+          <select
+            id="tableStyle"
+            className="form-select-inline"
+            value={tableStyle}
+            onChange={(e) =>
+              setTableStyle(e.target.value as "regular" | "grouped" | "experimental_consolidated")
+            }
+          >
+            <option value="regular">{t("about.table_style_regular")}</option>
+            <option value="grouped">{t("about.table_style_grouped")}</option>
+            <option value="experimental_consolidated">{t("about.table_style_experimental_consolidated")}</option>
+          </select>
+        </div>
         <details className="form-details">
           <summary>{t("about.details_summary")}</summary>
           <p>{t("about.details_table")}</p>
@@ -137,6 +139,8 @@ export default function Settings() {
             <dd>{t("about.details_regular")}</dd>
             <dt>{t("about.table_style_grouped")}</dt>
             <dd>{t("about.details_grouped")}</dd>
+            <dt>{t("about.table_style_experimental_consolidated")}</dt>
+            <dd>{t("about.details_experimental_consolidated")}</dd>
           </dl>
         </details>
       </section>

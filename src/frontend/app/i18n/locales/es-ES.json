@@ -15,6 +15,7 @@
     "table_style": "Estilo de tabla:",
     "table_style_regular": "Mostrar por orden",
     "table_style_grouped": "Agrupar por línea",
+    "table_style_experimental_consolidated": "(EXPERIMENTAL) Datos consolidados",
     "map_position_mode": "Posición del mapa:",
     "map_position_gps": "Posición GPS",
     "map_position_last": "Donde lo dejé",
@@ -37,7 +38,8 @@
     "details_summary": "¿Qué significa esto?",
     "details_table": "La tabla de horarios puede mostrarse de dos formas:",
     "details_regular": "Las paradas se muestran en el orden en que se visitan. Aplicaciones como Infobus (Vitrasa) usan este estilo.",
-    "details_grouped": "Las paradas se agrupan por la línea de autobús. Aplicaciones como iTranvias (A Coruña) o Moovit (más o menos) usan este estilo."
+    "details_grouped": "Las paradas se agrupan por la línea de autobús. Aplicaciones como iTranvias (A Coruña) o Moovit (más o menos) usan este estilo.",
+    "details_experimental_consolidated": "Las paradas se muestran utilizando datos consolidados de múltiples fuentes en tiempo real. Esta función está en fase experimental y puede no ser completamente precisa. Funciona únicamente en la región de Vigo."
   },
   "stoplist": {
     "search_placeholder": "Buscar parada por nombre o código...",
@@ -65,7 +67,18 @@
     "distance": "Distancia",
     "not_available": "No disponible",
     "none": "No hay estimaciones disponibles",
-    "next_arrivals": "Próximas llegadas"
+    "next_arrivals": "Próximas llegadas",
+    "on_time": "en hora",
+    "minutes_late": "{{minutes}} minutos tarde",
+    "minutes_early": "{{minutes}} minutos adelantado",
+    "bus_is": "Circula",
+    "service": "Servicio",
+    "trip": "viaje",
+    "last_updated": "Actualizado a las",
+    "reload": "Recargar",
+    "unknown_service": "Servicio desconocido. Puede tratarse de un refuerzo o de que el servicio lleva un nombre distinto al planificado.",
+    "experimental_feature": "Función experimental",
+    "experimental_description": "Esta vista utiliza datos consolidados de múltiples fuentes en tiempo real. Esta función está en fase experimental y puede no ser completamente precisa."
   },
   "timetable": {
     "fullCaption": "Horarios teóricos de la parada",

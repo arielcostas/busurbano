@@ -73,6 +73,12 @@ const parseServiceId = (serviceId: string): string => {
     case 150:
       displayLine = "REF";
       break;
+    case 201:
+      displayLine = "U1";
+      break;
+    case 202:
+      displayLine = "U2";
+      break;
     case 500:
       displayLine = "TUR";
       break;

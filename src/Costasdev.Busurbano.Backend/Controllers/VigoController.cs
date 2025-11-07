@@ -110,9 +110,10 @@ public class VigoController : ControllerBase
 
         var now = nowLocal.AddSeconds(60 - nowLocal.Second);
         // Define the scope end as the time of the last realtime arrival (no extra buffer)
+        var lastEstimateArrivalMinutes = realTimeEstimates.Max(e => e.Minutes);
         var scopeEnd = realTimeEstimates.Count > 0
-            ? now.AddMinutes(realTimeEstimates.Max(e => e.Minutes))
-            : now;
+            ? now.AddMinutes(Math.Min(lastEstimateArrivalMinutes + 5, 75))
+            : now.AddMinutes(60); // If no estimates, show next hour of scheduled only
 
         List<ConsolidatedCirculation> consolidatedCirculations = [];
         var usedTripIds = new HashSet<string>();

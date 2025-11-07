@@ -1,0 +1,158 @@
+/* Consolidated Circulation List Styles */
+.consolidated-circulation-container {
+  width: 100%;
+  margin-block-start: 1.5rem;
+}
+
+.consolidated-circulation-caption {
+  font-size: 0.9rem;
+  color: var(--subtitle-color);
+  text-align: center;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+}
+
+.consolidated-circulation-no-data {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--subtitle-color);
+  font-size: 0.95rem;
+}
+
+.consolidated-circulation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-block: 0 1rem;
+}
+
+.consolidated-circulation-card {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--message-background-color);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  transition: box-shadow 0.2s ease;
+}
+
+.consolidated-circulation-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.consolidated-circulation-card .card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+}
+
+.consolidated-circulation-card .line-info {
+  flex-shrink: 0;
+}
+
+.consolidated-circulation-card .route-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.consolidated-circulation-card .route-info strong {
+  font-size: 0.95rem;
+  color: var(--text-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+}
+
+.consolidated-circulation-card .time-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.consolidated-circulation-card .arrival-time {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.consolidated-circulation-card .arrival-time svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* Time color states */
+.consolidated-circulation-card .arrival-time.time-running {
+  color: #22c55e;
+}
+
+.consolidated-circulation-card .arrival-time.time-running svg {
+  color: #22c55e;
+}
+
+.consolidated-circulation-card .arrival-time.time-delayed {
+  color: #09106e;
+}
+
+.consolidated-circulation-card .arrival-time.time-delayed svg {
+  color: #09106e;
+}
+
+.consolidated-circulation-card .arrival-time.time-scheduled {
+  color: var(--text-color);
+}
+
+.consolidated-circulation-card .arrival-time.time-scheduled svg {
+  color: var(--subtitle-color);
+}
+
+.consolidated-circulation-card .distance-info {
+  font-size: 0.75rem;
+  color: var(--subtitle-color);
+  text-align: right;
+}
+
+.consolidated-circulation-card .card-footer {
+  padding: 0.5rem 1rem 0.75rem 1rem;
+  border-top: 1px solid var(--border-color);
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+@media (prefers-color-scheme: dark) {
+  .consolidated-circulation-card .card-footer {
+    background-color: rgba(255, 255, 255, 0.03);
+  }
+}
+
+.consolidated-circulation-card .status-text {
+  font-size: 0.8rem;
+  color: var(--subtitle-color);
+  line-height: 1.4;
+  display: block;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .consolidated-circulation-card .card-header {
+    gap: 0.5rem;
+    padding: 0.75rem 0.875rem;
+  }
+
+  .consolidated-circulation-card .arrival-time {
+    font-size: 1rem;
+  }
+
+  .consolidated-circulation-card .card-footer {
+    padding: 0.5rem 0.875rem 0.625rem 0.875rem;
+  }
+
+  .consolidated-circulation-card .status-text {
+    font-size: 0.9rem;
+  }
+}

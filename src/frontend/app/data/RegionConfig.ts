@@ -5,6 +5,7 @@ export interface RegionConfig {
   name: string;
   stopsEndpoint: string;
   estimatesEndpoint: string;
+  consolidatedCirculationsEndpoint: string | null;
   timetableEndpoint: string | null;
   defaultCenter: [number, number]; // [lat, lng]
   bounds?: {
@@ -22,6 +23,7 @@ export const REGIONS: Record<RegionId, RegionConfig> = {
     name: "Vigo",
     stopsEndpoint: "/stops/vigo.json",
     estimatesEndpoint: "/api/vigo/GetStopEstimates",
+    consolidatedCirculationsEndpoint: "/api/vigo/GetConsolidatedCirculations",
     timetableEndpoint: "/api/vigo/GetStopTimetable",
     defaultCenter: [42.229188855975046, -8.72246955783102],
     bounds: {
@@ -37,6 +39,7 @@ export const REGIONS: Record<RegionId, RegionConfig> = {
     name: "Santiago de Compostela",
     stopsEndpoint: "/stops/santiago.json",
     estimatesEndpoint: "/api/santiago/GetStopEstimates",
+    consolidatedCirculationsEndpoint: null, // Not available for Santiago
     timetableEndpoint: null, // Not available for Santiago
     defaultCenter: [42.8782, -8.5448],
     bounds: {

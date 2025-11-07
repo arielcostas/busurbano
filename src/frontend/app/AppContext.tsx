@@ -16,7 +16,7 @@ import {
 } from "./data/RegionConfig";
 
 export type Theme = "light" | "dark" | "system";
-type TableStyle = "regular" | "grouped";
+type TableStyle = "regular" | "grouped" | "experimental_consolidated";
 type MapPositionMode = "gps" | "last";
 
 interface MapState {

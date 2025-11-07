@@ -1,34 +1,32 @@
-import { type JSX, useEffect, useState, useCallback } from "react";
-import { useParams, Link, Navigate } from "react-router";
+import { useEffect, useState, useCallback } from "react";
+import { useParams, Link } from "react-router";
 import StopDataProvider, { type Stop } from "../data/StopDataProvider";
 import { Star, Edit2, ExternalLink, RefreshCw } from "lucide-react";
 import "./estimates-$id.css";
-import { RegularTable } from "../components/RegularTable";
 import { useApp } from "../AppContext";
-import { GroupedTable } from "../components/GroupedTable";
 import { useTranslation } from "react-i18next";
-import {
-  SchedulesTable,
-  type ScheduledTable,
-} from "~/components/SchedulesTable";
-import {
-  SchedulesTableSkeleton,
-  EstimatesGroupedSkeleton,
-} from "~/components/SchedulesTableSkeleton";
-import { TimetableSkeleton } from "~/components/TimetableSkeleton";
-import { ErrorDisplay } from "~/components/ErrorDisplay";
 import { PullToRefresh } from "~/components/PullToRefresh";
 import { useAutoRefresh } from "~/hooks/useAutoRefresh";
 import { type RegionId, getRegionConfig } from "~/data/RegionConfig";
 import { StopAlert } from "~/components/StopAlert";
 import LineIcon from "~/components/LineIcon";
+import { ConsolidatedCirculationList } from "~/components/Stops/ConsolidatedCirculationList";
 
-export interface Estimate {
+export interface ConsolidatedCirculation {
   line: string;
   route: string;
-  minutes: number;
-  meters: number;
+  schedule?: {
+    running: boolean;
+    minutes: number;
+    serviceId: string;
+    tripId: string;
+  };
+  realTime?: {
+    minutes: number;
+    distance: number;
+  };
 }
+
 
 interface ErrorInfo {
   type: "network" | "server" | "unknown";
@@ -36,44 +34,16 @@ interface ErrorInfo {
   message?: string;
 }
 
-const loadData = async (
+const loadConsolidatedData = async (
   region: RegionId,
   stopId: string,
-): Promise<Estimate[]> => {
+): Promise<ConsolidatedCirculation[]> => {
   const regionConfig = getRegionConfig(region);
-  const resp = await fetch(`${regionConfig.estimatesEndpoint}?id=${stopId}`, {
+  const resp = await fetch(`${regionConfig.consolidatedCirculationsEndpoint}?stopId=${stopId}`, {
     headers: {
       Accept: "application/json",
     },
   });
-
-  if (!resp.ok) {
-    throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
-  }
-
-  return await resp.json();
-};
-
-const loadTimetableData = async (
-  region: RegionId,
-  stopId: string,
-): Promise<ScheduledTable[]> => {
-  const regionConfig = getRegionConfig(region);
-
-  // Check if timetable is available for this region
-  if (!regionConfig.timetableEndpoint) {
-    throw new Error("Timetable not available for this region");
-  }
-
-  const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD format
-  const resp = await fetch(
-    `${regionConfig.timetableEndpoint}?date=${today}&stopId=${stopId}`,
-    {
-      headers: {
-        Accept: "application/json",
-      },
-    },
-  );
 
   if (!resp.ok) {
     throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
@@ -89,26 +59,16 @@ export default function Estimates() {
   const [customName, setCustomName] = useState<string | undefined>(undefined);
   const [stopData, setStopData] = useState<Stop | undefined>(undefined);
 
-  // Estimates data state
-  const [data, setData] = useState<Estimate[] | null>(null);
+  // Data state
+  const [data, setData] = useState<ConsolidatedCirculation[] | null>(null);
   const [dataDate, setDataDate] = useState<Date | null>(null);
-  const [estimatesLoading, setEstimatesLoading] = useState(true);
-  const [estimatesError, setEstimatesError] = useState<ErrorInfo | null>(null);
-
-  // Timetable data state
-  const [timetableData, setTimetableData] = useState<ScheduledTable[]>([]);
-  const [timetableLoading, setTimetableLoading] = useState(true);
-  const [timetableError, setTimetableError] = useState<ErrorInfo | null>(null);
+  const [dataLoading, setDataLoading] = useState(true);
+  const [dataError, setDataError] = useState<ErrorInfo | null>(null);
 
   const [favourited, setFavourited] = useState(false);
   const [isManualRefreshing, setIsManualRefreshing] = useState(false);
-  const { tableStyle, region } = useApp();
+  const { region } = useApp();
   const regionConfig = getRegionConfig(region);
-
-  // Redirect to /stops/$id if table style is experimental_consolidated
-  if (tableStyle === "experimental_consolidated") {
-    return <Navigate to={`/stops/${params.id}`} replace />;
-  }
 
   const parseError = (error: any): ErrorInfo => {
     if (!navigator.onLine) {
@@ -131,12 +91,12 @@ export default function Estimates() {
     return { type: "unknown", message: error.message };
   };
 
-  const loadEstimatesData = useCallback(async () => {
+  const loadData = useCallback(async () => {
     try {
-      setEstimatesLoading(true);
-      setEstimatesError(null);
+      setDataLoading(true);
+      setDataError(null);
 
-      const body = await loadData(region, params.id!);
+      const body = await loadConsolidatedData(region, params.id!);
       setData(body);
       setDataDate(new Date());
 
@@ -145,65 +105,46 @@ export default function Estimates() {
       setStopData(stop);
       setCustomName(StopDataProvider.getCustomName(region, stopIdNum));
     } catch (error) {
-      console.error("Error loading estimates data:", error);
-      setEstimatesError(parseError(error));
+      console.error("Error loading consolidated data:", error);
+      setDataError(parseError(error));
       setData(null);
       setDataDate(null);
     } finally {
-      setEstimatesLoading(false);
+      setDataLoading(false);
     }
   }, [params.id, stopIdNum, region]);
 
-  const loadTimetableDataAsync = useCallback(async () => {
-    // Skip loading timetable if not available for this region
-    if (!regionConfig.timetableEndpoint) {
-      setTimetableLoading(false);
-      return;
-    }
-
-    try {
-      setTimetableLoading(true);
-      setTimetableError(null);
-
-      const timetableBody = await loadTimetableData(region, params.id!);
-      setTimetableData(timetableBody);
-    } catch (error) {
-      console.error("Error loading timetable data:", error);
-      setTimetableError(parseError(error));
-      setTimetableData([]);
-    } finally {
-      setTimetableLoading(false);
-    }
-  }, [params.id, region, regionConfig.timetableEndpoint]);
+  const refreshData = useCallback(async () => {
+    await Promise.all([loadData()]);
+  }, [loadData]);
 
   // Manual refresh function for pull-to-refresh and button
   const handleManualRefresh = useCallback(async () => {
     try {
       setIsManualRefreshing(true);
       // Only reload real-time estimates data, not timetable
-      await loadEstimatesData();
+      await refreshData();
     } finally {
       setIsManualRefreshing(false);
     }
-  }, [loadEstimatesData]);
+  }, [refreshData]);
 
   // Auto-refresh estimates data every 30 seconds (only if not in error state)
   useAutoRefresh({
-    onRefresh: loadEstimatesData,
+    onRefresh: refreshData,
     interval: 30000,
-    enabled: !estimatesError,
+    enabled: !dataError,
   });
 
   useEffect(() => {
     // Initial load
-    loadEstimatesData();
-    loadTimetableDataAsync();
+    loadData();
 
     StopDataProvider.pushRecent(region, parseInt(params.id ?? ""));
     setFavourited(
       StopDataProvider.isFavourite(region, parseInt(params.id ?? "")),
     );
-  }, [params.id, region, loadEstimatesData, loadTimetableDataAsync]);
+  }, [params.id, region, loadData]);
 
   const toggleFavourite = () => {
     if (favourited) {
@@ -238,7 +179,7 @@ export default function Estimates() {
   };
 
   // Show loading skeleton while initial data is loading
-  if (estimatesLoading && !data) {
+  if (dataLoading && !data) {
     return (
       <PullToRefresh
         onRefresh={handleManualRefresh}
@@ -254,15 +195,7 @@ export default function Estimates() {
           </div>
 
           <div className="table-responsive">
-            {tableStyle === "grouped" ? (
-              <EstimatesGroupedSkeleton />
-            ) : (
-              <SchedulesTableSkeleton />
-            )}
-          </div>
-
-          <div className="timetable-section">
-            <TimetableSkeleton />
+            {/* TODO: Implement skeleton */}
           </div>
         </div>
       </PullToRefresh>
@@ -289,7 +222,7 @@ export default function Estimates() {
           <button
             className="manual-refresh-button"
             onClick={handleManualRefresh}
-            disabled={isManualRefreshing || estimatesLoading}
+            disabled={isManualRefreshing || dataLoading}
             title={t("estimates.reload", "Recargar estimaciones")}
           >
             <RefreshCw
@@ -310,66 +243,19 @@ export default function Estimates() {
           </div>
         )}
 
+        <div className="experimental-notice">
+          <strong>{t("estimates.experimental_feature", "Experimental feature")}</strong>
+          <p>{t("estimates.experimental_description", "This view uses consolidated data from multiple real-time sources. This feature is experimental and may not be completely accurate.")}</p>
+        </div>
+
         {stopData && <StopAlert stop={stopData} />}
 
         <div className="table-responsive">
-          {estimatesLoading ? (
-            tableStyle === "grouped" ? (
-              <EstimatesGroupedSkeleton />
-            ) : (
-              <SchedulesTableSkeleton />
-            )
-          ) : estimatesError ? (
-            <ErrorDisplay
-              error={estimatesError}
-              onRetry={loadEstimatesData}
-              title={t(
-                "errors.estimates_title",
-                "Error al cargar estimaciones",
-              )}
-            />
-          ) : data ? (
-            tableStyle === "grouped" ? (
-              <GroupedTable
-                data={data}
-                dataDate={dataDate}
-                regionConfig={regionConfig}
-              />
-            ) : (
-              <RegularTable
-                data={data}
-                dataDate={dataDate}
-                regionConfig={regionConfig}
-              />
-            )
-          ) : null}
+          {data ? (<>
+            <ConsolidatedCirculationList data={data} dataDate={dataDate} regionConfig={regionConfig} />
+          </>) : null}
         </div>
 
-        <div className="timetable-section">
-          {timetableLoading ? (
-            <TimetableSkeleton />
-          ) : timetableError ? (
-            <ErrorDisplay
-              error={timetableError}
-              onRetry={loadTimetableDataAsync}
-              title={t("errors.timetable_title", "Error al cargar horarios")}
-              className="compact"
-            />
-          ) : timetableData.length > 0 ? (
-            <>
-              <SchedulesTable
-                data={timetableData}
-                currentTime={new Date().toTimeString().slice(0, 8)} // HH:MM:SS
-              />
-              <div className="timetable-actions">
-                <Link to={`/timetable/${params.id}`} className="view-all-link">
-                  <ExternalLink className="external-icon" />
-                  {t("timetable.viewAll", "Ver todos los horarios")}
-                </Link>
-              </div>
-            </>
-          ) : null}
-        </div>
       </div>
     </PullToRefresh>
   );

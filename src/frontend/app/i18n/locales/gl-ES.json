@@ -15,6 +15,7 @@
     "table_style": "Estilo de táboa:",
     "table_style_regular": "Mostrar por orde",
     "table_style_grouped": "Agrupar por liña",
+    "table_style_experimental_consolidated": "(EXPERIMENTAL) Datos consolidados",
     "map_position_mode": "Posición do mapa:",
     "map_position_gps": "Posición GPS",
     "map_position_last": "Onde o deixei",
@@ -37,7 +38,8 @@
     "details_summary": "Que significa isto?",
     "details_table": "A táboa de horarios pode mostrarse de dúas formas:",
     "details_regular": "As paradas móstranse na orde na que se visitan. Aplicacións como Infobus (Vitrasa) usan este estilo.",
-    "details_grouped": "As paradas agrúpanse pola liña de autobús. Aplicacións como iTranvias (A Coruña) ou Moovit (máis ou menos) usan este estilo."
+    "details_grouped": "As paradas agrúpanse pola liña de autobús. Aplicacións como iTranvias (A Coruña) ou Moovit (máis ou menos) usan este estilo.",
+    "details_experimental_consolidated": "As paradas móstranse utilizando datos consolidados de múltiples fontes en tempo real. Esta función está en fase experimental e pode non ser completamente precisa. Funciona unicamente na rexión de Vigo."
   },
   "stoplist": {
     "search_placeholder": "Buscar parada por nome ou código...",
@@ -65,7 +67,18 @@
     "distance": "Distancia",
     "not_available": "Non dispoñible",
     "none": "Non hai estimacións dispoñibles",
-    "next_arrivals": "Próximas chegadas"
+    "next_arrivals": "Próximas chegadas",
+    "on_time": "a tempo",
+    "minutes_late": "{{minutes}} minutos de atraso",
+    "minutes_early": "{{minutes}} minutos de adelanto",
+    "bus_is": "O autobús vai",
+    "service": "Servizo",
+    "trip": "viaxe",
+    "last_updated": "Actualizado ás",
+    "reload": "Recargar",
+    "unknown_service": "Servizo descoñecido. Pode tratarse dun reforzo ou de que o servizo leva un nome distinto ó planificado.",
+    "experimental_feature": "Función experimental",
+    "experimental_description": "Esta vista utiliza datos consolidados de múltiples fontes en tempo real. Esta función está en fase experimental e pode non ser completamente precisa."
   },
   "timetable": {
     "fullCaption": "Horarios teóricos da parada",

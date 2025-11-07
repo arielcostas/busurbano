@@ -52,25 +52,25 @@
   border: 1px solid var(--card-border);
 }
 
-.card-header {
+.timetable-card .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
 }
 
-.line-info {
+.timetable-card .line-info {
   flex-shrink: 0;
 }
 
-.destination-info {
+.timetable-card .destination-info {
   flex: 1;
   text-align: left;
   margin: 0 1rem;
   color: var(--text-primary);
 }
 
-.destination-info strong {
+.timetable-card .destination-info strong {
   font-size: 0.95rem;
 }
 
@@ -78,14 +78,14 @@
   color: var(--text-secondary);
 }
 
-.time-info {
+.timetable-card .time-info {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   flex-shrink: 0;
 }
 
-.departure-time {
+.timetable-card .timetable-card .departure-time {
   font-weight: bold;
   font-family: monospace;
   font-size: 1.1rem;
@@ -96,18 +96,18 @@
   color: var(--text-secondary);
 }
 
-.card-body {
+.timetable-card .card-body {
   line-height: 1.4;
 }
 
-.route-streets {
+.timetable-card .route-streets {
   font-size: 0.85rem;
   color: var(--text-secondary);
   line-height: 1.8;
   word-break: break-word;
 }
 
-.service-id {
+.timetable-card .timetable-card .service-id {
   font-family: monospace;
   font-size: 0.8rem;
   color: var(--text-secondary);
@@ -124,7 +124,7 @@
   background: var(--service-background-past);
 }
 
-.no-data {
+.timetable-container .no-data {
   text-align: center;
   color: var(--text-secondary);
   font-style: italic;
@@ -142,66 +142,66 @@
   .timetable-card {
     padding: 0.75rem;
   }
-  .card-header {
+  .timetable-card .card-header {
     margin-bottom: 0.5rem;
   }
-  .destination-info {
+  .timetable-card .destination-info {
     margin: 0 0.5rem;
   }
-  .destination-info strong {
+  .timetable-card .destination-info strong {
     font-size: 0.9rem;
   }
-  .departure-time {
+  .timetable-card .departure-time {
     font-size: 1rem;
   }
-  .service-id {
+  .timetable-card .service-id {
     font-size: 0.8rem;
     padding: 0.2rem 0.4rem;
   }
 }
 
 @media (max-width: 480px) {
-  .card-header {
+  .timetable-card .card-header {
     flex-direction: column;
     align-items: stretch;
     gap: 0.5rem;
   }
 
-  .destination-info {
+  .timetable-card .destination-info {
     text-align: left;
     margin: 0;
     order: 2;
   }
 
-  .time-info {
+  .timetable-card .time-info {
     align-items: flex-start;
     order: 1;
     align-self: flex-end;
   }
 
-  .line-info {
+  .timetable-card .line-info {
     order: 0;
     align-self: flex-start;
   }
 
   /* Create a flex container for line and time on mobile */
-  .card-header {
+  .timetable-card .card-header {
     position: relative;
   }
 
-  .line-info {
+  .timetable-card .line-info {
     position: absolute;
     left: 0;
     top: 0;
   }
 
-  .time-info {
+  .timetable-card .time-info {
     position: absolute;
     right: 0;
     top: 0;
   }
 
-  .destination-info {
+  .timetable-card .destination-info {
     margin-top: 2rem;
     text-align: left;
   }

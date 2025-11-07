@@ -38,15 +38,20 @@
   --line-vigo-l24: rgb(191, 191, 191);
   --line-vigo-l25: rgb(172, 100, 4);
   --line-vigo-l27: rgb(112, 74, 42);
+  --line-vigo-l27-text: #ffffff;
   --line-vigo-l28: rgb(176, 189, 254);
   --line-vigo-l29: rgb(248, 184, 90);
   --line-vigo-l31: rgb(255, 255, 0);
   --line-vigo-a: rgb(119, 41, 143);
   --line-vigo-a-text: #ffffff;
   --line-vigo-h: rgb(0, 96, 168);
+  --line-vigo-h-text: #ffffff;
   --line-vigo-h1: rgb(0, 96, 168);
+  --line-vigo-h1-text: #ffffff;
   --line-vigo-h2: rgb(0, 96, 168);
+  --line-vigo-h2-text: #ffffff;
   --line-vigo-h3: rgb(0, 96, 168);
+  --line-vigo-h3-text: #ffffff;
   --line-vigo-lzd: rgb(61, 78, 167);
   --line-vigo-n1: rgb(191, 191, 191);
   --line-vigo-n4: rgb(102, 51, 102);
@@ -56,7 +61,9 @@
   --line-vigo-ptl: rgb(150, 220, 153);
   --line-vigo-turistico: rgb(102, 51, 102);
   --line-vigo-u1: rgb(172, 100, 4);
+  --line-vigo-u1-text: #ffffff;
   --line-vigo-u2: rgb(172, 100, 4);
+  --line-vigo-u2-text: #ffffff;
 
   --line-santiago-l1: #f32621;
   --line-santiago-l4: #ffcc33;

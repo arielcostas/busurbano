@@ -15,6 +15,7 @@
     "table_style": "Table style:",
     "table_style_regular": "Show in order",
     "table_style_grouped": "Group by line",
+    "table_style_experimental_consolidated": "(EXPERIMENTAL) Consolidated data",
     "map_position_mode": "Map position:",
     "map_position_gps": "GPS position",
     "map_position_last": "Where I left it",
@@ -37,7 +38,8 @@
     "details_summary": "What does this mean?",
     "details_table": "The timetable can be shown in two ways:",
     "details_regular": "Stops are shown in the order they are visited. Apps like Infobus (Vitrasa) use this style.",
-    "details_grouped": "Stops are grouped by bus line. Apps like iTranvias (A Coruña) or Moovit (more or less) use this style."
+    "details_grouped": "Stops are grouped by bus line. Apps like iTranvias (A Coruña) or Moovit (more or less) use this style.",
+    "details_experimental_consolidated": "Stops are shown using consolidated data from multiple real-time sources. This feature is experimental and may not be completely accurate. It works only in the Vigo region."
   },
   "stoplist": {
     "search_placeholder": "Search stop by name or code...",
@@ -65,7 +67,18 @@
     "distance": "Distance",
     "not_available": "Not available",
     "none": "No estimates available",
-    "next_arrivals": "Next arrivals"
+    "next_arrivals": "Next arrivals",
+    "on_time": "on time",
+    "minutes_late": "{{minutes}} minutes late",
+    "minutes_early": "{{minutes}} minutes early",
+    "bus_is": "Bus is",
+    "service": "Service",
+    "trip": "trip",
+    "last_updated": "Updated at",
+    "reload": "Reload",
+    "unknown_service": "Unknown service. It may be a reinforcement or the service has a different name than planned.",
+    "experimental_feature": "Experimental feature",
+    "experimental_description": "This view uses consolidated data from multiple real-time sources. This feature is experimental and may not be completely accurate."
   },
   "timetable": {
     "fullCaption": "Theoretical timetables for this stop",

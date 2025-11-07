@@ -237,3 +237,36 @@
 .estimates-line-icon {
   flex-shrink: 0;
 }
+
+.experimental-notice {
+  background-color: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  color: #856404;
+}
+
+.experimental-notice strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #856404;
+}
+
+.experimental-notice p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+@media (prefers-color-scheme: dark) {
+  .experimental-notice {
+    background-color: #3d3100;
+    border-color: #ffc107;
+    color: #ffd966;
+  }
+
+  .experimental-notice strong {
+    color: #ffd966;
+  }
+}
