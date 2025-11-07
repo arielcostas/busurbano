@@ -35,17 +35,25 @@
   flex-wrap: wrap;
 }
 
-.stop-sheet-line-more {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--subtitle-color);
-  background-color: var(--message-background-color);
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
+.stop-sheet-lines-container.scrollable {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  max-height: calc(2 * (var(--line-icon-height, 2rem) + 0.5rem));
+  align-content: flex-start;
+  scrollbar-width: thin;
+}
+
+.stop-sheet-lines-container.scrollable::-webkit-scrollbar {
+  height: 6px;
+}
+
+.stop-sheet-lines-container.scrollable::-webkit-scrollbar-thumb {
+  background-color: var(--border-color);
+  border-radius: 3px;
+}
+
+.stop-sheet-line-icon {
+  flex-shrink: 0;
 }
 
 .stop-sheet-loading {

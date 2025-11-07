@@ -139,17 +139,14 @@ export const StopSheet: React.FC<StopSheetProps> = ({
               <span className="stop-sheet-id">({stop.stopId})</span>
             </div>
 
-            <div className="stop-sheet-lines-container">
-              {stop.lines.slice(0, 4).map((line) => (
+            <div
+              className={`stop-sheet-lines-container ${stop.lines.length >= 6 ? "scrollable" : ""}`}
+            >
+              {stop.lines.map((line) => (
                 <div key={line} className="stop-sheet-line-icon">
                   <LineIcon line={line} region={region} rounded />
                 </div>
               ))}
-              {stop.lines.length > 4 && (
-                <div className="stop-sheet-line-icon stop-sheet-line-more">
-                  +{stop.lines.length - 4}
-                </div>
-              )}
             </div>
 
             <StopAlert stop={stop} compact />
