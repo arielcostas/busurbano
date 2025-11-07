@@ -23,11 +23,11 @@ const StopGalleryItem: React.FC<StopGalleryItemProps> = ({ stop }) => {
           {StopDataProvider.getDisplayName(region, stop)}
         </div>
         <div className="gallery-item-lines">
-          {stop.lines?.slice(0, 3).map((line) => (
+          {stop.lines?.slice(0, 6).map((line) => (
             <LineIcon key={line} line={line} region={region} />
           ))}
-          {stop.lines && stop.lines.length > 3 && (
-            <span className="more-lines">+{stop.lines.length - 3}</span>
+          {stop.lines && stop.lines.length > 5 && (
+            <span className="more-lines">+{stop.lines.length - 5}</span>
           )}
         </div>
       </Link>

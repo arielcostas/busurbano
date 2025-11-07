@@ -279,16 +279,16 @@ export default function StopList() {
 
       {!loading && (
         <StopGallery
-          stops={recentStops.slice(0, 5)}
-          title={t("stoplist.recents")}
+          stops={favouriteStops.sort((a, b) => a.stopId - b.stopId)}
+          title={t("stoplist.favourites")}
+          emptyMessage={t("stoplist.no_favourites")}
         />
       )}
 
       {!loading && (
         <StopGallery
-          stops={favouriteStops.sort((a, b) => a.stopId - b.stopId)}
-          title={t("stoplist.favourites")}
-          emptyMessage={t("stoplist.no_favourites")}
+          stops={recentStops.slice(0, 5)}
+          title={t("stoplist.recents")}
         />
       )}
 

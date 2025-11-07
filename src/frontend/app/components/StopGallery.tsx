@@ -49,7 +49,6 @@ const StopGallery: React.FC<StopGalleryProps> = ({
     <div className="gallery-container">
       <div className="gallery-header">
         <h2 className="page-subtitle">{title}</h2>
-        <span className="gallery-counter">{stops.length}</span>
       </div>
 
       <div className="gallery-scroll-container" ref={scrollRef}>

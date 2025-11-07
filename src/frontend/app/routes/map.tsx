@@ -144,7 +144,7 @@ export default function StopMap() {
         longitude: getLongitude(mapState.center),
         zoom: mapState.zoom,
       }}
-      attributionControl={false}
+      attributionControl={{compact: false}}
       maxBounds={
         REGIONS[region].bounds
           ? [REGIONS[region].bounds!.sw, REGIONS[region].bounds!.ne]
@@ -153,7 +153,6 @@ export default function StopMap() {
     >
       <NavigationControl position="top-right" />
       <GeolocateControl position="top-right" trackUserLocation={true} />
-      <AttributionControl position="bottom-right" compact={false} />
 
       <Source
         id="stops-source"

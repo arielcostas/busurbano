@@ -163,3 +163,7 @@ body {
     max-width: 1024px;
   }
 }
+
+.maplibregl-ctrl-attrib-inner {
+  font-size: 0.9em;
+}
