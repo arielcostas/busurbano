@@ -107,6 +107,14 @@ export const StopSheet: React.FC<StopSheetProps> = ({
 
       const handlePopState = () => {
         // Close the sheet when back button is pressed
+        // Remove the state marker so we know this close was from back navigation
+        if (window.history.state) {
+          window.history.replaceState(
+            { ...window.history.state, stopSheetOpen: false },
+            "",
+            null,
+          );
+        }
         onClose();
       };
 
@@ -116,8 +124,8 @@ export const StopSheet: React.FC<StopSheetProps> = ({
         window.removeEventListener("popstate", handlePopState);
       };
     } else {
-      // When sheet closes, remove the history entry if it's still there
-      if (window.history.state?.stopSheetOpen) {
+      // When sheet closes naturally (not via back), remove the history entry if it's still there
+      if (window.history.state?.stopSheetOpen === true) {
         window.history.back();
       }
     }
