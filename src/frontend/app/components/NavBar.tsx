@@ -27,7 +27,8 @@ export default function NavBar() {
     {
       name: t("navbar.stops", "Paradas"),
       icon: MapPin,
-      path: "/stops",
+      path: "/",
+      exact: true
     },
     {
       name: t("navbar.map", "Mapa"),
@@ -65,7 +66,9 @@ export default function NavBar() {
     <nav className="navigation-bar">
       {navItems.map((item) => {
         const Icon = item.icon;
-        const isActive = location.pathname.startsWith(item.path);
+        const isActive = item.exact ?
+          location.pathname === item.path :
+          location.pathname.startsWith(item.path);
 
         return (
           <Link

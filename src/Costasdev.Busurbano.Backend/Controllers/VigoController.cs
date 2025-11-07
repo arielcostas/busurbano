@@ -86,19 +86,19 @@ public class VigoController : ControllerBase
         return JsonSerializer.Deserialize<ScheduledStop[]>(contents)!;
     }*/
 
-    [HttpGet("GetStopArrivalsMerged")]
-    public async Task<IActionResult> GetStopArrivalsMerged(
+    [HttpGet("GetConsolidatedCirculations")]
+    public async Task<IActionResult> GetConsolidatedCirculations(
         [FromQuery] int stopId
     )
     {
         StringBuilder outputBuffer = new();
 
-    // Use Europe/Madrid timezone consistently to avoid UTC/local skew
-    var tz = TimeZoneInfo.FindSystemTimeZoneById("Europe/Madrid");
-    var nowLocal = TimeZoneInfo.ConvertTime(DateTime.UtcNow, tz);
+        // Use Europe/Madrid timezone consistently to avoid UTC/local skew
+        var tz = TimeZoneInfo.FindSystemTimeZoneById("Europe/Madrid");
+        var nowLocal = TimeZoneInfo.ConvertTime(DateTime.UtcNow, tz);
 
-    var realtimeTask = _api.GetStopEstimates(stopId);
-    var timetableTask = LoadTimetable(stopId.ToString(), nowLocal.Date.ToString("yyyy-MM-dd"));
+        var realtimeTask = _api.GetStopEstimates(stopId);
+        var timetableTask = LoadTimetable(stopId.ToString(), nowLocal.Date.ToString("yyyy-MM-dd"));
 
         await Task.WhenAll(realtimeTask, timetableTask);
 
@@ -108,14 +108,14 @@ public class VigoController : ControllerBase
             .Where(c => c.StartingDateTime() != null && c.CallingDateTime() != null)
             .ToList();
 
-    var now = nowLocal.AddSeconds(60 - nowLocal.Second);
+        var now = nowLocal.AddSeconds(60 - nowLocal.Second);
         // Define the scope end as the time of the last realtime arrival (no extra buffer)
         var scopeEnd = realTimeEstimates.Count > 0
             ? now.AddMinutes(realTimeEstimates.Max(e => e.Minutes))
             : now;
 
-    List<ConsolidatedCirculation> consolidatedCirculations = [];
-    var usedTripIds = new HashSet<string>();
+        List<ConsolidatedCirculation> consolidatedCirculations = [];
+        var usedTripIds = new HashSet<string>();
 
         foreach (var estimate in realTimeEstimates)
         {
@@ -256,6 +256,7 @@ public class VigoController : ControllerBase
                 });
             }
         }
+
         // Sort by ETA (RealTime minutes if present; otherwise Schedule minutes)
         var sorted = consolidatedCirculations
             .OrderBy(c => c.RealTime?.Minutes ?? c.Schedule!.Minutes)

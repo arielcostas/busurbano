@@ -4,13 +4,13 @@
   "name": "BusUrbano",
   "description": "Aplicación web para encontrar paradas y tiempos de llegada de los autobuses urbanos.",
   "short_name": "BusUrbano",
-  "start_url": "/stops",
-  "display": "standalone",
+  "start_url": "/",
+  "display": "fullscreen",
   "orientation": "portrait-primary",
   "lang": "es",
   "background_color": "#ffffff",
   "theme_color": "#007bff",
-  "categories": ["travel", "utilities", "productivity"],
+  "categories": ["productivity"],
   "prefer_related_applications": false,
   "icons": [
     {

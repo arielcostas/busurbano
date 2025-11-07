@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import StopDataProvider, { type Stop } from "../data/StopDataProvider";
 import StopItem from "../components/StopItem";
@@ -5,7 +6,7 @@ import StopItemSkeleton from "../components/StopItemSkeleton";
 import StopGallery from "../components/StopGallery";
 import ServiceAlerts from "../components/ServiceAlerts";
 import Fuse from "fuse.js";
-import "./stoplist.css";
+import "./home.css";
 import { useTranslation } from "react-i18next";
 import { useApp } from "../AppContext";
 import { REGIONS } from "~/data/RegionConfig";

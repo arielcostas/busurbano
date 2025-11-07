@@ -35,7 +35,7 @@ export default function Settings() {
       setRegion(pendingRegion as any);
       setShowModal(false);
       setPendingRegion(null);
-      navigate("/stops");
+      navigate("/");
     }
   };
 
