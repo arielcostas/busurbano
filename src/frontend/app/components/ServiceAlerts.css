@@ -13,42 +13,21 @@
 }
 
 .service-alert.info {
-  background-color: #e3f2fd;
-  border-color: #2196f3;
-  color: #0d47a1;
+  background-color: var(--alert-info-bg);
+  border-color: var(--alert-info-border);
+  color: var(--alert-info-text);
 }
 
 .service-alert.warning {
-  background-color: #fff3e0;
-  border-color: #ff9800;
-  color: #e65100;
+  background-color: var(--alert-warning-bg);
+  border-color: var(--alert-warning-border);
+  color: var(--alert-warning-text);
 }
 
 .service-alert.error {
-  background-color: #ffebee;
-  border-color: #f44336;
-  color: #b71c1c;
-}
-
-/* Dark mode adjustments */
-@media (prefers-color-scheme: dark) {
-  .service-alert.info {
-    background-color: #0d47a1;
-    border-color: #2196f3;
-    color: #e3f2fd;
-  }
-
-  .service-alert.warning {
-    background-color: #e65100;
-    border-color: #ff9800;
-    color: #fff3e0;
-  }
-
-  .service-alert.error {
-    background-color: #b71c1c;
-    border-color: #f44336;
-    color: #ffebee;
-  }
+  background-color: var(--alert-error-bg);
+  border-color: var(--alert-error-border);
+  color: var(--alert-error-text);
 }
 
 .alert-icon {

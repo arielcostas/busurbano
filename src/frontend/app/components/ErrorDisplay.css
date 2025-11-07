@@ -14,7 +14,7 @@
 .error-icon {
   width: 48px;
   height: 48px;
-  color: #e74c3c;
+  color: var(--error-icon-color);
   margin: 0 auto 1rem;
   display: block;
 }
@@ -22,12 +22,12 @@
 .error-title {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #2c3e50;
+  color: var(--error-title-color);
   margin: 0 0 0.5rem;
 }
 
 .error-message {
-  color: #7f8c8d;
+  color: var(--error-message-color);
   margin: 0 0 1.5rem;
   line-height: 1.5;
 }
@@ -36,7 +36,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: #3498db;
+  background: var(--button-background-color);
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -48,7 +48,7 @@
 }
 
 .error-retry-button:hover {
-  background: #2980b9;
+  background: var(--button-hover-background-color);
 }
 
 .error-retry-button:active {

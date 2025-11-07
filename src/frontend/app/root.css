@@ -26,6 +26,24 @@
   --service-background: #f0f0f0;
   --service-background-past: #e8e8e8;
 
+  /* Alert color variables */
+  --alert-info-bg: rgba(59, 130, 246, 0.1);
+  --alert-info-border: rgba(59, 130, 246, 0.5);
+  --alert-info-text: #1e40af;
+
+  --alert-warning-bg: rgba(255, 152, 0, 0.1);
+  --alert-warning-border: rgba(255, 152, 0, 0.5);
+  --alert-warning-text: #e65100;
+
+  --alert-error-bg: rgba(239, 68, 68, 0.1);
+  --alert-error-border: rgba(239, 68, 68, 0.5);
+  --alert-error-text: #991b1b;
+
+  /* Error display colors */
+  --error-icon-color: #e74c3c;
+  --error-title-color: #2c3e50;
+  --error-message-color: #7f8c8d;
+
   color-scheme: light;
   font-family: "Roboto Variable", Roboto, Arial, sans-serif;
 }
@@ -57,6 +75,24 @@
   --card-background: #1e1e1e;
   --service-background: #222222;
   --service-background-past: #1f1f1f;
+
+  /* Alert color variables (dark) */
+  --alert-info-bg: rgba(59, 130, 246, 0.15);
+  --alert-info-border: rgba(59, 130, 246, 0.4);
+  --alert-info-text: #93c5fd;
+
+  --alert-warning-bg: rgba(255, 152, 0, 0.15);
+  --alert-warning-border: rgba(255, 152, 0, 0.4);
+  --alert-warning-text: #ffa726;
+
+  --alert-error-bg: rgba(239, 68, 68, 0.15);
+  --alert-error-border: rgba(239, 68, 68, 0.4);
+  --alert-error-text: #fca5a5;
+
+  /* Error display colors (dark) */
+  --error-icon-color: #e74c3c;
+  --error-title-color: #e0e0e0;
+  --error-message-color: #b0b0b0;
 
   color-scheme: dark;
 }
