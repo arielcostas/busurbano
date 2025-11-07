@@ -129,10 +129,10 @@ export const StopSheet: React.FC<StopSheetProps> = ({
     data?.sort((a, b) => a.minutes - b.minutes).slice(0, 4) || [];
 
   return (
-    <Sheet isOpen={isOpen} onClose={onClose} detent={"content-height" as any}>
-      <Sheet.Container drag="y">
+    <Sheet isOpen={isOpen} onClose={onClose} detent="content">
+      <Sheet.Container>
         <Sheet.Header />
-        <Sheet.Content>
+        <Sheet.Content drag="y">
           <div className="stop-sheet-content">
             <div className="stop-sheet-header">
               <h2 className="stop-sheet-title">{stop.name.original}</h2>
