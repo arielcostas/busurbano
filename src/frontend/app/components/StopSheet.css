@@ -36,11 +36,14 @@
 }
 
 .stop-sheet-lines-container.scrollable {
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  max-height: calc(2 * (var(--line-icon-height, 2rem) + 0.5rem));
-  align-content: flex-start;
+  display: grid;
+  grid-template-rows: repeat(2, 1fr);
+  grid-auto-flow: column;
+  /* align-content: flex-start; */
   scrollbar-width: thin;
+  gap: 0.5rem 1rem;
+  overflow-x: scroll;
+  overflow-y: auto;
 }
 
 .stop-sheet-lines-container.scrollable::-webkit-scrollbar {
@@ -163,9 +166,8 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  margin: 1rem 0;
+  margin: 0.75rem 0 1rem 0;
   padding-top: 0.75rem;
-  border-top: 1px solid var(--border-color);
 }
 
 .stop-sheet-timestamp {

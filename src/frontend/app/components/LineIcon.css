@@ -118,4 +118,5 @@
 
   font: 600 14px / 1 monospace;
   letter-spacing: 0.05em;
+  text-wrap: nowrap;
 }
