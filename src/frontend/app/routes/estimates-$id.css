@@ -259,14 +259,12 @@
   line-height: 1.4;
 }
 
-@media (prefers-color-scheme: dark) {
-  .experimental-notice {
-    background-color: #3d3100;
-    border-color: #ffc107;
-    color: #ffd966;
-  }
+[data-theme="dark"] .experimental-notice {
+  background-color: #3d3100;
+  border-color: #ffc107;
+  color: #ffd966;
+}
 
-  .experimental-notice strong {
-    color: #ffd966;
-  }
+[data-theme="dark"] .experimental-notice strong {
+  color: #ffd966;
 }

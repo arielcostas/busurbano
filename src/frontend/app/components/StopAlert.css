@@ -1,24 +1,4 @@
-/* Alert color variables */
-:root {
-  --alert-info-bg: rgba(59, 130, 246, 0.1);
-  --alert-info-border: rgba(59, 130, 246, 0.5);
-  --alert-info-text: #1e40af;
-
-  --alert-error-bg: rgba(239, 68, 68, 0.1);
-  --alert-error-border: rgba(239, 68, 68, 0.5);
-  --alert-error-text: #991b1b;
-}
-
-/* Dark mode overrides use data-mode */
-[data-mode="dark"] {
-  --alert-info-bg: rgba(59, 130, 246, 0.15);
-  --alert-info-border: rgba(59, 130, 246, 0.4);
-  --alert-info-text: #93c5fd;
-
-  --alert-error-bg: rgba(239, 68, 68, 0.15);
-  --alert-error-border: rgba(239, 68, 68, 0.4);
-  --alert-error-text: #fca5a5;
-}
+/* Alert styles use variables from root.css */
 
 .stop-alert {
   display: flex;
@@ -34,6 +14,12 @@
   background-color: var(--alert-info-bg);
   border-color: var(--alert-info-border);
   color: var(--alert-info-text);
+}
+
+.stop-alert-warning {
+  background-color: var(--alert-warning-bg);
+  border-color: var(--alert-warning-border);
+  color: var(--alert-warning-text);
 }
 
 .stop-alert-error {
