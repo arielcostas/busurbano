@@ -103,7 +103,7 @@ export const StopSheet: React.FC<StopSheetProps> = ({
   useEffect(() => {
     if (isOpen) {
       // Push a dummy state when sheet opens
-      window.history.pushState({ stopSheetOpen: true }, "");
+      window.history.pushState({ stopSheetOpen: true }, "", null);
 
       const handlePopState = () => {
         // Close the sheet when back button is pressed
@@ -114,11 +114,12 @@ export const StopSheet: React.FC<StopSheetProps> = ({
 
       return () => {
         window.removeEventListener("popstate", handlePopState);
-        // Clean up: if the sheet is still open when unmounting, go back
-        if (window.history.state?.stopSheetOpen) {
-          window.history.back();
-        }
       };
+    } else {
+      // When sheet closes, remove the history entry if it's still there
+      if (window.history.state?.stopSheetOpen) {
+        window.history.back();
+      }
     }
   }, [isOpen, onClose]);
 
