@@ -450,7 +450,7 @@ const ScrollFabManager: React.FC<{
       const style = getComputedStyle(el);
       const hasScroll = el.scrollHeight > el.clientHeight + 8;
       const overflowY = style.overflowY;
-      if (hasScroll && (overflowY === 'auto' || overflowY === 'scroll')) {
+      if (hasScroll && (overflowY === "auto" || overflowY === "scroll")) {
         return el;
       }
       el = el.parentElement;
@@ -465,12 +465,14 @@ const ScrollFabManager: React.FC<{
 
     const handleScroll = () => {
       const scrollTop = useWindowScroll
-        ? (window.scrollY || document.documentElement.scrollTop || 0)
+        ? window.scrollY || document.documentElement.scrollTop || 0
         : scrollEl!.scrollTop;
       const scrollHeight = useWindowScroll
         ? document.documentElement.scrollHeight
         : scrollEl!.scrollHeight;
-      const clientHeight = useWindowScroll ? window.innerHeight : scrollEl!.clientHeight;
+      const clientHeight = useWindowScroll
+        ? window.innerHeight
+        : scrollEl!.clientHeight;
 
       const scrollBottom = scrollHeight - scrollTop - clientHeight;
       const threshold = 80; // slightly smaller threshold for responsiveness
@@ -479,39 +481,46 @@ const ScrollFabManager: React.FC<{
 
       if (nextEntryRef.current) {
         const rect = nextEntryRef.current.getBoundingClientRect();
-        const isNextVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
+        const isNextVisible =
+          rect.top >= 0 && rect.bottom <= window.innerHeight;
         setShowGoToNow(!isNextVisible);
       }
     };
 
     const target: any = useWindowScroll ? window : scrollEl!;
-    target.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', handleScroll);
+    target.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleScroll);
     handleScroll();
     return () => {
-      target.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleScroll);
+      target.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
     };
   }, [containerRef, nextEntryRef, disabled, data, currentTime]);
 
   const scrollToTop = () => {
     const scrollEl = getScrollContainer();
     if (!scrollEl) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
-      scrollEl.scrollTo({ top: 0, behavior: 'smooth' });
+      scrollEl.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
   const scrollToBottom = () => {
     const scrollEl = getScrollContainer();
     if (!scrollEl) {
-      window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: "smooth",
+      });
     } else {
-      scrollEl.scrollTo({ top: scrollEl.scrollHeight, behavior: 'smooth' });
+      scrollEl.scrollTo({ top: scrollEl.scrollHeight, behavior: "smooth" });
     }
   };
   const scrollToNow = () => {
-    nextEntryRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    nextEntryRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
   };
 
   if (disabled) return null;

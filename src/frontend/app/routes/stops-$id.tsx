@@ -27,7 +27,6 @@ export interface ConsolidatedCirculation {
   };
 }
 
-
 interface ErrorInfo {
   type: "network" | "server" | "unknown";
   status?: number;
@@ -39,11 +38,14 @@ const loadConsolidatedData = async (
   stopId: string,
 ): Promise<ConsolidatedCirculation[]> => {
   const regionConfig = getRegionConfig(region);
-  const resp = await fetch(`${regionConfig.consolidatedCirculationsEndpoint}?stopId=${stopId}`, {
-    headers: {
-      Accept: "application/json",
+  const resp = await fetch(
+    `${regionConfig.consolidatedCirculationsEndpoint}?stopId=${stopId}`,
+    {
+      headers: {
+        Accept: "application/json",
+      },
     },
-  });
+  );
 
   if (!resp.ok) {
     throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
@@ -232,9 +234,7 @@ export default function Estimates() {
         </div>
 
         {stopData && stopData.lines && stopData.lines.length > 0 && (
-          <div
-            className={`estimates-lines-container`}
-          >
+          <div className={`estimates-lines-container`}>
             {stopData.lines.map((line) => (
               <div key={line} className="estimates-line-icon">
                 <LineIcon line={line} region={region} rounded />
@@ -244,18 +244,30 @@ export default function Estimates() {
         )}
 
         <div className="experimental-notice">
-          <strong>{t("estimates.experimental_feature", "Experimental feature")}</strong>
-          <p>{t("estimates.experimental_description", "This view uses consolidated data from multiple real-time sources. This feature is experimental and may not be completely accurate.")}</p>
+          <strong>
+            {t("estimates.experimental_feature", "Experimental feature")}
+          </strong>
+          <p>
+            {t(
+              "estimates.experimental_description",
+              "This view uses consolidated data from multiple real-time sources. This feature is experimental and may not be completely accurate.",
+            )}
+          </p>
         </div>
 
         {stopData && <StopAlert stop={stopData} />}
 
         <div className="table-responsive">
-          {data ? (<>
-            <ConsolidatedCirculationList data={data} dataDate={dataDate} regionConfig={regionConfig} />
-          </>) : null}
+          {data ? (
+            <>
+              <ConsolidatedCirculationList
+                data={data}
+                dataDate={dataDate}
+                regionConfig={regionConfig}
+              />
+            </>
+          ) : null}
         </div>
-
       </div>
     </PullToRefresh>
   );

@@ -13,7 +13,10 @@ export const StopSheetSkeleton: React.FC<StopSheetSkeletonProps> = ({
   const { t } = useTranslation();
 
   return (
-    <SkeletonTheme baseColor="var(--skeleton-base)" highlightColor="var(--skeleton-highlight)">
+    <SkeletonTheme
+      baseColor="var(--skeleton-base)"
+      highlightColor="var(--skeleton-highlight)"
+    >
       <div className="stop-sheet-estimates">
         <h3 className="stop-sheet-subtitle">
           {t("estimates.next_arrivals", "Next arrivals")}
@@ -59,11 +62,14 @@ export const StopSheetSkeleton: React.FC<StopSheetSkeletonProps> = ({
             <Skeleton width="70px" height="0.85rem" />
           </div>
 
-          <div className="stop-sheet-view-all" style={{
-            background: "var(--service-background)",
-            cursor: "not-allowed",
-            pointerEvents: "none"
-          }}>
+          <div
+            className="stop-sheet-view-all"
+            style={{
+              background: "var(--service-background)",
+              cursor: "not-allowed",
+              pointerEvents: "none",
+            }}
+          >
             <Skeleton width="180px" height="0.85rem" />
           </div>
         </div>
