@@ -91,8 +91,6 @@ public class VigoController : ControllerBase
         [FromQuery] int stopId
     )
     {
-        StringBuilder outputBuffer = new();
-
         // Use Europe/Madrid timezone consistently to avoid UTC/local skew
         var tz = TimeZoneInfo.FindSystemTimeZoneById("Europe/Madrid");
         var nowLocal = TimeZoneInfo.ConvertTime(DateTime.UtcNow, tz);
@@ -210,16 +208,6 @@ public class VigoController : ControllerBase
                         Distance = estimate.Meters
                     }
                 });
-
-                // Also capture details in debug buffer for diagnostics
-                outputBuffer.AppendLine("**No circulation matched. List of all of them:**");
-                foreach (var circulation in possibleCirculations)
-                {
-                    outputBuffer.AppendLine(
-                        $"Circulation {circulation.TripId} stopping at {circulation.CallingDateTime()!.Value} (diff: {estimatedArrivalTime - circulation.CallingDateTime()!.Value:HH:mm})");
-                }
-
-                outputBuffer.AppendLine();
 
                 continue;
             }
