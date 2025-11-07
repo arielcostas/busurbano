@@ -1136,7 +1136,6 @@
     },
     "latitude": 42.23416729,
     "longitude": -8.733331094,
-<<<<<<< HEAD
     "lines": [
       "6",
       "9B",
@@ -1144,9 +1143,6 @@
       "15C",
       "28"
     ]
-=======
-    "lines": ["6", "9B", "15B", "28"]
->>>>>>> 88e0621 (Improve gallery scroll indicators and format code)
   },
   {
     "stopId": 1130,
@@ -1155,7 +1151,6 @@
     },
     "latitude": 42.231238831,
     "longitude": -8.735255297,
-<<<<<<< HEAD
     "lines": [
       "6",
       "9B",
@@ -1163,9 +1158,6 @@
       "15C",
       "28"
     ]
-=======
-    "lines": ["6", "9B", "15B", "28"]
->>>>>>> 88e0621 (Improve gallery scroll indicators and format code)
   },
   {
     "stopId": 1140,
@@ -3519,7 +3511,6 @@
     },
     "latitude": 42.236471452,
     "longitude": -8.720164905,
-<<<<<<< HEAD
     "lines": [
       "A",
       "5A",
@@ -3533,9 +3524,6 @@
     "alert": "warning",
     "title": "L17 no realiza parada",
     "message": "Con motivo de las atracciones navideñas, la línea 17 no realiza parada en esta ubicación.\nSe puede tomar en Urzaiz, 13 (cruce República Argentina).\n"
-=======
-    "lines": ["A", "5A", "9B", "11", "15B", "15C", "16", "17"]
->>>>>>> 88e0621 (Improve gallery scroll indicators and format code)
   },
   {
     "stopId": 3240,
@@ -3580,14 +3568,10 @@
     },
     "latitude": 42.226287696,
     "longitude": -8.737475832,
-<<<<<<< HEAD
     "lines": [
       "15B",
       "15C"
     ]
-=======
-    "lines": ["15B"]
->>>>>>> 88e0621 (Improve gallery scroll indicators and format code)
   },
   {
     "stopId": 3270,
@@ -6058,7 +6042,6 @@
       "PSA 4",
       "VTS"
     ],
-<<<<<<< HEAD
     "amenities": [
       "shelter",
       "display"
@@ -6067,9 +6050,6 @@
     "alert": "error",
     "title": "Cerrada por navidad",
     "message": "Con motivo de las atracciones navideñas, esta parada queda anulada.\nLíneas C3, 10, N1, 5B, 16 y 17 en García Barbón, 43 (restaurante Porto Santo).\nLíneas 4A y 4C (dir. Coia), 7, 12B, 16 y 17 se pueden tomar en Colón, 26 (oficina Banco Sabadell).\n"
-=======
-    "amenities": ["shelter", "display"]
->>>>>>> 88e0621 (Improve gallery scroll indicators and format code)
   },
   {
     "stopId": 5530,
@@ -6078,7 +6058,6 @@
     },
     "latitude": 42.23720456,
     "longitude": -8.718680736,
-<<<<<<< HEAD
     "lines": [
       "C3d",
       "5B",
@@ -6095,10 +6074,6 @@
     "alert": "error",
     "title": "Cerrada por navidad",
     "message": "Con motivo de las atracciones navideñas, esta parada queda anulada.\nLíneas C3 y 10 se pueden tomar en Rosalía de Castro 4 (detrás de ABANCA).\nResto de líneas en García Barbón 28 (pasando Alfonso XIII)\n"
-=======
-    "lines": ["C3d", "5B", "10", "17", "H2", "PSA 1"],
-    "amenities": ["shelter", "display"]
->>>>>>> 88e0621 (Improve gallery scroll indicators and format code)
   },
   {
     "stopId": 5540,
@@ -6107,7 +6082,6 @@
     },
     "latitude": 42.236759685,
     "longitude": -8.716384581,
-<<<<<<< HEAD
     "lines": [
       "C3d",
       "A",
@@ -6122,9 +6096,6 @@
     "alert": "warning",
     "title": "Líneas C3 y 10 no realizan parada",
     "message": "Con motivo de las atracciones navideñas, las líneas C3 y 10 realizan\nprovisionalmente la parada en Rúa Oporto 28 (calle perpendicular a la parada).\n"
-=======
-    "lines": ["C3d", "A", "5B", "10", "16", "17", "24", "H2", "PSA 1"]
->>>>>>> 88e0621 (Improve gallery scroll indicators and format code)
   },
   {
     "stopId": 5560,
@@ -7401,7 +7372,6 @@
     },
     "latitude": 42.23757846151978,
     "longitude": -8.721031378896738,
-<<<<<<< HEAD
     "lines": [
       "C1",
       "A",
@@ -7418,13 +7388,6 @@
     "cancelled": true,
     "title": "Parada movida a Colón 12",
     "message": "Con motivo del corte por las atracciones navideñas, las líneas se deben coger en Colón 12 (20208), excepto la línea 9B que arranca en Urzaiz-Príncipe."
-=======
-    "lines": ["C1", "A", "5A", "9B", "15B", "15C", "24", "28", "N4"],
-    "cancelled": true,
-    "title": "Parada movida a Colón 12",
-    "alternateCodes": [20208],
-    "amenities": ["shelter", "display"]
->>>>>>> 88e0621 (Improve gallery scroll indicators and format code)
   },
   {
     "stopId": 6640,
@@ -9839,14 +9802,10 @@
     },
     "latitude": 42.169776602,
     "longitude": -8.678942156,
-<<<<<<< HEAD
     "lines": [
       "A",
       "15C"
     ]
-=======
-    "lines": ["A"]
->>>>>>> 88e0621 (Improve gallery scroll indicators and format code)
   },
   {
     "stopId": 8730,
@@ -15013,7 +14972,6 @@
     },
     "latitude": 42.240364985,
     "longitude": -8.724530974,
-<<<<<<< HEAD
     "lines": [
       "C1",
       "C3d",
@@ -15028,9 +14986,6 @@
     "alert": "error",
     "title": "Cerrada por navidad",
     "message": "Con motivo de las atracciones navideñas, esta parada queda anulada.\nLa parada más cercana es Cánovas del Castillo, 18 (frente CC A Laxe).\n"
-=======
-    "lines": ["C1", "C3d", "A", "5A", "9B", "10", "15B", "15C", "28", "N4"]
->>>>>>> 88e0621 (Improve gallery scroll indicators and format code)
   },
   {
     "stopId": 20195,
@@ -15096,7 +15051,6 @@
       "10",
       "15B",
       "15C",
-<<<<<<< HEAD
       "24"
     ],
     "amenities": [
@@ -15106,16 +15060,6 @@
     "alert": "error",
     "title": "Parada movida a Marqués de Valladares (fronte 19)",
     "message": "Con motivo del corte por las atracciones navideñas, las líneas se deben coger en Marqués de Valladares (fronte 19), excepto la línea 9B que arranca en Urzaiz-Príncipe y la 24 que para en Colón 12 (provisional)."
-=======
-      "24",
-      "28",
-      "N4"
-    ],
-    "cancelled": true,
-    "title": "Parada movida a Marqués de Valladares (fronte 19)",
-    "alternateCodes": [20206],
-    "amenities": ["shelter"]
->>>>>>> 88e0621 (Improve gallery scroll indicators and format code)
   },
   {
     "stopId": 20199,
@@ -15152,7 +15096,6 @@
     },
     "latitude": 42.238271922,
     "longitude": -8.723353532,
-<<<<<<< HEAD
     "lines": [
       "C1",
       "C3d",
@@ -15165,9 +15108,6 @@
       "28",
       "N4"
     ]
-=======
-    "lines": ["C3d", "10"]
->>>>>>> 88e0621 (Improve gallery scroll indicators and format code)
   },
   {
     "stopId": 20208,
@@ -15176,7 +15116,6 @@
     },
     "latitude": 42.23805815883466,
     "longitude": -8.72057889828808,
-<<<<<<< HEAD
     "lines": [
       "C1",
       "A",
@@ -15190,10 +15129,6 @@
     ],
     "title": "Parada provisional sin datos",
     "message": "Parada provisional donde paran las líneas de Policarpo Sanz 40 *exceptuando 9B*"
-=======
-    "lines": ["C1", "A", "5A", "9B", "15B", "15C", "24", "28", "N4"],
-    "title": "Parada provisional sin datos"
->>>>>>> 88e0621 (Improve gallery scroll indicators and format code)
   },
   {
     "stopId": 20209,

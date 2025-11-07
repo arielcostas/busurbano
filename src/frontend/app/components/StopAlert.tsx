@@ -31,30 +31,11 @@ export const StopAlert: React.FC<StopAlertProps> = ({
   }, [stop.alert]);
 
   return (
-<<<<<<< HEAD
     <div className={`stop-alert ${alertType} ${compact ? 'stop-alert-compact' : ''}`}>
       {alertIcon}
       <div className="stop-alert-content">
         {stop.title && <div className="stop-alert-title">{stop.title}</div>}
         {stop.message && <div className="stop-alert-message">{stop.message}</div>}
-=======
-    <div
-      className={`stop-alert ${isError ? "stop-alert-error" : "stop-alert-info"} ${compact ? "stop-alert-compact" : ""}`}
-    >
-      <div className="stop-alert-icon">
-        {isError ? <AlertCircle /> : <Info />}
-      </div>
-      <div className="stop-alert-content">
-        {stop.title && <div className="stop-alert-title">{stop.title}</div>}
-        {stop.message && (
-          <div className="stop-alert-message">{stop.message}</div>
-        )}
-        {stop.alternateCodes && stop.alternateCodes.length > 0 && (
-          <div className="stop-alert-alternate-codes">
-            Alternative stops: {stop.alternateCodes.join(", ")}
-          </div>
-        )}
->>>>>>> 88e0621 (Improve gallery scroll indicators and format code)
       </div>
     </div>
   );

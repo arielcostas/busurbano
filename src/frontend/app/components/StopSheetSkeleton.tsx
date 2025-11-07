@@ -59,22 +59,11 @@ export const StopSheetSkeleton: React.FC<StopSheetSkeletonProps> = ({
             <Skeleton width="70px" height="0.85rem" />
           </div>
 
-<<<<<<< HEAD
           <div className="stop-sheet-view-all" style={{
             background: "var(--service-background)",
             cursor: "not-allowed",
             pointerEvents: "none"
           }}>
-=======
-          <div
-            className="stop-sheet-view-all"
-            style={{
-              background: "#f0f0f0",
-              cursor: "not-allowed",
-              pointerEvents: "none",
-            }}
-          >
->>>>>>> 88e0621 (Improve gallery scroll indicators and format code)
             <Skeleton width="180px" height="0.85rem" />
           </div>
         </div>
