@@ -4,7 +4,7 @@ import { type ConsolidatedCirculation } from "~routes/stops-$id";
 import LineIcon from "~components/LineIcon";
 import { type RegionConfig } from "~data/RegionConfig";
 
-import './ConsolidatedCirculationList.css';
+import "./ConsolidatedCirculationList.css";
 
 interface RegularTableProps {
   data: ConsolidatedCirculation[];
@@ -106,9 +106,13 @@ export const ConsolidatedCirculationList: React.FC<RegularTableProps> = ({
     if (delay >= -1 && delay <= 2) {
       return t("estimates.on_time", "on time");
     } else if (delay > 2) {
-      return t("estimates.minutes_late", "{{minutes}} minutes late", { minutes: delay });
+      return t("estimates.minutes_late", "{{minutes}} minutes late", {
+        minutes: delay,
+      });
     } else {
-      return t("estimates.minutes_early", "{{minutes}} minutes early", { minutes: Math.abs(delay) });
+      return t("estimates.minutes_early", "{{minutes}} minutes early", {
+        minutes: Math.abs(delay),
+      });
     }
   };
 
@@ -124,9 +128,7 @@ export const ConsolidatedCirculationList: React.FC<RegularTableProps> = ({
 
     if (estimate.realTime && !estimate.schedule) {
       return "time-running";
-    }
-
-    else if (estimate.realTime && !estimate.schedule?.running) {
+    } else if (estimate.realTime && !estimate.schedule?.running) {
       return "time-delayed";
     }
 
@@ -134,8 +136,9 @@ export const ConsolidatedCirculationList: React.FC<RegularTableProps> = ({
   };
 
   const sortedData = [...data].sort(
-    (a, b) => (a.realTime?.minutes ?? a.schedule?.minutes ?? 999) -
-      (b.realTime?.minutes ?? b.schedule?.minutes ?? 999)
+    (a, b) =>
+      (a.realTime?.minutes ?? a.schedule?.minutes ?? 999) -
+      (b.realTime?.minutes ?? b.schedule?.minutes ?? 999),
   );
 
   return (
@@ -153,7 +156,8 @@ export const ConsolidatedCirculationList: React.FC<RegularTableProps> = ({
       ) : (
         <div className="consolidated-circulation-list">
           {sortedData.map((estimate, idx) => {
-            const displayMinutes = estimate.realTime?.minutes ?? estimate.schedule?.minutes ?? 0;
+            const displayMinutes =
+              estimate.realTime?.minutes ?? estimate.schedule?.minutes ?? 0;
             const timeClass = getTimeClass(estimate);
             const delayText = getDelayText(estimate);
 
@@ -202,7 +206,10 @@ export const ConsolidatedCirculationList: React.FC<RegularTableProps> = ({
                       </>
                     ) : (
                       <>
-                        {t("estimates.unknown_service", "Unknown service. It may be a reinforcement or the service has a different name than planned.")}
+                        {t(
+                          "estimates.unknown_service",
+                          "Unknown service. It may be a reinforcement or the service has a different name than planned.",
+                        )}
                       </>
                     )}
                   </span>

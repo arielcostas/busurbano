@@ -144,7 +144,7 @@ export default function StopMap() {
         longitude: getLongitude(mapState.center),
         zoom: mapState.zoom,
       }}
-      attributionControl={{compact: false}}
+      attributionControl={{ compact: false }}
       maxBounds={
         REGIONS[region].bounds
           ? [REGIONS[region].bounds!.sw, REGIONS[region].bounds!.ne]

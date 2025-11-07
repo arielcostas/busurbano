@@ -299,9 +299,7 @@ export default function Estimates() {
         </div>
 
         {stopData && stopData.lines && stopData.lines.length > 0 && (
-          <div
-            className={`estimates-lines-container`}
-          >
+          <div className={`estimates-lines-container`}>
             {stopData.lines.map((line) => (
               <div key={line} className="estimates-line-icon">
                 <LineIcon line={line} region={region} rounded />

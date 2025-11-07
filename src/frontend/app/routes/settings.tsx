@@ -123,12 +123,19 @@ export default function Settings() {
             className="form-select-inline"
             value={tableStyle}
             onChange={(e) =>
-              setTableStyle(e.target.value as "regular" | "grouped" | "experimental_consolidated")
+              setTableStyle(
+                e.target.value as
+                  | "regular"
+                  | "grouped"
+                  | "experimental_consolidated",
+              )
             }
           >
             <option value="regular">{t("about.table_style_regular")}</option>
             <option value="grouped">{t("about.table_style_grouped")}</option>
-            <option value="experimental_consolidated">{t("about.table_style_experimental_consolidated")}</option>
+            <option value="experimental_consolidated">
+              {t("about.table_style_experimental_consolidated")}
+            </option>
           </select>
         </div>
         <details className="form-details">

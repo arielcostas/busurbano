@@ -21,7 +21,7 @@ export interface Stop {
 
   title?: string;
   message?: string;
-  alert?: "info"|"warning"|"error";
+  alert?: "info" | "warning" | "error";
   cancelled?: boolean;
 }
 

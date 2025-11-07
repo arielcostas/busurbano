@@ -31,11 +31,15 @@ export const StopAlert: React.FC<StopAlertProps> = ({
   }, [stop.alert]);
 
   return (
-    <div className={`stop-alert ${alertType} ${compact ? 'stop-alert-compact' : ''}`}>
+    <div
+      className={`stop-alert ${alertType} ${compact ? "stop-alert-compact" : ""}`}
+    >
       {alertIcon}
       <div className="stop-alert-content">
         {stop.title && <div className="stop-alert-title">{stop.title}</div>}
-        {stop.message && <div className="stop-alert-message">{stop.message}</div>}
+        {stop.message && (
+          <div className="stop-alert-message">{stop.message}</div>
+        )}
       </div>
     </div>
   );
