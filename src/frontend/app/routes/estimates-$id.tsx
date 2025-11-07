@@ -21,6 +21,7 @@ import { PullToRefresh } from "~/components/PullToRefresh";
 import { useAutoRefresh } from "~/hooks/useAutoRefresh";
 import { type RegionId, getRegionConfig } from "~/data/RegionConfig";
 import { StopAlert } from "~/components/StopAlert";
+import LineIcon from "~/components/LineIcon";
 
 export interface Estimate {
   line: string;
@@ -295,6 +296,21 @@ export default function Estimates() {
             />
           </button>
         </div>
+
+        {stopData && stopData.lines && stopData.lines.length > 0 && (
+          <div className="estimates-lines-container">
+            {stopData.lines.slice(0, 4).map((line) => (
+              <div key={line} className="estimates-line-icon">
+                <LineIcon line={line} region={region} rounded />
+              </div>
+            ))}
+            {stopData.lines.length > 4 && (
+              <div className="estimates-line-icon estimates-line-more">
+                +{stopData.lines.length - 4}
+              </div>
+            )}
+          </div>
+        )}
 
         {stopData && <StopAlert stop={stopData} />}
 

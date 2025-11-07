@@ -140,11 +140,16 @@ export const StopSheet: React.FC<StopSheetProps> = ({
             </div>
 
             <div className="stop-sheet-lines-container">
-              {stop.lines.map((line) => (
+              {stop.lines.slice(0, 4).map((line) => (
                 <div key={line} className="stop-sheet-line-icon">
                   <LineIcon line={line} region={region} rounded />
                 </div>
               ))}
+              {stop.lines.length > 4 && (
+                <div className="stop-sheet-line-icon stop-sheet-line-more">
+                  +{stop.lines.length - 4}
+                </div>
+              )}
             </div>
 
             <StopAlert stop={stop} compact />

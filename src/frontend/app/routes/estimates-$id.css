@@ -209,3 +209,27 @@
   width: 1rem;
   height: 1rem;
 }
+
+.estimates-lines-container {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.estimates-line-icon {
+  flex-shrink: 0;
+}
+
+.estimates-line-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--subtitle-color);
+  background-color: var(--message-background-color);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+}
