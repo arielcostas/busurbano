@@ -4,6 +4,15 @@
   touch-action: none;
 }
 
+/*.react-modal-sheet-content > * > *:not(.stop-sheet-actions){
+  interactivity: inert;
+}*/
+
+.react-modal-sheet-content-scroller {
+  overscroll-behavior-y: unset !important;
+  overflow-y: unset !important;
+}
+
 .stop-sheet-content {
   padding: 16px;
   display: flex;
@@ -45,7 +54,6 @@
   scrollbar-width: thin;
   gap: 0.5rem 1rem;
   overflow-x: scroll;
-  overflow-y: auto;
 }
 
 .stop-sheet-lines-container.scrollable::-webkit-scrollbar {
@@ -72,7 +80,6 @@
 
 .stop-sheet-estimates {
   flex: 1;
-  overflow-y: auto;
   min-height: 0;
   margin-block-start: 1.25rem;
 }

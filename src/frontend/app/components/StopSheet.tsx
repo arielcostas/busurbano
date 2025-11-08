@@ -1,17 +1,17 @@
+import { Clock, RefreshCw } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Sheet } from "react-modal-sheet";
 import { Link } from "react-router";
-import { useTranslation } from "react-i18next";
-import { Clock, RefreshCw } from "lucide-react";
-import LineIcon from "./LineIcon";
-import { StopSheetSkeleton } from "./StopSheetSkeleton";
-import { ErrorDisplay } from "./ErrorDisplay";
-import { StopAlert } from "./StopAlert";
-import { type Estimate } from "../routes/estimates-$id";
-import { REGIONS, type RegionId, getRegionConfig } from "../data/RegionConfig";
-import { useApp } from "../AppContext";
-import "./StopSheet.css";
 import type { Stop } from "~/data/StopDataProvider";
+import { useApp } from "../AppContext";
+import { REGIONS, type RegionId, getRegionConfig } from "../data/RegionConfig";
+import { type Estimate } from "../routes/estimates-$id";
+import { ErrorDisplay } from "./ErrorDisplay";
+import LineIcon from "./LineIcon";
+import { StopAlert } from "./StopAlert";
+import "./StopSheet.css";
+import { StopSheetSkeleton } from "./StopSheetSkeleton";
 
 interface StopSheetProps {
   isOpen: boolean;
@@ -50,7 +50,6 @@ export const StopSheet: React.FC<StopSheetProps> = ({
 }) => {
   const { t } = useTranslation();
   const { region } = useApp();
-  const regionConfig = getRegionConfig(region);
   const [data, setData] = useState<Estimate[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<ErrorInfo | null>(null);
@@ -206,45 +205,47 @@ export const StopSheet: React.FC<StopSheetProps> = ({
                   )}
                 </div>
 
-                <div className="stop-sheet-footer">
-                  {lastUpdated && (
-                    <div className="stop-sheet-timestamp">
-                      {t("estimates.last_updated", "Actualizado a las")}{" "}
-                      {lastUpdated.toLocaleTimeString(undefined, {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        second: "2-digit",
-                      })}
-                    </div>
-                  )}
 
-                  <div className="stop-sheet-actions">
-                    <button
-                      className="stop-sheet-reload"
-                      onClick={loadData}
-                      disabled={loading}
-                      title={t("estimates.reload", "Recargar estimaciones")}
-                    >
-                      <RefreshCw
-                        className={`reload-icon ${loading ? "spinning" : ""}`}
-                      />
-                      {t("estimates.reload", "Recargar")}
-                    </button>
-
-                    <Link
-                      to={`/estimates/${stop.stopId}`}
-                      className="stop-sheet-view-all"
-                      onClick={onClose}
-                    >
-                      {t(
-                        "map.view_all_estimates",
-                        "Ver todas las estimaciones",
-                      )}
-                    </Link>
-                  </div>
-                </div>
               </>
             ) : null}
+          </div>
+
+          <div className="stop-sheet-footer">
+            {lastUpdated && (
+              <div className="stop-sheet-timestamp">
+                {t("estimates.last_updated", "Actualizado a las")}{" "}
+                {lastUpdated.toLocaleTimeString(undefined, {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit",
+                })}
+              </div>
+            )}
+
+            <div className="stop-sheet-actions">
+              <button
+                className="stop-sheet-reload"
+                onClick={loadData}
+                disabled={loading}
+                title={t("estimates.reload", "Recargar estimaciones")}
+              >
+                <RefreshCw
+                  className={`reload-icon ${loading ? "spinning" : ""}`}
+                />
+                {t("estimates.reload", "Recargar")}
+              </button>
+
+              <Link
+                to={`/estimates/${stop.stopId}`}
+                className="stop-sheet-view-all"
+                onClick={onClose}
+              >
+                {t(
+                  "map.view_all_estimates",
+                  "Ver todas las estimaciones",
+                )}
+              </Link>
+            </div>
           </div>
         </Sheet.Content>
       </Sheet.Container>
