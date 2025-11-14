@@ -4,10 +4,6 @@
   touch-action: none;
 }
 
-/*.react-modal-sheet-content > * > *:not(.stop-sheet-actions){
-  interactivity: inert;
-}*/
-
 .react-modal-sheet-content-scroller {
   overscroll-behavior-y: unset !important;
   overflow-y: unset !important;
@@ -224,15 +220,6 @@
 
 .reload-icon.spinning {
   animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 .stop-sheet-view-all {

@@ -1,0 +1,234 @@
+/* Common reusable styles across the application */
+
+/* Animations */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+/* Common button styles */
+.button {
+  padding: 0.75rem 1rem;
+  background-color: var(--button-background-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.button:hover {
+  background-color: var(--button-hover-background-color);
+}
+
+.button:disabled {
+  background-color: var(--button-disabled-background-color);
+  cursor: not-allowed;
+}
+
+.button-group {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+/* Common icon styles */
+.star-icon {
+  margin-right: 0.5rem;
+  color: #ccc;
+  fill: none;
+}
+
+.star-icon.active {
+  color: var(--star-color);
+  fill: var(--star-color);
+}
+
+.edit-icon {
+  margin-right: 0.5rem;
+  color: #ccc;
+  cursor: pointer;
+  stroke-width: 2px;
+}
+
+.edit-icon:hover {
+  color: var(--star-color);
+}
+
+.refresh-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  transition: transform 0.2s ease;
+}
+
+.refresh-icon.spinning {
+  animation: spin 1s linear infinite;
+}
+
+/* Common estimates page styles */
+.estimates-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.estimates-stop-id {
+  font-size: 1rem;
+  color: var(--subtitle-color);
+  margin-left: 0.5rem;
+}
+
+.estimates-arrival {
+  color: #28a745;
+  font-weight: 500;
+}
+
+.estimates-delayed {
+  color: #dc3545;
+}
+
+/* Common table styles */
+.table-responsive {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table caption {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.table th,
+.table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.table th {
+  border-bottom: 2px solid #ddd;
+}
+
+.table tfoot td {
+  text-align: center;
+}
+
+/* Common refresh button styles */
+.manual-refresh-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--primary-color);
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: max-content;
+}
+
+.manual-refresh-button:hover:not(:disabled) {
+  background: var(--primary-color-hover);
+  transform: translateY(-1px);
+}
+
+.manual-refresh-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Common timetable section styles */
+.timetable-section {
+  padding-bottom: 3rem;
+}
+
+.timetable-section .timetable-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.timetable-section .timetable-card {
+  padding: 0.875rem;
+}
+
+.timetable-actions {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+/* Common link styles */
+.view-all-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--link-color, #007bff);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--link-color, #007bff);
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.view-all-link:hover {
+  background-color: var(--link-color, #007bff);
+  color: white;
+  text-decoration: none;
+}
+
+.external-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Common scrollbar styles */
+.scrollable-container {
+  scrollbar-width: thin;
+}
+
+.scrollable-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.scrollable-container::-webkit-scrollbar-thumb {
+  background-color: var(--border-color);
+  border-radius: 3px;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 640px) {
+  .estimates-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .manual-refresh-button {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
+  }
+}

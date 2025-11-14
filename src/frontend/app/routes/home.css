@@ -104,23 +104,6 @@
   margin-bottom: 1rem;
 }
 
-/* About page specific styles */
-.about-page {
-  text-align: center;
-  padding: 1rem;
-}
-
-.about-version {
-  color: var(--subtitle-color);
-  font-size: 0.9rem;
-  margin-top: 2rem;
-}
-
-.about-description {
-  margin-top: 1rem;
-  line-height: 1.6;
-}
-
 /* Map page specific styles */
 .map-container {
   height: calc(100dvh - 140px);
@@ -209,68 +192,6 @@
 }
 
 /* Estimates page specific styles */
-.estimates-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.estimates-stop-id {
-  font-size: 1rem;
-  color: var(--subtitle-color);
-  margin-left: 0.5rem;
-}
-
-.estimates-arrival {
-  color: #28a745;
-  font-weight: 500;
-}
-
-.estimates-delayed {
-  color: #dc3545;
-}
-
-.button-group {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.button {
-  padding: 0.75rem 1rem;
-  background-color: var(--button-background-color);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-}
-
-.button:hover {
-  background-color: var(--button-hover-background-color);
-}
-
-.button:disabled {
-  background-color: var(--button-disabled-background-color);
-  cursor: not-allowed;
-}
-
-.star-icon {
-  margin-right: 0.5rem;
-  color: #ccc;
-  fill: none;
-}
-
-.star-icon.active {
-  color: var(--star-color); /* Yellow color for active star */
-  fill: var(--star-color);
-}
-
 /* Tablet and larger breakpoint */
 @media (min-width: 768px) {
   .search-form {
