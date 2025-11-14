@@ -6,6 +6,7 @@ using Costasdev.Busurbano.Backend.Types;
 using Costasdev.VigoTransitApi;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using static Costasdev.Busurbano.Backend.Types.StopArrivals.Types;
 using SysFile = System.IO.File;
 
 namespace Costasdev.Busurbano.Backend.Controllers;
@@ -72,20 +73,6 @@ public class VigoController : ControllerBase
         }
     }
 
-    /*private StopEstimate[] LoadDebugEstimates()
-    {
-        var file = @"C:\Users\ariel\Desktop\GetStopEstimates.json";
-        var contents = System.IO.File.ReadAllText(file);
-        return JsonSerializer.Deserialize<StopEstimate[]>(contents, JsonSerializerOptions.Web)!;
-    }
-
-    private ScheduledStop[] LoadDebugTimetable()
-    {
-        var file = @"C:\Users\ariel\Desktop\GetStopTimetable.json";
-        var contents = System.IO.File.ReadAllText(file);
-        return JsonSerializer.Deserialize<ScheduledStop[]>(contents)!;
-    }*/
-
     [HttpGet("GetConsolidatedCirculations")]
     public async Task<IActionResult> GetConsolidatedCirculations(
         [FromQuery] int stopId
@@ -96,13 +83,13 @@ public class VigoController : ControllerBase
         var nowLocal = TimeZoneInfo.ConvertTime(DateTime.UtcNow, tz);
 
         var realtimeTask = _api.GetStopEstimates(stopId);
-        var timetableTask = LoadTimetable(stopId.ToString(), nowLocal.Date.ToString("yyyy-MM-dd"));
+        var timetableTask = LoadStopArrivalsProto(stopId.ToString(), nowLocal.Date.ToString("yyyy-MM-dd"));
 
         await Task.WhenAll(realtimeTask, timetableTask);
 
         var realTimeEstimates = realtimeTask.Result.Estimates;
         // Filter out records with unparseable times (e.g., hours >= 24)
-        var timetable = timetableTask.Result
+        var timetable = timetableTask.Result.Arrivals
             .Where(c => c.StartingDateTime() != null && c.CallingDateTime() != null)
             .ToList();
 
@@ -138,7 +125,7 @@ public class VigoController : ControllerBase
                 .OrderBy(c => c.CallingDateTime()!.Value)
                 .ToArray();
 
-            ScheduledStop? closestCirculation = null;
+            ScheduledArrival? closestCirculation = null;
 
             // Matching strategy:
             // 1) Prefer a started trip whose scheduled calling time is close to the estimated arrival.
@@ -280,6 +267,19 @@ public class VigoController : ControllerBase
         return Ok(sorted);
     }
 
+    private async Task<StopArrivals> LoadStopArrivalsProto(string stopId, string dateString)
+    {
+        var file = Path.Combine(_configuration.ScheduleBasePath, dateString, stopId + ".pb");
+        if (!SysFile.Exists(file))
+        {
+            throw new FileNotFoundException();
+        }
+
+        var contents = await SysFile.ReadAllBytesAsync(file);
+        var stopArrivals = StopArrivals.Parser.ParseFrom(contents);
+        return stopArrivals;
+    }
+
     private async Task<List<ScheduledStop>> LoadTimetable(string stopId, string dateString)
     {
         var file = Path.Combine(_configuration.ScheduleBasePath, dateString, stopId + ".json");
@@ -315,5 +315,28 @@ public class VigoController : ControllerBase
         }
 
         return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
+    }
+}
+
+public static class StopScheduleExtensions
+{
+    public static DateTime? StartingDateTime(this ScheduledArrival stop)
+    {
+        if (!TimeOnly.TryParse(stop.StartingTime, out var time))
+        {
+            return null;
+        }
+        var dt = DateTime.Today + time.ToTimeSpan();
+        return dt.AddSeconds(60 - dt.Second);
+    }
+
+    public static DateTime? CallingDateTime(this ScheduledArrival stop)
+    {
+        if (!TimeOnly.TryParse(stop.CallingTime, out var time))
+        {
+            return null;
+        }
+        var dt = DateTime.Today + time.ToTimeSpan();
+        return dt.AddSeconds(60 - dt.Second);
     }
 }

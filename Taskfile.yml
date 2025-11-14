@@ -11,15 +11,11 @@ tasks:
     cmds:
       - npm run dev --prefix src/frontend
 
-  format-backend:
-    desc: Format backend solution.
+  build-proto:
+    desc: Generates the protobuf bindings for C# and Python
     cmds:
-      - dotnet format --verbosity diagnostic
-
-  format-frontend:
-    desc: Format frontend sources.
-    cmds:
-      - 'prettier --write src/frontend/**/*.{ts,tsx,css}'
+      - protoc --python_out=./src/gtfs_vigo_stops/src --pyi_out=./src/gtfs_vigo_stops/src --proto_path=./src/common ./src/common/stop_schedule.proto
+      - protoc --csharp_out=./src/Costasdev.Busurbano.Backend/Types/ --proto_path=./src/common ./src/common/stop_schedule.proto
 
   build-backend:
     desc: Publish backend in Release mode.
@@ -32,6 +28,16 @@ tasks:
       - npm run build --prefix src/frontend
       - mkdir dist/frontend
       - mv src/frontend/build/client/ dist/frontend/
+
+  format-backend:
+    desc: Format backend solution.
+    cmds:
+      - dotnet format --verbosity diagnostic
+
+  format-frontend:
+    desc: Format frontend sources.
+    cmds:
+      - 'prettier --write src/frontend/**/*.{ts,tsx,css}'
 
   gen-stop-report:
     desc: Generate stop-based JSON reports for specified dates or date ranges.

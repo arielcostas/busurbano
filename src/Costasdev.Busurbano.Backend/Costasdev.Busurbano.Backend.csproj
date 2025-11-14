@@ -13,11 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="Costasdev.VigoTransitApi" Version="0.1.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="Views\Shared\_Layout.cshtml" />
-    <_ContentIncludedByDefault Remove="Views\StopEstimates\GetEstimates.cshtml" />
+    <PackageReference Include="Google.Protobuf" Version="3.33.1" />
   </ItemGroup>
 
   <ItemGroup>
