@@ -77,8 +77,7 @@
     "last_updated": "Actualizado a las",
     "reload": "Recargar",
     "unknown_service": "Servicio desconocido. Puede tratarse de un refuerzo o de que el servicio lleva un nombre distinto al planificado.",
-    "experimental_feature": "Función experimental",
-    "experimental_description": "Esta vista utiliza datos consolidados de múltiples fuentes en tiempo real. Esta función está en fase experimental y puede no ser completamente precisa."
+    "experimental_feature": "Función experimental"
   },
   "timetable": {
     "fullCaption": "Horarios teóricos de la parada",

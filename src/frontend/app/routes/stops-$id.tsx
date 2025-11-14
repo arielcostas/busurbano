@@ -255,12 +255,6 @@ export default function Estimates() {
           <strong>
             {t("estimates.experimental_feature", "Experimental feature")}
           </strong>
-          <p>
-            {t(
-              "estimates.experimental_description",
-              "This view uses consolidated data from multiple real-time sources. This feature is experimental and may not be completely accurate.",
-            )}
-          </p>
         </div>
 
         {(isManualRefreshing || dataLoading) && (

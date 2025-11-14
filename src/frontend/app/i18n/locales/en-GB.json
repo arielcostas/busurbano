@@ -77,8 +77,7 @@
     "last_updated": "Updated at",
     "reload": "Reload",
     "unknown_service": "Unknown service. It may be a reinforcement or the service has a different name than planned.",
-    "experimental_feature": "Experimental feature",
-    "experimental_description": "This view uses consolidated data from multiple real-time sources. This feature is experimental and may not be completely accurate."
+    "experimental_feature": "Experimental feature"
   },
   "timetable": {
     "fullCaption": "Theoretical timetables for this stop",
