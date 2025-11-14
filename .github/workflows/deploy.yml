@@ -13,6 +13,8 @@ jobs:
   detect-changes:
     runs-on: ubuntu-latest
     name: Detect changed components
+    permissions:
+      contents: read
     outputs:
       frontend: ${{ steps.filter.outputs.frontend }}
       backend: ${{ steps.filter.outputs.backend }}
