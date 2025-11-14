@@ -1,27 +1,27 @@
-import { type JSX, useEffect, useState, useCallback } from "react";
-import { useParams, Link, Navigate } from "react-router";
-import StopDataProvider, { type Stop } from "../data/StopDataProvider";
-import { Star, Edit2, ExternalLink, RefreshCw } from "lucide-react";
-import "./estimates-$id.css";
-import { RegularTable } from "../components/RegularTable";
-import { useApp } from "../AppContext";
-import { GroupedTable } from "../components/GroupedTable";
+import { Edit2, ExternalLink, RefreshCw, Star } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Link, Navigate, useParams } from "react-router";
+import { ErrorDisplay } from "~/components/ErrorDisplay";
+import LineIcon from "~/components/LineIcon";
+import { PullToRefresh } from "~/components/PullToRefresh";
 import {
-  SchedulesTable,
   type ScheduledTable,
+  SchedulesTable,
 } from "~/components/SchedulesTable";
 import {
-  SchedulesTableSkeleton,
   EstimatesGroupedSkeleton,
+  SchedulesTableSkeleton,
 } from "~/components/SchedulesTableSkeleton";
-import { TimetableSkeleton } from "~/components/TimetableSkeleton";
-import { ErrorDisplay } from "~/components/ErrorDisplay";
-import { PullToRefresh } from "~/components/PullToRefresh";
-import { useAutoRefresh } from "~/hooks/useAutoRefresh";
-import { type RegionId, getRegionConfig } from "~/data/RegionConfig";
 import { StopAlert } from "~/components/StopAlert";
-import LineIcon from "~/components/LineIcon";
+import { TimetableSkeleton } from "~/components/TimetableSkeleton";
+import { type RegionId, getRegionConfig } from "~/data/RegionConfig";
+import { useAutoRefresh } from "~/hooks/useAutoRefresh";
+import { useApp } from "../AppContext";
+import { GroupedTable } from "../components/GroupedTable";
+import { RegularTable } from "../components/RegularTable";
+import StopDataProvider, { type Stop } from "../data/StopDataProvider";
+import "./estimates-$id.css";
 
 export interface Estimate {
   line: string;

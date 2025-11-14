@@ -178,7 +178,7 @@ export const ConsolidatedCirculationList: React.FC<RegularTableProps> = ({
                     <div className="distance-info">
                       {estimate.schedule && (
                       <>
-                      {parseServiceId(estimate.schedule.serviceId)} v{getTripIdDisplay(estimate.schedule.tripId)} {" "}
+                      {parseServiceId(estimate.schedule.serviceId)} ({getTripIdDisplay(estimate.schedule.tripId)})
                       </>
                       )}
 

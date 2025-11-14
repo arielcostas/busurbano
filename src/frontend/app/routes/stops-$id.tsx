@@ -13,7 +13,7 @@ import { type RegionId, getRegionConfig } from "~/data/RegionConfig";
 import { useAutoRefresh } from "~/hooks/useAutoRefresh";
 import { useApp } from "../AppContext";
 import StopDataProvider, { type Stop } from "../data/StopDataProvider";
-import "./estimates-$id.css";
+import "./stops-$id.css";
 
 export interface ConsolidatedCirculation {
   line: string;
@@ -242,7 +242,7 @@ export default function Estimates() {
         </div>
 
         {stopData && stopData.lines && stopData.lines.length > 0 && (
-          <div className={`estimates-lines-container`}>
+          <div className={`estimates-lines-container scrollable`}>
             {stopData.lines.map((line) => (
               <div key={line} className="estimates-line-icon">
                 <LineIcon line={line} region={region} rounded />
