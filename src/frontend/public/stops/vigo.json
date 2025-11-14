@@ -1731,7 +1731,6 @@
     "longitude": -8.669172606,
     "lines": [
       "15A",
-      "15B",
       "VTS"
     ]
   },
@@ -2405,7 +2404,8 @@
       "C3i",
       "10",
       "15B",
-      "15C"
+      "15C",
+      "TUR"
     ]
   },
   {
@@ -6020,7 +6020,6 @@
       "15C",
       "16",
       "17",
-      "18A",
       "18B",
       "18H",
       "24",
@@ -6300,7 +6299,8 @@
       "14",
       "18A",
       "18B",
-      "18H"
+      "18H",
+      "TUR"
     ]
   },
   {
@@ -7099,6 +7099,17 @@
     ]
   },
   {
+    "stopId": 6305,
+    "name": {
+      "original": "O Castro"
+    },
+    "latitude": 42.230800582,
+    "longitude": -8.725954962,
+    "lines": [
+      "TUR"
+    ]
+  },
+  {
     "stopId": 6360,
     "name": {
       "original": "Rúa de Pablo Iglesias (Colexio)"
@@ -7142,6 +7153,17 @@
     "lines": [
       "16",
       "VTS"
+    ]
+  },
+  {
+    "stopId": 6415,
+    "name": {
+      "original": "Parque de Castrelos (Museo)"
+    },
+    "latitude": 42.213852214,
+    "longitude": -8.727322863,
+    "lines": [
+      "TUR"
     ]
   },
   {
@@ -10163,7 +10185,8 @@
     "latitude": 42.207537397,
     "longitude": -8.670071905,
     "lines": [
-      "15B"
+      "15B",
+      "15C"
     ]
   },
   {
@@ -10931,6 +10954,7 @@
       "12A",
       "12B",
       "14",
+      "18A",
       "27"
     ]
   },
@@ -15076,6 +15100,17 @@
     ]
   },
   {
+    "stopId": 20202,
+    "name": {
+      "original": "Estación Marítima"
+    },
+    "latitude": 42.2404374,
+    "longitude": -8.726048008,
+    "lines": [
+      "TUR"
+    ]
+  },
+  {
     "stopId": 20203,
     "name": {
       "original": "Avda. da Gran Vía, 47"
@@ -15115,10 +15150,10 @@
   {
     "stopId": 20208,
     "name": {
-      "original": "Colón 12"
+      "original": "Rúa de Colón, 12"
     },
-    "latitude": 42.23805815883466,
-    "longitude": -8.72057889828808,
+    "latitude": 42.238028627,
+    "longitude": -8.720556548,
     "lines": [
       "C1",
       "A",
@@ -15128,9 +15163,7 @@
       "15C",
       "28",
       "N4"
-    ],
-    "title": "Parada provisional sin datos",
-    "message": "Parada provisional donde paran las líneas de Policarpo Sanz 40 *exceptuando 9B*"
+    ]
   },
   {
     "stopId": 20209,
@@ -15190,6 +15223,7 @@
       "A",
       "5A",
       "5B",
+      "10",
       "11",
       "15B",
       "15C"
