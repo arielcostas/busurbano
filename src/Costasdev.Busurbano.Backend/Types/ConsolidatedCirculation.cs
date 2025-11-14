@@ -7,6 +7,7 @@ public class ConsolidatedCirculation
 
     public ScheduleData? Schedule { get; set; }
     public RealTimeData? RealTime { get; set; }
+    public Position? CurrentPosition { get; set; }
 }
 
 public class RealTimeData
@@ -21,4 +22,11 @@ public class ScheduleData
     public required int Minutes { get; set; }
     public required string ServiceId { get; set; }
     public required string TripId { get; set; }
+}
+
+public class Position
+{
+    public required double Latitude { get; set; }
+    public required double Longitude { get; set; }
+    public int OrientationDegrees { get; set; }
 }

@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using Costasdev.Busurbano.Backend.Configuration;
+using Costasdev.Busurbano.Backend.Services;
 using Costasdev.Busurbano.Backend.Types;
 using Costasdev.VigoTransitApi;
 using Microsoft.AspNetCore.Mvc;
@@ -18,12 +19,14 @@ public class VigoController : ControllerBase
     private readonly ILogger<VigoController> _logger;
     private readonly VigoTransitApiClient _api;
     private readonly AppConfiguration _configuration;
+    private readonly ShapeTraversalService _shapeService;
 
-    public VigoController(HttpClient http, IOptions<AppConfiguration> options, ILogger<VigoController> logger)
+    public VigoController(HttpClient http, IOptions<AppConfiguration> options, ILogger<VigoController> logger, ShapeTraversalService shapeService)
     {
         _logger = logger;
         _api = new VigoTransitApiClient(http);
         _configuration = options.Value;
+        _shapeService = shapeService;
     }
 
     [HttpGet("GetStopEstimates")]
@@ -92,6 +95,8 @@ public class VigoController : ControllerBase
         var timetable = timetableTask.Result.Arrivals
             .Where(c => c.StartingDateTime() != null && c.CallingDateTime() != null)
             .ToList();
+
+        var stopLocation = timetableTask.Result.Location;
 
         var now = nowLocal.AddSeconds(60 - nowLocal.Second);
         // Define the scope end as the time of the last realtime arrival (no extra buffer)
@@ -206,13 +211,26 @@ public class VigoController : ControllerBase
                 continue;
             }
 
+            var isRunning = closestCirculation.StartingDateTime()!.Value <= now;
+            Position? currentPosition = null;
+
+            // Calculate bus position only for realtime trips that have already departed
+            if (isRunning && !string.IsNullOrEmpty(closestCirculation.ShapeId))
+            {
+                var shape = await _shapeService.LoadShapeAsync(closestCirculation.ShapeId);
+                if (shape != null && stopLocation != null)
+                {
+                    currentPosition = _shapeService.GetBusPosition(shape, stopLocation, estimate.Meters);
+                }
+            }
+
             consolidatedCirculations.Add(new ConsolidatedCirculation
             {
                 Line = estimate.Line,
                 Route = estimate.Route,
                 Schedule = new ScheduleData
                 {
-                    Running = closestCirculation.StartingDateTime()!.Value <= now,
+                    Running = isRunning,
                     Minutes = (int)(closestCirculation.CallingDateTime()!.Value - now).TotalMinutes,
                     TripId = closestCirculation.TripId,
                     ServiceId = closestCirculation.ServiceId,
@@ -221,7 +239,8 @@ public class VigoController : ControllerBase
                 {
                     Minutes = estimate.Minutes,
                     Distance = estimate.Meters
-                }
+                },
+                CurrentPosition = currentPosition
             });
 
             usedTripIds.Add(closestCirculation.TripId);
@@ -278,6 +297,19 @@ public class VigoController : ControllerBase
         var contents = await SysFile.ReadAllBytesAsync(file);
         var stopArrivals = StopArrivals.Parser.ParseFrom(contents);
         return stopArrivals;
+    }
+
+    private async Task<Shape> LoadShapeProto(string shapeId)
+    {
+        var file = Path.Combine(_configuration.ScheduleBasePath, shapeId + ".pb");
+        if (!SysFile.Exists(file))
+        {
+            throw new FileNotFoundException();
+        }
+
+        var contents = await SysFile.ReadAllBytesAsync(file);
+        var shape = Shape.Parser.ParseFrom(contents);
+        return shape;
     }
 
     private async Task<List<ScheduledStop>> LoadTimetable(string stopId, string dateString)
