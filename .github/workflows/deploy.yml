@@ -10,9 +10,32 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    name: Detect changed components
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+      backend: ${{ steps.filter.outputs.backend }}
+      stops-script: ${{ steps.filter.outputs.stops-script }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            frontend:
+              - 'src/frontend/**'
+            backend:
+              - 'src/Costasdev.Busurbano.Backend/**'
+              - 'src/common/**'
+            stops-script:
+              - 'src/gtfs_vigo_stops/**'
+
   build-frontend:
     runs-on: ubuntu-latest
     name: Build frontend artifact
+    needs: detect-changes
+    if: needs.detect-changes.outputs.frontend == 'true'
     environment: Production
     steps:
       - uses: actions/checkout@v5
@@ -45,6 +68,8 @@ jobs:
   build-backend:
     runs-on: ubuntu-latest
     name: Build backend artifact
+    needs: detect-changes
+    if: needs.detect-changes.outputs.backend == 'true'
     environment: Production
     permissions:
       contents: read
@@ -68,6 +93,8 @@ jobs:
   build-stops-script:
     runs-on: ubuntu-latest
     name: Build stop report script
+    needs: detect-changes
+    if: needs.detect-changes.outputs.stops-script == 'true'
     environment: Production
     permissions:
       contents: read
@@ -84,21 +111,30 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    needs: [build-frontend, build-backend, build-stops-script]
+    needs: [detect-changes, build-frontend, build-backend, build-stops-script]
+    if: |
+      always() && 
+      needs.detect-changes.result == 'success' && 
+      (needs.build-frontend.result == 'success' || 
+       needs.build-backend.result == 'success' || 
+       needs.build-stops-script.result == 'success')
     name: Deploy to production server
     environment: Production
     steps:
       - name: Download Frontend Artifact
+        if: needs.detect-changes.outputs.frontend == 'true'
         uses: actions/download-artifact@v6
         with:
           name: production
           path: dist
       - name: Download Backend Artifact
+        if: needs.detect-changes.outputs.backend == 'true'
         uses: actions/download-artifact@v6
         with:
           name: backend
           path: dist/backend
       - name: Download Stop Report Script Artifact
+        if: needs.detect-changes.outputs.stops-script == 'true'
         uses: actions/download-artifact@v6
         with:
           name: stop_report
@@ -123,21 +159,27 @@ jobs:
           ssh-keyscan -H ${{ secrets.TARGET_HOST }} >> ~/.ssh/known_hosts
 
       - name: Deploy frontend
+        if: needs.detect-changes.outputs.frontend == 'true'
         run: |
           scp -r dist/frontend/* ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }}:${{ secrets.TARGET_PATH }}/
 
       - name: Stop service
+        if: needs.detect-changes.outputs.backend == 'true'
         run: ssh ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }} "echo ${{ secrets.TARGET_PASSWORD }} | sudo -S /usr/bin/systemctl stop busurbano"
 
       - name: Upload backend
+        if: needs.detect-changes.outputs.backend == 'true'
         run: scp -r dist/backend/* app@${{ secrets.TARGET_HOST }}:/opt/busurbano/
 
       - name: Allow execution
+        if: needs.detect-changes.outputs.backend == 'true'
         run: ssh ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }} "chmod +x /opt/busurbano/Costasdev.Busurbano.Backend"
 
       - name: Start service
+        if: needs.detect-changes.outputs.backend == 'true'
         run: ssh ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }} "echo ${{ secrets.TARGET_PASSWORD }} | sudo -S /usr/bin/systemctl start busurbano"
 
       - name: Deploy stop report script
+        if: needs.detect-changes.outputs.stops-script == 'true'
         run: |
           scp -r dist/stop_report/* ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }}:/opt/gtfs_vigo_stops/
