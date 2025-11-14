@@ -11,6 +11,8 @@ import { type RegionId, getRegionConfig } from "~/data/RegionConfig";
 import { StopAlert } from "~/components/StopAlert";
 import LineIcon from "~/components/LineIcon";
 import { ConsolidatedCirculationList } from "~/components/Stops/ConsolidatedCirculationList";
+import { ConsolidatedCirculationListSkeleton } from "~/components/Stops/ConsolidatedCirculationListSkeleton";
+import { ErrorDisplay } from "~/components/ErrorDisplay";
 
 export interface ConsolidatedCirculation {
   line: string;
@@ -197,7 +199,7 @@ export default function Estimates() {
           </div>
 
           <div className="table-responsive">
-            {/* TODO: Implement skeleton */}
+            <ConsolidatedCirculationListSkeleton />
           </div>
         </div>
       </PullToRefresh>
@@ -255,17 +257,33 @@ export default function Estimates() {
           </p>
         </div>
 
+        {(isManualRefreshing || dataLoading) && (
+          <div className="refresh-status">
+            <RefreshCw className="refresh-icon spinning" />
+            <span>{t("estimates.refreshing", "Actualizando datos...")}</span>
+          </div>
+        )}
+
         {stopData && <StopAlert stop={stopData} />}
 
         <div className="table-responsive">
-          {data ? (
-            <>
-              <ConsolidatedCirculationList
-                data={data}
-                dataDate={dataDate}
-                regionConfig={regionConfig}
-              />
-            </>
+          {dataLoading ? (
+            <ConsolidatedCirculationListSkeleton />
+          ) : dataError ? (
+            <ErrorDisplay
+              error={dataError}
+              onRetry={loadData}
+              title={t(
+                "errors.estimates_title",
+                "Error al cargar estimaciones",
+              )}
+            />
+          ) : data ? (
+            <ConsolidatedCirculationList
+              data={data}
+              dataDate={dataDate}
+              regionConfig={regionConfig}
+            />
           ) : null}
         </div>
       </div>
