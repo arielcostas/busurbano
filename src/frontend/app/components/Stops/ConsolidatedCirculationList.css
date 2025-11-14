@@ -104,12 +104,22 @@
   color: #09106e;
 }
 
+/* Scheduled-only: dark blue in light mode, softer blue in dark mode */
 .consolidated-circulation-card .arrival-time.time-scheduled {
-  color: var(--text-color);
+  color: #0b3d91; /* dark blue */
 }
 
 .consolidated-circulation-card .arrival-time.time-scheduled svg {
-  color: var(--subtitle-color);
+  color: #0b3d91;
+}
+
+@media (prefers-color-scheme: dark) {
+  .consolidated-circulation-card .arrival-time.time-scheduled {
+    color: #8fb4ff; /* lighten for dark backgrounds */
+  }
+  .consolidated-circulation-card .arrival-time.time-scheduled svg {
+    color: #8fb4ff;
+  }
 }
 
 .consolidated-circulation-card .distance-info {

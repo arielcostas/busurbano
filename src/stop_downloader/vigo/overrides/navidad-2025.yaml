@@ -1,22 +1,3 @@
-20208:
-  new: true
-  name: "Colón 12"
-  title: "Parada provisional sin datos"
-  message: "Parada provisional donde paran las líneas de Policarpo Sanz 40 *exceptuando 9B*"
-  location:
-    latitude: 42.23805815883466
-    longitude: -8.72057889828808
-  lines:
-    - "C1"
-    - "A"
-    - "5A"
-    - "9B"
-    - "15B"
-    - "15C"
-    - "24"
-    - "28"
-    - "N4"
-
 20194: # Cánovas del Castillo 28
   cancelled: true
   alert: "error"

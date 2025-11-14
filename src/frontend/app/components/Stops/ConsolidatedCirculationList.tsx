@@ -1,8 +1,8 @@
-import { useTranslation } from "react-i18next";
 import { Clock } from "lucide-react";
-import { type ConsolidatedCirculation } from "~routes/stops-$id";
+import { useTranslation } from "react-i18next";
 import LineIcon from "~components/LineIcon";
 import { type RegionConfig } from "~data/RegionConfig";
+import { type ConsolidatedCirculation } from "~routes/stops-$id";
 
 import "./ConsolidatedCirculationList.css";
 
@@ -104,15 +104,11 @@ export const ConsolidatedCirculationList: React.FC<RegularTableProps> = ({
     const delay = estimate.realTime.minutes - estimate.schedule.minutes;
 
     if (delay >= -1 && delay <= 2) {
-      return t("estimates.on_time", "on time");
+      return "OK"
     } else if (delay > 2) {
-      return t("estimates.minutes_late", "{{minutes}} minutes late", {
-        minutes: delay,
-      });
+      return "R" + delay;
     } else {
-      return t("estimates.minutes_early", "{{minutes}} minutes early", {
-        minutes: Math.abs(delay),
-      });
+      return "A" + Math.abs(delay);
     }
   };
 
@@ -179,15 +175,32 @@ export const ConsolidatedCirculationList: React.FC<RegularTableProps> = ({
                         ? `${displayMinutes} ${t("estimates.minutes", "min")}`
                         : absoluteArrivalTime(displayMinutes)}
                     </div>
-                    {estimate.realTime && estimate.realTime.distance >= 0 && (
-                      <div className="distance-info">
-                        {formatDistance(estimate.realTime.distance)}
-                      </div>
-                    )}
+                    <div className="distance-info">
+                      {estimate.schedule && (
+                      <>
+                      {parseServiceId(estimate.schedule.serviceId)} v{getTripIdDisplay(estimate.schedule.tripId)} {" "}
+                      </>
+                      )}
+
+                      {estimate.schedule &&
+                        estimate.realTime &&
+                        estimate.realTime.distance >= 0 && <> &middot; </>}
+
+                      {estimate.realTime && estimate.realTime.distance >= 0 && (
+                        <>{formatDistance(estimate.realTime.distance)}</>
+                      )}
+
+                      {estimate.schedule &&
+                        estimate.realTime &&
+                        estimate.realTime.distance >= 0 && <> &middot; </>}
+
+                        {delayText}
+
+                    </div>
                   </div>
                 </div>
 
-                <div className="card-footer">
+                {/*<div className="card-footer">
                   <span className="status-text">
                     {delayText && (
                       <>
@@ -213,7 +226,7 @@ export const ConsolidatedCirculationList: React.FC<RegularTableProps> = ({
                       </>
                     )}
                   </span>
-                </div>
+                </div>*/}
               </div>
             );
           })}

@@ -1,18 +1,19 @@
-import { useEffect, useState, useCallback } from "react";
-import { useParams, Link } from "react-router";
-import StopDataProvider, { type Stop } from "../data/StopDataProvider";
-import { Star, Edit2, ExternalLink, RefreshCw } from "lucide-react";
-import "./estimates-$id.css";
-import { useApp } from "../AppContext";
+import { Edit2, RefreshCw, Star } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { PullToRefresh } from "~/components/PullToRefresh";
-import { useAutoRefresh } from "~/hooks/useAutoRefresh";
-import { type RegionId, getRegionConfig } from "~/data/RegionConfig";
-import { StopAlert } from "~/components/StopAlert";
+import { useParams } from "react-router";
+import { ErrorDisplay } from "~/components/ErrorDisplay";
 import LineIcon from "~/components/LineIcon";
+import { PullToRefresh } from "~/components/PullToRefresh";
+import { StopAlert } from "~/components/StopAlert";
+import { StopMap } from "~/components/StopMapSheet";
 import { ConsolidatedCirculationList } from "~/components/Stops/ConsolidatedCirculationList";
 import { ConsolidatedCirculationListSkeleton } from "~/components/Stops/ConsolidatedCirculationListSkeleton";
-import { ErrorDisplay } from "~/components/ErrorDisplay";
+import { type RegionId, getRegionConfig } from "~/data/RegionConfig";
+import { useAutoRefresh } from "~/hooks/useAutoRefresh";
+import { useApp } from "../AppContext";
+import StopDataProvider, { type Stop } from "../data/StopDataProvider";
+import "./estimates-$id.css";
 
 export interface ConsolidatedCirculation {
   line: string;
@@ -26,6 +27,11 @@ export interface ConsolidatedCirculation {
   realTime?: {
     minutes: number;
     distance: number;
+  };
+  currentPosition?: {
+    latitude: number;
+    longitude: number;
+    orientationDegrees: number;
   };
 }
 
@@ -266,25 +272,42 @@ export default function Estimates() {
 
         {stopData && <StopAlert stop={stopData} />}
 
-        <div className="table-responsive">
-          {dataLoading ? (
-            <ConsolidatedCirculationListSkeleton />
-          ) : dataError ? (
-            <ErrorDisplay
-              error={dataError}
-              onRetry={loadData}
-              title={t(
-                "errors.estimates_title",
-                "Error al cargar estimaciones",
-              )}
+        <div className="estimates-content-wrapper">
+          <div className="estimates-list-container">
+            <div className="table-responsive">
+              {dataLoading ? (
+                <ConsolidatedCirculationListSkeleton />
+              ) : dataError ? (
+                <ErrorDisplay
+                  error={dataError}
+                  onRetry={loadData}
+                  title={t(
+                    "errors.estimates_title",
+                    "Error al cargar estimaciones",
+                  )}
+                />
+              ) : data ? (
+                <ConsolidatedCirculationList
+                  data={data}
+                  dataDate={dataDate}
+                  regionConfig={regionConfig}
+                />
+              ) : null}
+            </div>
+          </div>
+
+          {/* Map showing stop and bus positions */}
+          {stopData && (
+            <StopMap
+              stop={stopData}
+              region={region}
+              circulations={(data ?? []).map((c) => ({
+                line: c.line,
+                route: c.route,
+                currentPosition: c.currentPosition,
+              }))}
             />
-          ) : data ? (
-            <ConsolidatedCirculationList
-              data={data}
-              dataDate={dataDate}
-              regionConfig={regionConfig}
-            />
-          ) : null}
+          )}
         </div>
       </div>
     </PullToRefresh>
