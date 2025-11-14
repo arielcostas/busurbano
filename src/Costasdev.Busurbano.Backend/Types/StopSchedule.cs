@@ -36,13 +36,15 @@ namespace Costasdev.Busurbano.Backend.Types {
             "YW1lGBYgASgJEhUKDXN0YXJ0aW5nX3RpbWUYFyABKAkSFAoMY2FsbGluZ190",
             "aW1lGCEgASgJEhMKC2NhbGxpbmdfc3NtGCIgASgNEhUKDXRlcm1pbnVzX2Nv",
             "ZGUYKSABKAkSFQoNdGVybWludXNfbmFtZRgqIAEoCRIVCg10ZXJtaW51c190",
-            "aW1lGCsgASgJQiSqAiFDb3N0YXNkZXYuQnVzdXJiYW5vLkJhY2tlbmQuVHlw",
-            "ZXNiBnByb3RvMw=="));
+            "aW1lGCsgASgJIjsKBVNoYXBlEhAKCHNoYXBlX2lkGAEgASgJEiAKBnBvaW50",
+            "cxgDIAMoCzIQLnByb3RvLkVwc2cyNTgyOUIkqgIhQ29zdGFzZGV2LkJ1c3Vy",
+            "YmFuby5CYWNrZW5kLlR5cGVzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Costasdev.Busurbano.Backend.Types.Epsg25829), global::Costasdev.Busurbano.Backend.Types.Epsg25829.Parser, new[]{ "X", "Y" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Costasdev.Busurbano.Backend.Types.StopArrivals), global::Costasdev.Busurbano.Backend.Types.StopArrivals.Parser, new[]{ "StopId", "Location", "Arrivals" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Costasdev.Busurbano.Backend.Types.StopArrivals.Types.ScheduledArrival), global::Costasdev.Busurbano.Backend.Types.StopArrivals.Types.ScheduledArrival.Parser, new[]{ "ServiceId", "TripId", "Line", "Route", "ShapeId", "ShapeDistTraveled", "StopSequence", "NextStreets", "StartingCode", "StartingName", "StartingTime", "CallingTime", "CallingSsm", "TerminusCode", "TerminusName", "TerminusTime" }, null, null, null, null)})
+            new pbr::GeneratedClrTypeInfo(typeof(global::Costasdev.Busurbano.Backend.Types.StopArrivals), global::Costasdev.Busurbano.Backend.Types.StopArrivals.Parser, new[]{ "StopId", "Location", "Arrivals" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Costasdev.Busurbano.Backend.Types.StopArrivals.Types.ScheduledArrival), global::Costasdev.Busurbano.Backend.Types.StopArrivals.Types.ScheduledArrival.Parser, new[]{ "ServiceId", "TripId", "Line", "Route", "ShapeId", "ShapeDistTraveled", "StopSequence", "NextStreets", "StartingCode", "StartingName", "StartingTime", "CallingTime", "CallingSsm", "TerminusCode", "TerminusName", "TerminusTime" }, null, null, null, null)}),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Costasdev.Busurbano.Backend.Types.Shape), global::Costasdev.Busurbano.Backend.Types.Shape.Parser, new[]{ "ShapeId", "Points" }, null, null, null, null)
           }));
     }
     #endregion
@@ -1301,6 +1303,230 @@ namespace Costasdev.Busurbano.Backend.Types {
 
     }
     #endregion
+
+  }
+
+  [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
+  public sealed partial class Shape : pb::IMessage<Shape>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<Shape> _parser = new pb::MessageParser<Shape>(() => new Shape());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<Shape> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Costasdev.Busurbano.Backend.Types.StopScheduleReflection.Descriptor.MessageTypes[2]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public Shape() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public Shape(Shape other) : this() {
+      shapeId_ = other.shapeId_;
+      points_ = other.points_.Clone();
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public Shape Clone() {
+      return new Shape(this);
+    }
+
+    /// <summary>Field number for the "shape_id" field.</summary>
+    public const int ShapeIdFieldNumber = 1;
+    private string shapeId_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string ShapeId {
+      get { return shapeId_; }
+      set {
+        shapeId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "points" field.</summary>
+    public const int PointsFieldNumber = 3;
+    private static readonly pb::FieldCodec<global::Costasdev.Busurbano.Backend.Types.Epsg25829> _repeated_points_codec
+        = pb::FieldCodec.ForMessage(26, global::Costasdev.Busurbano.Backend.Types.Epsg25829.Parser);
+    private readonly pbc::RepeatedField<global::Costasdev.Busurbano.Backend.Types.Epsg25829> points_ = new pbc::RepeatedField<global::Costasdev.Busurbano.Backend.Types.Epsg25829>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public pbc::RepeatedField<global::Costasdev.Busurbano.Backend.Types.Epsg25829> Points {
+      get { return points_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as Shape);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(Shape other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (ShapeId != other.ShapeId) return false;
+      if(!points_.Equals(other.points_)) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (ShapeId.Length != 0) hash ^= ShapeId.GetHashCode();
+      hash ^= points_.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (ShapeId.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(ShapeId);
+      }
+      points_.WriteTo(output, _repeated_points_codec);
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (ShapeId.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(ShapeId);
+      }
+      points_.WriteTo(ref output, _repeated_points_codec);
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      if (ShapeId.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(ShapeId);
+      }
+      size += points_.CalculateSize(_repeated_points_codec);
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(Shape other) {
+      if (other == null) {
+        return;
+      }
+      if (other.ShapeId.Length != 0) {
+        ShapeId = other.ShapeId;
+      }
+      points_.Add(other.points_);
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            ShapeId = input.ReadString();
+            break;
+          }
+          case 26: {
+            points_.AddEntriesFrom(input, _repeated_points_codec);
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            ShapeId = input.ReadString();
+            break;
+          }
+          case 26: {
+            points_.AddEntriesFrom(ref input, _repeated_points_codec);
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
   }
 

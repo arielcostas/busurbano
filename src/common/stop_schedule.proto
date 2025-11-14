@@ -39,3 +39,10 @@ message StopArrivals {
 
     repeated ScheduledArrival arrivals = 5;
 }
+
+
+message Shape {
+    string shape_id = 1;
+
+    repeated Epsg25829 points = 3;
+}

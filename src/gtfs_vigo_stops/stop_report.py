@@ -6,6 +6,7 @@ import time
 import traceback
 from typing import Any, Dict, List
 
+from src.shapes import process_shapes
 from src.common import get_all_feed_dates
 from src.download import download_feed_from_url
 from src.logger import get_logger
@@ -338,6 +339,13 @@ def main():
     for date in date_list:
         _, stop_summary = process_date(feed_dir, date, output_dir)
         all_stops_summary[date] = stop_summary
+
+    logger.info("Finished processing all dates. Beginning with shape transformation.")
+
+    # Process shapes, converting each coordinate to EPSG:25829 and saving as Protobuf
+    process_shapes(feed_dir, output_dir)
+
+    logger.info("Finished processing shapes.")
 
     if feed_url:
         if os.path.exists(feed_dir):

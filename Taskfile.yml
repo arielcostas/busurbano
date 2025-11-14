@@ -14,7 +14,7 @@ tasks:
   build-proto:
     desc: Generates the protobuf bindings for C# and Python
     cmds:
-      - protoc --python_out=./src/gtfs_vigo_stops/src --pyi_out=./src/gtfs_vigo_stops/src --proto_path=./src/common ./src/common/stop_schedule.proto
+      - protoc --python_out=./src/gtfs_vigo_stops/src/proto --pyi_out=./src/gtfs_vigo_stops/src/proto --proto_path=./src/common ./src/common/stop_schedule.proto
       - protoc --csharp_out=./src/Costasdev.Busurbano.Backend/Types/ --proto_path=./src/common ./src/common/stop_schedule.proto
 
   build-backend:

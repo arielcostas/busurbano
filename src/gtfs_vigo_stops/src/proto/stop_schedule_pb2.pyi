@@ -58,3 +58,11 @@ class StopArrivals(_message.Message):
     location: Epsg25829
     arrivals: _containers.RepeatedCompositeFieldContainer[StopArrivals.ScheduledArrival]
     def __init__(self, stop_id: _Optional[str] = ..., location: _Optional[_Union[Epsg25829, _Mapping]] = ..., arrivals: _Optional[_Iterable[_Union[StopArrivals.ScheduledArrival, _Mapping]]] = ...) -> None: ...
+
+class Shape(_message.Message):
+    __slots__ = ()
+    SHAPE_ID_FIELD_NUMBER: _ClassVar[int]
+    POINTS_FIELD_NUMBER: _ClassVar[int]
+    shape_id: str
+    points: _containers.RepeatedCompositeFieldContainer[Epsg25829]
+    def __init__(self, shape_id: _Optional[str] = ..., points: _Optional[_Iterable[_Union[Epsg25829, _Mapping]]] = ...) -> None: ...
