@@ -12,6 +12,6 @@
 
 @media (max-width: 640px) {
   .stop-map-container {
-    height: 250px;
+    height: 25vh;
   }
 }
