@@ -7,8 +7,6 @@ import json
 import os
 from typing import Any, Dict, List
 
-from pyproj import Transformer
-
 from src.logger import get_logger
 from src.proto.stop_schedule_pb2 import Epsg25829, StopArrivals
 
@@ -18,8 +16,8 @@ def write_stop_protobuf(
     date: str,
     stop_code: str,
     arrivals: List[Dict[str, Any]],
-    stop_lat: float,
-    stop_lon: float,
+    stop_x: float,
+    stop_y: float,
 ) -> None:
     """
     Write stop arrivals data to a Protobuf file.
@@ -32,12 +30,9 @@ def write_stop_protobuf(
     """
     logger = get_logger("report_writer")
 
-    transformer = Transformer.from_crs(4326, 25829, always_xy=True)
-    x, y = transformer.transform(stop_lon, stop_lat)
-
     item = StopArrivals(
         stop_id=stop_code,
-        location=Epsg25829(x=x, y=y),
+        location=Epsg25829(x=stop_x, y=stop_y),
         arrivals=[
             StopArrivals.ScheduledArrival(
                 service_id=arrival["service_id"],

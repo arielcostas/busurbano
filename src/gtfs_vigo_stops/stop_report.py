@@ -2,6 +2,7 @@ import argparse
 import os
 import shutil
 import sys
+import time
 import traceback
 from typing import Any, Dict, List
 
@@ -256,9 +257,24 @@ def process_date(
             logger.warning(f"No stop arrivals found for date {date}")
             return date, {}
 
+        logger.info(
+            f"Writing stop reports for {len(stop_arrivals)} stops for date {date}"
+        )
+
         # Write individual stop JSON files
+        writing_start_time = time.perf_counter()
         for stop_code, arrivals in stop_arrivals.items():
-            # Get the stop from 'stops' by value to get the coords
+            write_stop_json(output_dir, date, stop_code, arrivals)
+        writing_end_time = time.perf_counter()
+        writing_elapsed = writing_end_time - writing_start_time
+
+        logger.info(
+            f"Finished writing stop JSON reports for date {date} in {writing_elapsed:.2f}s"
+        )
+
+        # Write individual stop JSON files
+        writing_start_time = time.perf_counter()
+        for stop_code, arrivals in stop_arrivals.items():
             stop_by_code = stops_by_code.get(stop_code)
 
             if stop_by_code is not None:
@@ -267,18 +283,22 @@ def process_date(
                     date,
                     stop_code,
                     arrivals,
-                    stop_by_code.stop_lat or 0.0,
-                    stop_by_code.stop_lon or 0.0,
+                    stop_by_code.stop_25829_x or 0.0,
+                    stop_by_code.stop_25829_y or 0.0,
                 )
 
-            write_stop_json(output_dir, date, stop_code, arrivals)
+        writing_end_time = time.perf_counter()
+        writing_elapsed = writing_end_time - writing_start_time
 
-        # Create summary for index
+        logger.info(
+            f"Finished writing stop protobuf reports for date {date} in {writing_elapsed:.2f}s"
+        )
+
+        logger.info(f"Processed {len(stop_arrivals)} stops for date {date}")
+
         stop_summary = {
             stop_code: len(arrivals) for stop_code, arrivals in stop_arrivals.items()
         }
-        logger.info(f"Processed {len(stop_arrivals)} stops for date {date}")
-
         return date, stop_summary
     except Exception as e:
         logger.error(f"Error processing date {date}: {e}")
