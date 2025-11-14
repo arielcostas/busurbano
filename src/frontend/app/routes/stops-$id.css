@@ -45,14 +45,14 @@
 /* Estimates page specific styles */
 .estimates-page {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   height: 100%;
   overflow: hidden;
 }
 
 .estimates-header {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: space-between;
   margin-bottom: 1rem;
   gap: 1rem;
