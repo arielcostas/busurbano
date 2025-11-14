@@ -99,6 +99,38 @@ export const StopSheet: React.FC<StopSheetProps> = ({
     }
   }, [isOpen, stop.stopId, region]);
 
+  // Handle browser back button to close the sheet
+  useEffect(() => {
+    if (isOpen) {
+      // Push a dummy state when sheet opens
+      window.history.pushState({ stopSheetOpen: true }, "", null);
+
+      const handlePopState = () => {
+        // Close the sheet when back button is pressed
+        // Remove the state marker so we know this close was from back navigation
+        if (window.history.state) {
+          window.history.replaceState(
+            { ...window.history.state, stopSheetOpen: false },
+            "",
+            null,
+          );
+        }
+        onClose();
+      };
+
+      window.addEventListener("popstate", handlePopState);
+
+      return () => {
+        window.removeEventListener("popstate", handlePopState);
+      };
+    } else {
+      // When sheet closes naturally (not via back), remove the history entry if it's still there
+      if (window.history.state?.stopSheetOpen === true) {
+        window.history.back();
+      }
+    }
+  }, [isOpen, onClose]);
+
   const formatTime = (minutes: number) => {
     if (minutes > 15) {
       const now = new Date();
@@ -128,10 +160,16 @@ export const StopSheet: React.FC<StopSheetProps> = ({
     data?.sort((a, b) => a.minutes - b.minutes).slice(0, 4) || [];
 
   return (
-    <Sheet isOpen={isOpen} onClose={onClose} detent="content">
+    <Sheet
+      isOpen={isOpen}
+      onClose={onClose}
+      detent="content"
+      dragCloseThreshold={0.5}
+      dragVelocityThreshold={300}
+    >
       <Sheet.Container>
         <Sheet.Header />
-        <Sheet.Content drag="y">
+        <Sheet.Content>
           <div className="stop-sheet-content">
             <div className="stop-sheet-header">
               <h2 className="stop-sheet-title">{stop.name.original}</h2>
