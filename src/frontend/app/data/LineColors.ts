@@ -88,10 +88,11 @@ export function getLineColor(
   region: RegionId,
   line: string,
 ): LineColorInfo {
-  const formattedLine =  /^[a-zA-Z]/.test(line) ? line : `L${line}`;
+  let formattedLine =  /^[a-zA-Z]/.test(line) ? line : `L${line}`;
+  formattedLine = formattedLine.toLowerCase().trim();
 
   if (region === "vigo") {
-    return vigoLineColors[formattedLine] ?? defaultLineColor;
+    return vigoLineColors[formattedLine.toLowerCase().trim()] ?? defaultLineColor;
   } else if (region === "santiago") {
     return santiagoLineColors[formattedLine] ?? defaultLineColor;
   }

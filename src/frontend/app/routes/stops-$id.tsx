@@ -213,10 +213,7 @@ export default function Estimates() {
   }
 
   return (
-    <PullToRefresh
-      onRefresh={handleManualRefresh}
-      isRefreshing={isManualRefreshing}
-    >
+    <>
       <div className="page-container estimates-page">
         <div className="estimates-header">
           <h1 className="page-title">
@@ -251,12 +248,6 @@ export default function Estimates() {
           </div>
         )}
 
-        <div className="experimental-notice">
-          <strong>
-            {t("estimates.experimental_feature", "Experimental feature")}
-          </strong>
-        </div>
-
         {(isManualRefreshing || dataLoading) && (
           <div className="refresh-status">
             <RefreshCw className="refresh-icon spinning" />
@@ -268,6 +259,12 @@ export default function Estimates() {
 
         <div className="estimates-content-wrapper">
           <div className="estimates-list-container">
+            <div className="experimental-notice">
+              <strong>
+                {t("estimates.experimental_feature", "Experimental feature")}
+              </strong>
+            </div>
+
             <div className="table-responsive">
               {dataLoading ? (
                 <ConsolidatedCirculationListSkeleton />
@@ -304,6 +301,6 @@ export default function Estimates() {
           )}
         </div>
       </div>
-    </PullToRefresh>
+    </>
   );
 }

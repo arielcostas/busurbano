@@ -145,7 +145,7 @@ export const StopMap: React.FC<StopMapProps> = ({
                   height: 14,
                   background: "#1976d2",
                   border: "2px solid white",
-                  borderRadius: "50%",
+                  borderRadius: "5%",
                   boxShadow: "0 0 0 2px rgba(0,0,0,0.2)",
                 }}
                 title={`Stop ${stop.stopId}`}
@@ -165,7 +165,6 @@ export const StopMap: React.FC<StopMapProps> = ({
                 anchor="center"
               >
                 <div
-                  title={`${c.line} → ${c.route}`}
                   style={{
                     display: "flex",
                     flexDirection: "column",
@@ -187,6 +186,7 @@ export const StopMap: React.FC<StopMapProps> = ({
                       lineHeight: 1,
                       border: "1px solid #fff",
                       boxShadow: "0 1px 2px rgba(0,0,0,0.3)",
+                      transform: `rotate(${-p.orientationDegrees}deg)`,
                     }}
                   >
                     {c.line}
