@@ -5,8 +5,13 @@ export async function loadStyle(
   styleName: string,
   colorScheme: Theme,
 ): Promise<StyleSpecification> {
+  if (colorScheme == "system") {
+    const isDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    colorScheme = isDarkMode ? "dark" : "light";
+  }
+
   if (styleName == "openfreemap") {
-    const url = "/maps/styles/openfreemap-any.json";
+    const url = `/maps/styles/openfreemap-${colorScheme}.json`;
 
     const resp = await fetch(url);
     if (!resp.ok) {

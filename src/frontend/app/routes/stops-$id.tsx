@@ -141,7 +141,7 @@ export default function Estimates() {
   // Auto-refresh estimates data every 30 seconds (only if not in error state)
   useAutoRefresh({
     onRefresh: refreshData,
-    interval: 30000,
+    interval: 12000,
     enabled: !dataError,
   });
 

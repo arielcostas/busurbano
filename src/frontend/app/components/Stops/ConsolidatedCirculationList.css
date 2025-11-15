@@ -2,7 +2,6 @@
   font-size: 0.9rem;
   color: var(--subtitle-color);
   text-align: center;
-  margin-bottom: 1rem;
   padding: 0.5rem;
 }
 
@@ -77,38 +76,24 @@
 }
 
 /* Time color states */
-.consolidated-circulation-card .arrival-time.time-running {
-  color: #22c55e;
-}
-
+.consolidated-circulation-card .arrival-time.time-running,
 .consolidated-circulation-card .arrival-time.time-running svg {
   color: #22c55e;
 }
 
-.consolidated-circulation-card .arrival-time.time-delayed {
-  color: #09106e;
-}
-
+.consolidated-circulation-card .arrival-time.time-delayed,
 .consolidated-circulation-card .arrival-time.time-delayed svg {
-  color: #09106e;
+  color: #ff6a00;
 }
 
-/* Scheduled-only: dark blue in light mode, softer blue in dark mode */
-.consolidated-circulation-card .arrival-time.time-scheduled {
+.consolidated-circulation-card .arrival-time.time-scheduled,
+.consolidated-circulation-card .arrival-time.time-scheduled svg {
   color: #0b3d91; /* dark blue */
 }
 
-.consolidated-circulation-card .arrival-time.time-scheduled svg {
-  color: #0b3d91;
-}
-
-@media (prefers-color-scheme: dark) {
-  .consolidated-circulation-card .arrival-time.time-scheduled {
-    color: #8fb4ff; /* lighten for dark backgrounds */
-  }
-  .consolidated-circulation-card .arrival-time.time-scheduled svg {
-    color: #8fb4ff;
-  }
+[data-theme="dark"] .consolidated-circulation-card .arrival-time.time-scheduled,
+[data-theme="dark"] .consolidated-circulation-card .arrival-time.time-scheduled svg {
+  color: #8fb4ff; /* lighten for dark backgrounds */
 }
 
 .consolidated-circulation-card .distance-info {

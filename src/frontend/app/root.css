@@ -202,4 +202,5 @@ body {
 
 .maplibregl-ctrl-attrib-inner {
   font-size: 0.9em;
+  color: var(--ml-c-link-2);
 }

@@ -276,14 +276,7 @@
 
 .experimental-notice strong {
   display: block;
-  margin-bottom: 0.5rem;
   color: #856404;
-}
-
-.experimental-notice p {
-  margin: 0;
-  font-size: 0.9rem;
-  line-height: 1.4;
 }
 
 [data-theme="dark"] .experimental-notice {
