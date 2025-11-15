@@ -138,7 +138,7 @@ export const ConsolidatedCirculationList: React.FC<RegularTableProps> = ({
   );
 
   return (
-    <div className="consolidated-circulation-container">
+    <>
       <div className="consolidated-circulation-caption">
         {t("estimates.caption", "Estimaciones de llegadas a las {{time}}", {
           time: dataDate?.toLocaleTimeString(),
@@ -150,7 +150,7 @@ export const ConsolidatedCirculationList: React.FC<RegularTableProps> = ({
           {t("estimates.none", "No hay estimaciones disponibles")}
         </div>
       ) : (
-        <div className="consolidated-circulation-list">
+        <>
           {sortedData.map((estimate, idx) => {
             const displayMinutes =
               estimate.realTime?.minutes ?? estimate.schedule?.minutes ?? 0;
@@ -194,44 +194,15 @@ export const ConsolidatedCirculationList: React.FC<RegularTableProps> = ({
                         estimate.realTime &&
                         estimate.realTime.distance >= 0 && <> &middot; </>}
 
-                        {delayText}
-
+                      {delayText}
                     </div>
                   </div>
                 </div>
-
-                {/*<div className="card-footer">
-                  <span className="status-text">
-                    {delayText && (
-                      <>
-                        {t("estimates.bus_is", "Bus is")} {delayText}.{" "}
-                      </>
-                    )}
-                  </span>
-                  <span className="status-text">
-                    {estimate.schedule ? (
-                      <>
-                        {t("estimates.service", "Service")}{" "}
-                        {parseServiceId(estimate.schedule.serviceId)}
-                        {", "}
-                        {t("estimates.trip", "trip")}{" "}
-                        {getTripIdDisplay(estimate.schedule.tripId)}
-                      </>
-                    ) : (
-                      <>
-                        {t(
-                          "estimates.unknown_service",
-                          "Unknown service. It may be a reinforcement or the service has a different name than planned.",
-                        )}
-                      </>
-                    )}
-                  </span>
-                </div>*/}
               </div>
             );
           })}
-        </div>
+        </>
       )}
-    </div>
+    </>
   );
 };

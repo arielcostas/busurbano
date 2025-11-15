@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 import { ErrorDisplay } from "~/components/ErrorDisplay";
 import LineIcon from "~/components/LineIcon";
-import { PullToRefresh } from "~/components/PullToRefresh";
 import { StopAlert } from "~/components/StopAlert";
 import { StopMap } from "~/components/StopMapSheet";
 import { ConsolidatedCirculationList } from "~/components/Stops/ConsolidatedCirculationList";
@@ -188,34 +187,10 @@ export default function Estimates() {
     }
   };
 
-  // Show loading skeleton while initial data is loading
-  if (dataLoading && !data) {
-    return (
-      <PullToRefresh
-        onRefresh={handleManualRefresh}
-        isRefreshing={isManualRefreshing}
-      >
-        <div className="page-container estimates-page">
-          <div className="estimates-header">
-            <h1 className="page-title">
-              <Star className="star-icon" />
-              <Edit2 className="edit-icon" />
-              {t("common.loading")}...
-            </h1>
-          </div>
-
-          <div className="table-responsive">
-            <ConsolidatedCirculationListSkeleton />
-          </div>
-        </div>
-      </PullToRefresh>
-    );
-  }
-
   return (
     <>
-      <div className="page-container estimates-page">
-        <div className="estimates-header">
+      <div className="page-container stops-page">
+        <div className="stops-header">
           <h1 className="page-title">
             <Star
               className={`star-icon ${favourited ? "active" : ""}`}
@@ -248,58 +223,46 @@ export default function Estimates() {
           </div>
         )}
 
-        {(isManualRefreshing || dataLoading) && (
-          <div className="refresh-status">
-            <RefreshCw className="refresh-icon spinning" />
-            <span>{t("estimates.refreshing", "Actualizando datos...")}</span>
-          </div>
-        )}
-
         {stopData && <StopAlert stop={stopData} />}
 
-        <div className="estimates-content-wrapper">
-          <div className="estimates-list-container">
-            <div className="experimental-notice">
-              <strong>
-                {t("estimates.experimental_feature", "Experimental feature")}
-              </strong>
-            </div>
-
-            <div className="table-responsive">
-              {dataLoading ? (
-                <ConsolidatedCirculationListSkeleton />
-              ) : dataError ? (
-                <ErrorDisplay
-                  error={dataError}
-                  onRetry={loadData}
-                  title={t(
-                    "errors.estimates_title",
-                    "Error al cargar estimaciones",
-                  )}
-                />
-              ) : data ? (
-                <ConsolidatedCirculationList
-                  data={data}
-                  dataDate={dataDate}
-                  regionConfig={regionConfig}
-                />
-              ) : null}
-            </div>
-          </div>
-
-          {/* Map showing stop and bus positions */}
-          {stopData && (
-            <StopMap
-              stop={stopData}
-              region={region}
-              circulations={(data ?? []).map((c) => ({
-                line: c.line,
-                route: c.route,
-                currentPosition: c.currentPosition,
-              }))}
-            />
-          )}
+        <div className="experimental-notice">
+          <strong>
+            {t("estimates.experimental_feature", "Experimental feature")}
+          </strong>
         </div>
+
+        <div className="estimates-list-container">
+          {dataLoading ? (
+            <ConsolidatedCirculationListSkeleton />
+          ) : dataError ? (
+            <ErrorDisplay
+              error={dataError}
+              onRetry={loadData}
+              title={t(
+                "errors.estimates_title",
+                "Error al cargar estimaciones",
+              )}
+            />
+          ) : data ? (
+            <ConsolidatedCirculationList
+              data={data}
+              dataDate={dataDate}
+              regionConfig={regionConfig}
+            />
+          ) : null}
+        </div>
+
+        {stopData && (
+          <StopMap
+            stop={stopData}
+            region={region}
+            circulations={(data ?? []).map((c) => ({
+              line: c.line,
+              route: c.route,
+              currentPosition: c.currentPosition,
+            }))}
+          />
+        )}
       </div>
     </>
   );

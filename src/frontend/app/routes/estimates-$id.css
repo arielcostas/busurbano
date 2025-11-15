@@ -1,20 +1,6 @@
-.estimates-content-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  min-height: 0;
-  flex: 1;
-}
-
-.estimates-list-container {
-  overflow-y: auto;
-  flex: 1;
-  min-height: 0;
-  border-radius: 0.5rem;
-}
-
 .table-responsive {
   overflow-x: auto;
+  margin-bottom: 1.5rem;
 }
 
 .table {
@@ -43,20 +29,12 @@
 }
 
 /* Estimates page specific styles */
-.estimates-page {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  overflow: hidden;
-}
-
 .estimates-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1rem;
   gap: 1rem;
-  flex-shrink: 0;
 }
 
 .manual-refresh-button {
@@ -80,32 +58,6 @@
 }
 
 .manual-refresh-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.toggle-map-button {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  background: var(--primary-color);
-  border: none;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  min-width: max-content;
-}
-
-.toggle-map-button:hover:not(:disabled) {
-  background: var(--primary-color-hover);
-  transform: translateY(-1px);
-}
-
-.toggle-map-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
@@ -263,7 +215,6 @@
   gap: 0.5rem;
   flex-wrap: wrap;
   margin-bottom: 1rem;
-  flex-shrink: 0;
 }
 
 .estimates-lines-container.scrollable {
@@ -287,28 +238,33 @@
   flex-shrink: 0;
 }
 
-.refresh-status {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  justify-content: center;
-  padding: 0.75rem 1rem;
-  margin-bottom: 1rem;
-  background-color: rgba(0, 123, 255, 0.1);
-  border: 1px solid rgba(0, 123, 255, 0.2);
+.experimental-notice {
+  background-color: #fff3cd;
+  border: 1px solid #ffc107;
   border-radius: 8px;
-  color: var(--primary-color);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  color: #856404;
+}
+
+.experimental-notice strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #856404;
+}
+
+.experimental-notice p {
+  margin: 0;
   font-size: 0.9rem;
-  font-weight: 500;
-  flex-shrink: 0;
+  line-height: 1.4;
 }
 
-.refresh-status .refresh-icon {
-  width: 1rem;
-  height: 1rem;
+[data-theme="dark"] .experimental-notice {
+  background-color: #3d3100;
+  border-color: #ffc107;
+  color: #ffd966;
 }
 
-[data-theme="dark"] .refresh-status {
-  background-color: rgba(0, 123, 255, 0.15);
-  border-color: rgba(0, 123, 255, 0.3);
+[data-theme="dark"] .experimental-notice strong {
+  color: #ffd966;
 }
