@@ -38,9 +38,9 @@ const loadTimetableData = async (
   // Add delay to see skeletons in action (remove in production)
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD format
+  // Use "today" to let server determine date based on Europe/Madrid timezone
   const resp = await fetch(
-    `${regionConfig.timetableEndpoint}?date=${today}&stopId=${stopId}`,
+    `${regionConfig.timetableEndpoint}?date=today&stopId=${stopId}`,
     {
       headers: {
         Accept: "application/json",

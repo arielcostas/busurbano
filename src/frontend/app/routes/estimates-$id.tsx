@@ -65,9 +65,9 @@ const loadTimetableData = async (
     throw new Error("Timetable not available for this region");
   }
 
-  const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD format
+  // Use "today" to let server determine date based on Europe/Madrid timezone
   const resp = await fetch(
-    `${regionConfig.timetableEndpoint}?date=${today}&stopId=${stopId}`,
+    `${regionConfig.timetableEndpoint}?date=today&stopId=${stopId}`,
     {
       headers: {
         Accept: "application/json",

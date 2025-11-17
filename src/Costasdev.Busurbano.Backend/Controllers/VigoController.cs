@@ -49,25 +49,39 @@ public class VigoController : ControllerBase
     [HttpGet("GetStopTimetable")]
     public async Task<IActionResult> GetStopTimetable(
         [FromQuery] int stopId,
-        [FromQuery] string date
+        [FromQuery] string? date = null
     )
     {
-        // Validate date format
-        if (!DateTime.TryParseExact(date, "yyyy-MM-dd", null, DateTimeStyles.None, out _))
+        // Use Europe/Madrid timezone to determine the correct date
+        var tz = TimeZoneInfo.FindSystemTimeZoneById("Europe/Madrid");
+        var nowLocal = TimeZoneInfo.ConvertTime(DateTime.UtcNow, tz);
+        
+        // If no date provided or date is "today", use Madrid timezone's current date
+        string effectiveDate;
+        if (string.IsNullOrEmpty(date) || date == "today")
         {
-            return BadRequest("Invalid date format. Please use yyyy-MM-dd format.");
+            effectiveDate = nowLocal.Date.ToString("yyyy-MM-dd");
+        }
+        else
+        {
+            // Validate provided date format
+            if (!DateTime.TryParseExact(date, "yyyy-MM-dd", null, DateTimeStyles.None, out _))
+            {
+                return BadRequest("Invalid date format. Please use yyyy-MM-dd format.");
+            }
+            effectiveDate = date;
         }
 
         try
         {
-            var timetableData = await LoadTimetable(stopId.ToString(), date);
+            var timetableData = await LoadTimetable(stopId.ToString(), effectiveDate);
 
             return new OkObjectResult(timetableData);
         }
         catch (FileNotFoundException ex)
         {
-            _logger.LogError(ex, "Stop data not found for stop {StopId} on date {Date}", stopId, date);
-            return StatusCode(404, $"Stop data not found for stop {stopId} on date {date}");
+            _logger.LogError(ex, "Stop data not found for stop {StopId} on date {Date}", stopId, effectiveDate);
+            return StatusCode(404, $"Stop data not found for stop {stopId} on date {effectiveDate}");
         }
         catch (Exception ex)
         {

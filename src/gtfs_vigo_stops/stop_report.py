@@ -256,14 +256,11 @@ def get_stop_arrivals(feed_dir: str, date: str) -> Dict[str, List[Dict[str, Any]
                     continue  # Skip stops without a code
                 
                 # Filter based on whether this is from previous day's service
-                # For previous day services: only include if calling_time >= 24:00:00
-                # For current day services: only include if calling_time < 24:00:00
+                # For previous day services: only include if calling_time >= 24:00:00 (night services rolling to this day)
+                # For current day services: include ALL times (both < 24:00 and >= 24:00)
                 if is_prev_day_service:
                     if not is_next_day_service(stop_time.departure_time):
                         continue  # Skip times < 24:00 from previous day
-                else:
-                    if is_next_day_service(stop_time.departure_time):
-                        continue  # Skip times >= 24:00 from current day (they'll be in tomorrow's report)
 
                 if stop_code not in stop_arrivals:
                     stop_arrivals[stop_code] = []
