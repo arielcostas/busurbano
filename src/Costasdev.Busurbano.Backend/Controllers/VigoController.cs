@@ -74,9 +74,15 @@ public class VigoController : ControllerBase
 
         try
         {
-            var timetableData = await LoadTimetable(stopId.ToString(), effectiveDate);
+            var file = Path.Combine(_configuration.ScheduleBasePath, effectiveDate, stopId + ".json");
+            if (!SysFile.Exists(file))
+            {
+                throw new FileNotFoundException();
+            }
 
-            return new OkObjectResult(timetableData);
+            var contents = await SysFile.ReadAllTextAsync(file);
+
+            return new OkObjectResult(JsonSerializer.Deserialize<List<ScheduledStop>>(contents)!);
         }
         catch (FileNotFoundException ex)
         {
@@ -104,33 +110,38 @@ public class VigoController : ControllerBase
         var tomorrowDate = nowLocal.Date.AddDays(1).ToString("yyyy-MM-dd");
 
         // Load both today's and tomorrow's schedules to handle night services
-        var todayTimetableTask = LoadStopArrivalsProto(stopId.ToString(), todayDate);
-        var tomorrowTimetableTask = LoadStopArrivalsProto(stopId.ToString(), tomorrowDate);
+        var timetableTask = LoadStopArrivalsProto(stopId.ToString(), todayDate);
 
         // Wait for real-time data and today's schedule (required)
-        await Task.WhenAll(realtimeTask, todayTimetableTask);
+        await Task.WhenAll(realtimeTask, timetableTask);
 
         var realTimeEstimates = realtimeTask.Result.Estimates;
-        var timetable = todayTimetableTask.Result.Arrivals
+
+        // Handle case where schedule file doesn't exist - return realtime-only data
+        if (timetableTask.Result == null)
+        {
+            _logger.LogWarning("No schedule data available for stop {StopId} on {Date}, returning realtime-only data", stopId, todayDate);
+
+            var realtimeOnlyCirculations = realTimeEstimates.Select(estimate => new ConsolidatedCirculation
+            {
+                Line = estimate.Line,
+                Route = estimate.Route,
+                Schedule = null,
+                RealTime = new RealTimeData
+                {
+                    Minutes = estimate.Minutes,
+                    Distance = estimate.Meters
+                }
+            }).OrderBy(c => c.RealTime!.Minutes).ToList();
+
+            return Ok(realtimeOnlyCirculations);
+        }
+
+        var timetable = timetableTask.Result.Arrivals
             .Where(c => c.StartingDateTime() != null && c.CallingDateTime() != null)
             .ToList();
 
-        // Try to load tomorrow's schedule (optional, may not exist yet)
-        try
-        {
-            await tomorrowTimetableTask;
-            var tomorrowArrivals = tomorrowTimetableTask.Result.Arrivals
-                .Where(c => c.StartingDateTime() != null && c.CallingDateTime() != null)
-                .ToList();
-            timetable.AddRange(tomorrowArrivals);
-        }
-        catch (FileNotFoundException)
-        {
-            // Tomorrow's schedule doesn't exist yet, that's okay
-            _logger.LogInformation("Tomorrow's schedule not found for stop {StopId}, using only today's schedule", stopId);
-        }
-
-        var stopLocation = todayTimetableTask.Result.Location;
+        var stopLocation = timetableTask.Result.Location;
 
         var now = nowLocal.AddSeconds(60 - nowLocal.Second);
         // Define the scope end as the time of the last realtime arrival (no extra buffer)
@@ -319,12 +330,13 @@ public class VigoController : ControllerBase
         return Ok(sorted);
     }
 
-    private async Task<StopArrivals> LoadStopArrivalsProto(string stopId, string dateString)
+    private async Task<StopArrivals?> LoadStopArrivalsProto(string stopId, string dateString)
     {
         var file = Path.Combine(_configuration.ScheduleBasePath, dateString, stopId + ".pb");
         if (!SysFile.Exists(file))
         {
-            throw new FileNotFoundException();
+            _logger.LogWarning("Stop arrivals proto file not found: {File}", file);
+            return null;
         }
 
         var contents = await SysFile.ReadAllBytesAsync(file);
@@ -343,18 +355,6 @@ public class VigoController : ControllerBase
         var contents = await SysFile.ReadAllBytesAsync(file);
         var shape = Shape.Parser.ParseFrom(contents);
         return shape;
-    }
-
-    private async Task<List<ScheduledStop>> LoadTimetable(string stopId, string dateString)
-    {
-        var file = Path.Combine(_configuration.ScheduleBasePath, dateString, stopId + ".json");
-        if (!SysFile.Exists(file))
-        {
-            throw new FileNotFoundException();
-        }
-
-        var contents = await SysFile.ReadAllTextAsync(file);
-        return JsonSerializer.Deserialize<List<ScheduledStop>>(contents)!;
     }
 
     private static string NormalizeRouteName(string route)
