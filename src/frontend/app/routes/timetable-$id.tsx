@@ -38,9 +38,9 @@ const loadTimetableData = async (
   // Add delay to see skeletons in action (remove in production)
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD format
+  // Use "today" to let server determine date based on Europe/Madrid timezone
   const resp = await fetch(
-    `${regionConfig.timetableEndpoint}?date=${today}&stopId=${stopId}`,
+    `${regionConfig.timetableEndpoint}?date=today&stopId=${stopId}`,
     {
       headers: {
         Accept: "application/json",
@@ -59,6 +59,13 @@ const loadTimetableData = async (
 const timeToMinutes = (time: string): number => {
   const [hours, minutes] = time.split(":").map(Number);
   return hours * 60 + minutes;
+};
+
+// Utility function to format GTFS time for display (handle hours >= 24)
+const formatTimeForDisplay = (time: string): string => {
+  const [hours, minutes] = time.split(":").map(Number);
+  const normalizedHours = hours % 24;
+  return `${normalizedHours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
 };
 
 // Filter past entries (keep only a few recent past ones)
@@ -402,7 +409,7 @@ const TimetableTableWithScroll: React.FC<{
 
                 <div className="time-info">
                   <span className="departure-time">
-                    {entry.calling_time.slice(0, 5)}
+                    {formatTimeForDisplay(entry.calling_time)}
                   </span>
                   <div className="service-id">
                     {parseServiceId(entry.service_id)}

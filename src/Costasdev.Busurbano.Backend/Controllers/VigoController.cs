@@ -49,25 +49,45 @@ public class VigoController : ControllerBase
     [HttpGet("GetStopTimetable")]
     public async Task<IActionResult> GetStopTimetable(
         [FromQuery] int stopId,
-        [FromQuery] string date
+        [FromQuery] string? date = null
     )
     {
-        // Validate date format
-        if (!DateTime.TryParseExact(date, "yyyy-MM-dd", null, DateTimeStyles.None, out _))
+        // Use Europe/Madrid timezone to determine the correct date
+        var tz = TimeZoneInfo.FindSystemTimeZoneById("Europe/Madrid");
+        var nowLocal = TimeZoneInfo.ConvertTime(DateTime.UtcNow, tz);
+
+        // If no date provided or date is "today", use Madrid timezone's current date
+        string effectiveDate;
+        if (string.IsNullOrEmpty(date) || date == "today")
         {
-            return BadRequest("Invalid date format. Please use yyyy-MM-dd format.");
+            effectiveDate = nowLocal.Date.ToString("yyyy-MM-dd");
+        }
+        else
+        {
+            // Validate provided date format
+            if (!DateTime.TryParseExact(date, "yyyy-MM-dd", null, DateTimeStyles.None, out _))
+            {
+                return BadRequest("Invalid date format. Please use yyyy-MM-dd format.");
+            }
+            effectiveDate = date;
         }
 
         try
         {
-            var timetableData = await LoadTimetable(stopId.ToString(), date);
+            var file = Path.Combine(_configuration.ScheduleBasePath, effectiveDate, stopId + ".json");
+            if (!SysFile.Exists(file))
+            {
+                throw new FileNotFoundException();
+            }
 
-            return new OkObjectResult(timetableData);
+            var contents = await SysFile.ReadAllTextAsync(file);
+
+            return new OkObjectResult(JsonSerializer.Deserialize<List<ScheduledStop>>(contents)!);
         }
         catch (FileNotFoundException ex)
         {
-            _logger.LogError(ex, "Stop data not found for stop {StopId} on date {Date}", stopId, date);
-            return StatusCode(404, $"Stop data not found for stop {stopId} on date {date}");
+            _logger.LogError(ex, "Stop data not found for stop {StopId} on date {Date}", stopId, effectiveDate);
+            return StatusCode(404, $"Stop data not found for stop {stopId} on date {effectiveDate}");
         }
         catch (Exception ex)
         {
@@ -86,12 +106,37 @@ public class VigoController : ControllerBase
         var nowLocal = TimeZoneInfo.ConvertTime(DateTime.UtcNow, tz);
 
         var realtimeTask = _api.GetStopEstimates(stopId);
-        var timetableTask = LoadStopArrivalsProto(stopId.ToString(), nowLocal.Date.ToString("yyyy-MM-dd"));
+        var todayDate = nowLocal.Date.ToString("yyyy-MM-dd");
+        var tomorrowDate = nowLocal.Date.AddDays(1).ToString("yyyy-MM-dd");
 
+        // Load both today's and tomorrow's schedules to handle night services
+        var timetableTask = LoadStopArrivalsProto(stopId.ToString(), todayDate);
+
+        // Wait for real-time data and today's schedule (required)
         await Task.WhenAll(realtimeTask, timetableTask);
 
         var realTimeEstimates = realtimeTask.Result.Estimates;
-        // Filter out records with unparseable times (e.g., hours >= 24)
+
+        // Handle case where schedule file doesn't exist - return realtime-only data
+        if (timetableTask.Result == null)
+        {
+            _logger.LogWarning("No schedule data available for stop {StopId} on {Date}, returning realtime-only data", stopId, todayDate);
+
+            var realtimeOnlyCirculations = realTimeEstimates.Select(estimate => new ConsolidatedCirculation
+            {
+                Line = estimate.Line,
+                Route = estimate.Route,
+                Schedule = null,
+                RealTime = new RealTimeData
+                {
+                    Minutes = estimate.Minutes,
+                    Distance = estimate.Meters
+                }
+            }).OrderBy(c => c.RealTime!.Minutes).ToList();
+
+            return Ok(realtimeOnlyCirculations);
+        }
+
         var timetable = timetableTask.Result.Arrivals
             .Where(c => c.StartingDateTime() != null && c.CallingDateTime() != null)
             .ToList();
@@ -285,12 +330,13 @@ public class VigoController : ControllerBase
         return Ok(sorted);
     }
 
-    private async Task<StopArrivals> LoadStopArrivalsProto(string stopId, string dateString)
+    private async Task<StopArrivals?> LoadStopArrivalsProto(string stopId, string dateString)
     {
         var file = Path.Combine(_configuration.ScheduleBasePath, dateString, stopId + ".pb");
         if (!SysFile.Exists(file))
         {
-            throw new FileNotFoundException();
+            _logger.LogWarning("Stop arrivals proto file not found: {File}", file);
+            return null;
         }
 
         var contents = await SysFile.ReadAllBytesAsync(file);
@@ -309,18 +355,6 @@ public class VigoController : ControllerBase
         var contents = await SysFile.ReadAllBytesAsync(file);
         var shape = Shape.Parser.ParseFrom(contents);
         return shape;
-    }
-
-    private async Task<List<ScheduledStop>> LoadTimetable(string stopId, string dateString)
-    {
-        var file = Path.Combine(_configuration.ScheduleBasePath, dateString, stopId + ".json");
-        if (!SysFile.Exists(file))
-        {
-            throw new FileNotFoundException();
-        }
-
-        var contents = await SysFile.ReadAllTextAsync(file);
-        return JsonSerializer.Deserialize<List<ScheduledStop>>(contents)!;
     }
 
     private static string NormalizeRouteName(string route)
@@ -353,21 +387,53 @@ public static class StopScheduleExtensions
 {
     public static DateTime? StartingDateTime(this ScheduledArrival stop)
     {
-        if (!TimeOnly.TryParse(stop.StartingTime, out var time))
-        {
-            return null;
-        }
-        var dt = DateTime.Today + time.ToTimeSpan();
-        return dt.AddSeconds(60 - dt.Second);
+        return ParseGtfsTime(stop.StartingTime);
     }
 
     public static DateTime? CallingDateTime(this ScheduledArrival stop)
     {
-        if (!TimeOnly.TryParse(stop.CallingTime, out var time))
+        return ParseGtfsTime(stop.CallingTime);
+    }
+
+    /// <summary>
+    /// Parse GTFS time format (HH:MM:SS) which can have hours >= 24 for services past midnight
+    /// </summary>
+    private static DateTime? ParseGtfsTime(string timeStr)
+    {
+        if (string.IsNullOrWhiteSpace(timeStr))
         {
             return null;
         }
-        var dt = DateTime.Today + time.ToTimeSpan();
-        return dt.AddSeconds(60 - dt.Second);
+
+        var parts = timeStr.Split(':');
+        if (parts.Length != 3)
+        {
+            return null;
+        }
+
+        if (!int.TryParse(parts[0], out var hours) ||
+            !int.TryParse(parts[1], out var minutes) ||
+            !int.TryParse(parts[2], out var seconds))
+        {
+            return null;
+        }
+
+        // Handle GTFS times that exceed 24 hours (e.g., 25:30:00 for 1:30 AM next day)
+        var days = hours / 24;
+        var normalizedHours = hours % 24;
+
+        try
+        {
+            var dt = DateTime.Today
+                .AddDays(days)
+                .AddHours(normalizedHours)
+                .AddMinutes(minutes)
+                .AddSeconds(seconds);
+            return dt.AddSeconds(60 - dt.Second);
+        }
+        catch
+        {
+            return null;
+        }
     }
 }
