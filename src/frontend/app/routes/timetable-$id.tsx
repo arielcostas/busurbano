@@ -61,6 +61,13 @@ const timeToMinutes = (time: string): number => {
   return hours * 60 + minutes;
 };
 
+// Utility function to format GTFS time for display (handle hours >= 24)
+const formatTimeForDisplay = (time: string): string => {
+  const [hours, minutes] = time.split(":").map(Number);
+  const normalizedHours = hours % 24;
+  return `${normalizedHours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
+};
+
 // Filter past entries (keep only a few recent past ones)
 const filterTimetableData = (
   data: ScheduledTable[],
@@ -402,7 +409,7 @@ const TimetableTableWithScroll: React.FC<{
 
                 <div className="time-info">
                   <span className="departure-time">
-                    {entry.calling_time.slice(0, 5)}
+                    {formatTimeForDisplay(entry.calling_time)}
                   </span>
                   <div className="service-id">
                     {parseServiceId(entry.service_id)}
