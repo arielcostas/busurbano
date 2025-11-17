@@ -353,21 +353,53 @@ public static class StopScheduleExtensions
 {
     public static DateTime? StartingDateTime(this ScheduledArrival stop)
     {
-        if (!TimeOnly.TryParse(stop.StartingTime, out var time))
-        {
-            return null;
-        }
-        var dt = DateTime.Today + time.ToTimeSpan();
-        return dt.AddSeconds(60 - dt.Second);
+        return ParseGtfsTime(stop.StartingTime);
     }
 
     public static DateTime? CallingDateTime(this ScheduledArrival stop)
     {
-        if (!TimeOnly.TryParse(stop.CallingTime, out var time))
+        return ParseGtfsTime(stop.CallingTime);
+    }
+
+    /// <summary>
+    /// Parse GTFS time format (HH:MM:SS) which can have hours >= 24 for services past midnight
+    /// </summary>
+    private static DateTime? ParseGtfsTime(string timeStr)
+    {
+        if (string.IsNullOrWhiteSpace(timeStr))
         {
             return null;
         }
-        var dt = DateTime.Today + time.ToTimeSpan();
-        return dt.AddSeconds(60 - dt.Second);
+
+        var parts = timeStr.Split(':');
+        if (parts.Length != 3)
+        {
+            return null;
+        }
+
+        if (!int.TryParse(parts[0], out var hours) ||
+            !int.TryParse(parts[1], out var minutes) ||
+            !int.TryParse(parts[2], out var seconds))
+        {
+            return null;
+        }
+
+        // Handle GTFS times that exceed 24 hours (e.g., 25:30:00 for 1:30 AM next day)
+        var days = hours / 24;
+        var normalizedHours = hours % 24;
+
+        try
+        {
+            var dt = DateTime.Today
+                .AddDays(days)
+                .AddHours(normalizedHours)
+                .AddMinutes(minutes)
+                .AddSeconds(seconds);
+            return dt.AddSeconds(60 - dt.Second);
+        }
+        catch
+        {
+            return null;
+        }
     }
 }

@@ -58,6 +58,7 @@ def parse_args():
 def time_to_seconds(time_str: str) -> int:
     """
     Convert HH:MM:SS to seconds since midnight.
+    Handles GTFS times that can exceed 24 hours (e.g., 25:30:00 for 1:30 AM next day).
     """
     if not time_str:
         return 0
@@ -73,29 +74,91 @@ def time_to_seconds(time_str: str) -> int:
         return 0
 
 
+def normalize_gtfs_time(time_str: str) -> str:
+    """
+    Normalize GTFS time format to standard HH:MM:SS (0-23 hours).
+    Converts times like 25:30:00 to 01:30:00.
+    
+    Args:
+        time_str: Time in HH:MM:SS format, possibly with hours >= 24
+        
+    Returns:
+        Normalized time string in HH:MM:SS format
+    """
+    if not time_str:
+        return time_str
+    
+    parts = time_str.split(":")
+    if len(parts) != 3:
+        return time_str
+    
+    try:
+        hours, minutes, seconds = map(int, parts)
+        normalized_hours = hours % 24
+        return f"{normalized_hours:02d}:{minutes:02d}:{seconds:02d}"
+    except ValueError:
+        return time_str
+
+
+def is_next_day_service(time_str: str) -> bool:
+    """
+    Check if a GTFS time represents a service on the next day (hours >= 24).
+    
+    Args:
+        time_str: Time in HH:MM:SS format
+        
+    Returns:
+        True if the time is >= 24:00:00, False otherwise
+    """
+    if not time_str:
+        return False
+    
+    parts = time_str.split(":")
+    if len(parts) != 3:
+        return False
+    
+    try:
+        hours = int(parts[0])
+        return hours >= 24
+    except ValueError:
+        return False
+
+
 def get_stop_arrivals(feed_dir: str, date: str) -> Dict[str, List[Dict[str, Any]]]:
     """
     Process trips for the given date and organize stop arrivals.
+    Also includes night services from the previous day (times >= 24:00:00).
 
     Args:
         feed_dir: Path to the GTFS feed directory
         date: Date in YYYY-MM-DD format
-        numeric_stop_code: If True, strip non-numeric characters from stop codes
 
     Returns:
         Dictionary mapping stop_code to lists of arrival information.
     """
+    from datetime import datetime, timedelta
+    
     stops = get_all_stops(feed_dir)
     logger.info(f"Found {len(stops)} stops in the feed.")
 
     active_services = get_active_services(feed_dir, date)
     if not active_services:
         logger.info("No active services found for the given date.")
+    
+    logger.info(f"Found {len(active_services)} active services for date {date}.")
+    
+    # Also get services from the previous day to include night services (times >= 24:00)
+    prev_date = (datetime.strptime(date, "%Y-%m-%d") - timedelta(days=1)).strftime("%Y-%m-%d")
+    prev_services = get_active_services(feed_dir, prev_date)
+    logger.info(f"Found {len(prev_services)} active services for previous date {prev_date} (for night services).")
+    
+    all_services = list(set(active_services + prev_services))
+    
+    if not all_services:
+        logger.info("No active services found for current or previous date.")
         return {}
 
-    logger.info(f"Found {len(active_services)} active services for date {date}.")
-
-    trips = get_trips_for_services(feed_dir, active_services)
+    trips = get_trips_for_services(feed_dir, all_services)
     total_trip_count = sum(len(trip_list) for trip_list in trips.values())
     logger.info(f"Found {total_trip_count} trips for active services.")
 
@@ -120,6 +183,9 @@ def get_stop_arrivals(feed_dir: str, date: str) -> Dict[str, List[Dict[str, Any]
     stop_arrivals = {}
 
     for service_id, trip_list in trips.items():
+        # Determine if this service is from the previous day
+        is_prev_day_service = service_id in prev_services and service_id not in active_services
+        
         for trip in trip_list:
             # Get route information once per trip
             route_info = routes.get(trip.route_id, {})
@@ -188,6 +254,16 @@ def get_stop_arrivals(feed_dir: str, date: str) -> Dict[str, List[Dict[str, Any]
 
                 if not stop_code:
                     continue  # Skip stops without a code
+                
+                # Filter based on whether this is from previous day's service
+                # For previous day services: only include if calling_time >= 24:00:00
+                # For current day services: only include if calling_time < 24:00:00
+                if is_prev_day_service:
+                    if not is_next_day_service(stop_time.departure_time):
+                        continue  # Skip times < 24:00 from previous day
+                else:
+                    if is_next_day_service(stop_time.departure_time):
+                        continue  # Skip times >= 24:00 from current day (they'll be in tomorrow's report)
 
                 if stop_code not in stop_arrivals:
                     stop_arrivals[stop_code] = []
@@ -218,12 +294,12 @@ def get_stop_arrivals(feed_dir: str, date: str) -> Dict[str, List[Dict[str, Any]
                         "next_streets": next_streets,
                         "starting_code": starting_code,
                         "starting_name": starting_name,
-                        "starting_time": starting_time,
-                        "calling_time": stop_time.departure_time,
-                        "calling_ssm": time_to_seconds(stop_time.departure_time),
+                        "starting_time": normalize_gtfs_time(starting_time),
+                        "calling_time": normalize_gtfs_time(stop_time.departure_time),
+                        "calling_ssm": time_to_seconds(normalize_gtfs_time(stop_time.departure_time)),
                         "terminus_code": terminus_code,
                         "terminus_name": terminus_name,
-                        "terminus_time": terminus_time,
+                        "terminus_time": normalize_gtfs_time(terminus_time),
                     }
                 )
 
