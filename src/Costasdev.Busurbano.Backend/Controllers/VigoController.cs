@@ -55,7 +55,7 @@ public class VigoController : ControllerBase
         // Use Europe/Madrid timezone to determine the correct date
         var tz = TimeZoneInfo.FindSystemTimeZoneById("Europe/Madrid");
         var nowLocal = TimeZoneInfo.ConvertTime(DateTime.UtcNow, tz);
-        
+
         // If no date provided or date is "today", use Madrid timezone's current date
         string effectiveDate;
         if (string.IsNullOrEmpty(date) || date == "today")
@@ -100,17 +100,37 @@ public class VigoController : ControllerBase
         var nowLocal = TimeZoneInfo.ConvertTime(DateTime.UtcNow, tz);
 
         var realtimeTask = _api.GetStopEstimates(stopId);
-        var timetableTask = LoadStopArrivalsProto(stopId.ToString(), nowLocal.Date.ToString("yyyy-MM-dd"));
+        var todayDate = nowLocal.Date.ToString("yyyy-MM-dd");
+        var tomorrowDate = nowLocal.Date.AddDays(1).ToString("yyyy-MM-dd");
 
-        await Task.WhenAll(realtimeTask, timetableTask);
+        // Load both today's and tomorrow's schedules to handle night services
+        var todayTimetableTask = LoadStopArrivalsProto(stopId.ToString(), todayDate);
+        var tomorrowTimetableTask = LoadStopArrivalsProto(stopId.ToString(), tomorrowDate);
+
+        // Wait for real-time data and today's schedule (required)
+        await Task.WhenAll(realtimeTask, todayTimetableTask);
 
         var realTimeEstimates = realtimeTask.Result.Estimates;
-        // Filter out records with unparseable times (e.g., hours >= 24)
-        var timetable = timetableTask.Result.Arrivals
+        var timetable = todayTimetableTask.Result.Arrivals
             .Where(c => c.StartingDateTime() != null && c.CallingDateTime() != null)
             .ToList();
 
-        var stopLocation = timetableTask.Result.Location;
+        // Try to load tomorrow's schedule (optional, may not exist yet)
+        try
+        {
+            await tomorrowTimetableTask;
+            var tomorrowArrivals = tomorrowTimetableTask.Result.Arrivals
+                .Where(c => c.StartingDateTime() != null && c.CallingDateTime() != null)
+                .ToList();
+            timetable.AddRange(tomorrowArrivals);
+        }
+        catch (FileNotFoundException)
+        {
+            // Tomorrow's schedule doesn't exist yet, that's okay
+            _logger.LogInformation("Tomorrow's schedule not found for stop {StopId}, using only today's schedule", stopId);
+        }
+
+        var stopLocation = todayTimetableTask.Result.Location;
 
         var now = nowLocal.AddSeconds(60 - nowLocal.Second);
         // Define the scope end as the time of the last realtime arrival (no extra buffer)
