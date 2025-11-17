@@ -308,7 +308,7 @@ export const StopMap: React.FC<StopMapProps> = ({
                         dx="0"
                         dy="1"
                         stdDeviation="1"
-                        flood-opacity="0.35"
+                        floodOpacity={0.35}
                       />
                     </filter>
                   </defs>
