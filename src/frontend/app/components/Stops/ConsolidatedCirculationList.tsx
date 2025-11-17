@@ -21,7 +21,7 @@ export const ConsolidatedCirculationList: React.FC<RegularTableProps> = ({
   const sortedData = [...data].sort(
     (a, b) =>
       (a.realTime?.minutes ?? a.schedule?.minutes ?? 999) -
-      (b.realTime?.minutes ?? b.schedule?.minutes ?? 999),
+      (b.realTime?.minutes ?? b.schedule?.minutes ?? 999)
   );
 
   return (

@@ -34,7 +34,11 @@ export const ConsolidatedCirculationListSkeleton: React.FC = () => {
 
               <div className="card-footer">
                 <Skeleton width="90%" height={14} />
-                <Skeleton width="70%" height={14} style={{ marginTop: "4px" }} />
+                <Skeleton
+                  width="70%"
+                  height={14}
+                  style={{ marginTop: "4px" }}
+                />
               </div>
             </div>
           ))}

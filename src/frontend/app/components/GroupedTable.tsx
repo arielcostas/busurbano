@@ -29,7 +29,7 @@ export const GroupedTable: React.FC<GroupedTable> = ({
       acc[estimate.line].push(estimate);
       return acc;
     },
-    {} as Record<string, typeof data>,
+    {} as Record<string, typeof data>
   );
 
   const sortedLines = Object.keys(groupedEstimates).sort((a, b) => {
@@ -72,7 +72,7 @@ export const GroupedTable: React.FC<GroupedTable> = ({
                 </td>
               )}
             </tr>
-          )),
+          ))
         )}
       </tbody>
 

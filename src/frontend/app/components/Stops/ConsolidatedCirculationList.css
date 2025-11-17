@@ -92,7 +92,10 @@
 }
 
 [data-theme="dark"] .consolidated-circulation-card .arrival-time.time-scheduled,
-[data-theme="dark"] .consolidated-circulation-card .arrival-time.time-scheduled svg {
+[data-theme="dark"]
+  .consolidated-circulation-card
+  .arrival-time.time-scheduled
+  svg {
   color: #8fb4ff; /* lighten for dark backgrounds */
 }
 

@@ -48,7 +48,7 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({
         htmlScroll,
         bodyScroll,
         containerScroll,
-        parentScroll,
+        parentScroll
       );
 
       if (maxScroll > 0 || isRefreshing) {
@@ -60,7 +60,7 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({
       startY.current = e.touches[0].clientY;
       setIsPulling(true);
     },
-    [isRefreshing],
+    [isRefreshing]
   );
 
   const handleTouchMove = useCallback(
@@ -78,7 +78,7 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({
         htmlScroll,
         bodyScroll,
         containerScroll,
-        parentScroll,
+        parentScroll
       );
 
       if (maxScroll > 10) {
@@ -116,7 +116,7 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({
         setIsActive(false);
       }
     },
-    [isPulling, threshold, isActive, y],
+    [isPulling, threshold, isActive, y]
   );
 
   const handleTouchEnd = useCallback(async () => {

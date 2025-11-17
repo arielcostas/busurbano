@@ -28,7 +28,7 @@ interface ErrorInfo {
 
 const loadConsolidatedData = async (
   region: RegionId,
-  stopId: number,
+  stopId: number
 ): Promise<ConsolidatedCirculation[]> => {
   const regionConfig = getRegionConfig(region);
   const resp = await fetch(
@@ -37,7 +37,7 @@ const loadConsolidatedData = async (
       headers: {
         Accept: "application/json",
       },
-    },
+    }
   );
 
   if (!resp.ok) {
@@ -109,7 +109,7 @@ export const StopSheet: React.FC<StopSheetProps> = ({
     ? [...data].sort(
         (a, b) =>
           (a.realTime?.minutes ?? a.schedule?.minutes ?? 999) -
-          (b.realTime?.minutes ?? b.schedule?.minutes ?? 999),
+          (b.realTime?.minutes ?? b.schedule?.minutes ?? 999)
       )
     : [];
   const limitedEstimates = sortedData.slice(0, 4);
@@ -145,7 +145,7 @@ export const StopSheet: React.FC<StopSheetProps> = ({
                 onRetry={loadData}
                 title={t(
                   "errors.estimates_title",
-                  "Error al cargar estimaciones",
+                  "Error al cargar estimaciones"
                 )}
                 className="compact"
               />
@@ -172,8 +172,6 @@ export const StopSheet: React.FC<StopSheetProps> = ({
                     </div>
                   )}
                 </div>
-
-
               </>
             ) : null}
           </div>
@@ -208,10 +206,7 @@ export const StopSheet: React.FC<StopSheetProps> = ({
                 className="stop-sheet-view-all"
                 onClick={onClose}
               >
-                {t(
-                  "map.view_all_estimates",
-                  "Ver todas las estimaciones",
-                )}
+                {t("map.view_all_estimates", "Ver todas las estimaciones")}
               </Link>
             </div>
           </div>

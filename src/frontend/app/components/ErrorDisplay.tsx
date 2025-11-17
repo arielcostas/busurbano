@@ -38,25 +38,25 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
       case "network":
         return t(
           "errors.network",
-          "No hay conexión a internet. Comprueba tu conexión y vuelve a intentarlo.",
+          "No hay conexión a internet. Comprueba tu conexión y vuelve a intentarlo."
         );
       case "server":
         if (error.status === 404) {
           return t(
             "errors.not_found",
-            "No se encontraron datos para esta parada.",
+            "No se encontraron datos para esta parada."
           );
         }
         if (error.status === 500) {
           return t(
             "errors.server_error",
-            "Error del servidor. Inténtalo de nuevo más tarde.",
+            "Error del servidor. Inténtalo de nuevo más tarde."
           );
         }
         if (error.status && error.status >= 400) {
           return t(
             "errors.client_error",
-            "Error en la solicitud. Verifica que la parada existe.",
+            "Error en la solicitud. Verifica que la parada existe."
           );
         }
         return t("errors.server_generic", "Error del servidor ({{status}})", {

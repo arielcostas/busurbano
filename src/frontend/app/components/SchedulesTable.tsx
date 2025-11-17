@@ -100,17 +100,17 @@ const findNearbyEntries = (
   entries: ScheduledTable[],
   currentTime: string,
   before: number = 4,
-  after: number = 4,
+  after: number = 4
 ): ScheduledTable[] => {
   if (!currentTime) return entries.slice(0, before + after);
 
   const currentMinutes = timeToMinutes(currentTime);
   const sortedEntries = [...entries].sort(
-    (a, b) => timeToMinutes(a.calling_time) - timeToMinutes(b.calling_time),
+    (a, b) => timeToMinutes(a.calling_time) - timeToMinutes(b.calling_time)
   );
 
   let currentIndex = sortedEntries.findIndex(
-    (entry) => timeToMinutes(entry.calling_time) >= currentMinutes,
+    (entry) => timeToMinutes(entry.calling_time) >= currentMinutes
   );
 
   if (currentIndex === -1) {

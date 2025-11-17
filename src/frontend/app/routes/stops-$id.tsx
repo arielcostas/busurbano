@@ -42,7 +42,7 @@ interface ErrorInfo {
 
 const loadConsolidatedData = async (
   region: RegionId,
-  stopId: string,
+  stopId: string
 ): Promise<ConsolidatedCirculation[]> => {
   const regionConfig = getRegionConfig(region);
   const resp = await fetch(
@@ -51,7 +51,7 @@ const loadConsolidatedData = async (
       headers: {
         Accept: "application/json",
       },
-    },
+    }
   );
 
   if (!resp.ok) {
@@ -151,7 +151,7 @@ export default function Estimates() {
 
     StopDataProvider.pushRecent(region, parseInt(params.id ?? ""));
     setFavourited(
-      StopDataProvider.isFavourite(region, parseInt(params.id ?? "")),
+      StopDataProvider.isFavourite(region, parseInt(params.id ?? ""))
     );
   }, [params.id, region, loadData]);
 
@@ -240,7 +240,7 @@ export default function Estimates() {
               onRetry={loadData}
               title={t(
                 "errors.estimates_title",
-                "Error al cargar estimaciones",
+                "Error al cargar estimaciones"
               )}
             />
           ) : data ? (

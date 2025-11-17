@@ -14,7 +14,7 @@ self.addEventListener("install", (event) => {
     caches
       .open(STATIC_CACHE_NAME)
       .then((cache) => cache.addAll(STATIC_CACHE_ASSETS))
-      .then(() => self.skipWaiting()),
+      .then(() => self.skipWaiting())
   );
 });
 
@@ -27,7 +27,7 @@ self.addEventListener("activate", (event) => {
         if (name !== STATIC_CACHE_NAME) {
           return caches.delete(name);
         }
-      }),
+      })
     );
 
     await self.clients.claim();

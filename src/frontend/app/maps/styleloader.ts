@@ -3,10 +3,12 @@ import type { Theme } from "~/AppContext";
 
 export async function loadStyle(
   styleName: string,
-  colorScheme: Theme,
+  colorScheme: Theme
 ): Promise<StyleSpecification> {
   if (colorScheme == "system") {
-    const isDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const isDarkMode = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
     colorScheme = isDarkMode ? "dark" : "light";
   }
 

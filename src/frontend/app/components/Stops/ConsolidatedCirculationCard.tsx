@@ -68,10 +68,9 @@ const parseServiceId = (serviceId: string): string => {
   return `${displayLine}-${turnNumber}`;
 };
 
-export const ConsolidatedCirculationCard: React.FC<ConsolidatedCirculationCardProps> = ({
-  estimate,
-  regionConfig,
-}) => {
+export const ConsolidatedCirculationCard: React.FC<
+  ConsolidatedCirculationCardProps
+> = ({ estimate, regionConfig }) => {
   const { t } = useTranslation();
 
   const absoluteArrivalTime = (minutes: number) => {
@@ -82,7 +81,7 @@ export const ConsolidatedCirculationCard: React.FC<ConsolidatedCirculationCardPr
       {
         hour: "2-digit",
         minute: "2-digit",
-      },
+      }
     ).format(arrival);
   };
 
@@ -102,7 +101,7 @@ export const ConsolidatedCirculationCard: React.FC<ConsolidatedCirculationCardPr
     const delay = estimate.realTime.minutes - estimate.schedule.minutes;
 
     if (delay >= -1 && delay <= 2) {
-      return "OK"
+      return "OK";
     } else if (delay > 2) {
       return "R" + delay;
     } else {
@@ -154,9 +153,10 @@ export const ConsolidatedCirculationCard: React.FC<ConsolidatedCirculationCardPr
           </div>
           <div className="distance-info">
             {estimate.schedule && (
-            <>
-            {parseServiceId(estimate.schedule.serviceId)} ({getTripIdDisplay(estimate.schedule.tripId)})
-            </>
+              <>
+                {parseServiceId(estimate.schedule.serviceId)} (
+                {getTripIdDisplay(estimate.schedule.tripId)})
+              </>
             )}
 
             {estimate.schedule &&

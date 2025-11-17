@@ -127,7 +127,7 @@ export default function Settings() {
                 e.target.value as
                   | "regular"
                   | "grouped"
-                  | "experimental_consolidated",
+                  | "experimental_consolidated"
               )
             }
           >
@@ -198,7 +198,7 @@ export default function Settings() {
             <p>
               {t(
                 "about.region_change_message",
-                "¿Estás seguro de que quieres cambiar la región? Serás redirigido a la lista de paradas.",
+                "¿Estás seguro de que quieres cambiar la región? Serás redirigido a la lista de paradas."
               )}
             </p>
             <div className="modal-buttons">
