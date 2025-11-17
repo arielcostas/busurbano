@@ -1,7 +1,5 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Text;
-using System.Text.Json;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using NetTopologySuite.Features;
