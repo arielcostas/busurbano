@@ -63,7 +63,7 @@ async function getStops(region: RegionId): Promise<Stop[]> {
   const rawFav = localStorage.getItem(`favouriteStops_${region}`);
   const favouriteStops = rawFav ? (JSON.parse(rawFav) as number[]) : [];
   cachedStopsByRegion[region]!.forEach(
-    (stop) => (stop.favourite = favouriteStops.includes(stop.stopId)),
+    (stop) => (stop.favourite = favouriteStops.includes(stop.stopId))
   );
   return cachedStopsByRegion[region]!;
 }
@@ -71,7 +71,7 @@ async function getStops(region: RegionId): Promise<Stop[]> {
 // New: get single stop by id
 async function getStopById(
   region: RegionId,
-  stopId: number,
+  stopId: number
 ): Promise<Stop | undefined> {
   await initStops(region);
   const stop = stopsMapByRegion[region]?.[stopId];
@@ -99,7 +99,7 @@ function setCustomName(region: RegionId, stopId: number, label: string) {
   customNamesByRegion[region][stopId] = label;
   localStorage.setItem(
     `customStopNames_${region}`,
-    JSON.stringify(customNamesByRegion[region]),
+    JSON.stringify(customNamesByRegion[region])
   );
 }
 
@@ -108,7 +108,7 @@ function removeCustomName(region: RegionId, stopId: number) {
     delete customNamesByRegion[region][stopId];
     localStorage.setItem(
       `customStopNames_${region}`,
-      JSON.stringify(customNamesByRegion[region]),
+      JSON.stringify(customNamesByRegion[region])
     );
   }
 }
@@ -129,7 +129,7 @@ function addFavourite(region: RegionId, stopId: number) {
     favouriteStops.push(stopId);
     localStorage.setItem(
       `favouriteStops_${region}`,
-      JSON.stringify(favouriteStops),
+      JSON.stringify(favouriteStops)
     );
   }
 }
@@ -144,7 +144,7 @@ function removeFavourite(region: RegionId, stopId: number) {
   const newFavouriteStops = favouriteStops.filter((id) => id !== stopId);
   localStorage.setItem(
     `favouriteStops_${region}`,
-    JSON.stringify(newFavouriteStops),
+    JSON.stringify(newFavouriteStops)
   );
 }
 
@@ -175,7 +175,7 @@ function pushRecent(region: RegionId, stopId: number) {
 
   localStorage.setItem(
     `recentStops_${region}`,
-    JSON.stringify(Array.from(recentStops)),
+    JSON.stringify(Array.from(recentStops))
   );
 }
 

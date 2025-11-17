@@ -29,7 +29,7 @@ export default function StopList() {
 
   const randomPlaceholder = useMemo(
     () => t("stoplist.search_placeholder"),
-    [t],
+    [t]
   );
 
   const fuse = useMemo(
@@ -38,7 +38,7 @@ export default function StopList() {
         threshold: 0.3,
         keys: ["name.original", "name.intersect", "stopId"],
       }),
-    [data],
+    [data]
   );
 
   const requestUserLocation = useCallback(() => {
@@ -59,7 +59,7 @@ export default function StopList() {
       {
         enableHighAccuracy: false,
         maximumAge: 5 * 60 * 1000,
-      },
+      }
     );
   }, []);
 
@@ -117,7 +117,7 @@ export default function StopList() {
       lat1: number,
       lon1: number,
       lat2: number,
-      lon2: number,
+      lon2: number
     ) => {
       const R = 6371000; // meters
       const dLat = toRadians(lat2 - lat1);
@@ -145,7 +145,7 @@ export default function StopList() {
           userLocation.latitude,
           userLocation.longitude,
           stop.latitude,
-          stop.longitude,
+          stop.longitude
         );
 
         return { stop, distance };
@@ -183,7 +183,7 @@ export default function StopList() {
 
       // Update favourite and recent stops with full data
       const favStops = stopsWithFavourites.filter((stop) =>
-        favouriteStopsIds.includes(stop.stopId),
+        favouriteStopsIds.includes(stop.stopId)
       );
       setFavouriteStops(favStops);
 
@@ -312,7 +312,7 @@ export default function StopList() {
           )}
           {!loading && data
             ? (userLocation ? sortedAllStops.slice(0, 6) : sortedAllStops).map(
-                (stop) => <StopItem key={stop.stopId} stop={stop} />,
+                (stop) => <StopItem key={stop.stopId} stop={stop} />
               )
             : null}
         </ul>

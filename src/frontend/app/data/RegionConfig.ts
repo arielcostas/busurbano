@@ -33,7 +33,7 @@ export const REGIONS: Record<RegionId, RegionConfig> = {
     textColour: "#e72b37",
     defaultZoom: 14,
     showMeters: true,
-  }
+  },
 };
 
 export const DEFAULT_REGION: RegionId = "vigo";

@@ -172,7 +172,17 @@ export default function StopMap() {
             `stop-${region}-cancelled`,
             `stop-${region}`,
           ],
-          "icon-size": ["interpolate", ["linear"], ["zoom"], 13, 0.4, 14, 0.7, 18, 1.0],
+          "icon-size": [
+            "interpolate",
+            ["linear"],
+            ["zoom"],
+            13,
+            0.4,
+            14,
+            0.7,
+            18,
+            1.0,
+          ],
           "icon-allow-overlap": true,
           "icon-ignore-placement": true,
         }}

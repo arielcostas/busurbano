@@ -51,7 +51,7 @@ export default function NavBar() {
               updateMapState(coords, 16);
             }
           },
-          () => {},
+          () => {}
         );
       },
     },

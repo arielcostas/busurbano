@@ -38,7 +38,7 @@ interface ErrorInfo {
 
 const loadData = async (
   region: RegionId,
-  stopId: string,
+  stopId: string
 ): Promise<Estimate[]> => {
   const regionConfig = getRegionConfig(region);
   const resp = await fetch(`${regionConfig.estimatesEndpoint}?id=${stopId}`, {
@@ -56,7 +56,7 @@ const loadData = async (
 
 const loadTimetableData = async (
   region: RegionId,
-  stopId: string,
+  stopId: string
 ): Promise<ScheduledTable[]> => {
   const regionConfig = getRegionConfig(region);
 
@@ -72,7 +72,7 @@ const loadTimetableData = async (
       headers: {
         Accept: "application/json",
       },
-    },
+    }
   );
 
   if (!resp.ok) {
@@ -201,7 +201,7 @@ export default function Estimates() {
 
     StopDataProvider.pushRecent(region, parseInt(params.id ?? ""));
     setFavourited(
-      StopDataProvider.isFavourite(region, parseInt(params.id ?? "")),
+      StopDataProvider.isFavourite(region, parseInt(params.id ?? ""))
     );
   }, [params.id, region, loadEstimatesData, loadTimetableDataAsync]);
 
@@ -323,7 +323,7 @@ export default function Estimates() {
               onRetry={loadEstimatesData}
               title={t(
                 "errors.estimates_title",
-                "Error al cargar estimaciones",
+                "Error al cargar estimaciones"
               )}
             />
           ) : data ? (

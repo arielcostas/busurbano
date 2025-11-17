@@ -1,15 +1,16 @@
-import { Clock, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Sheet } from "react-modal-sheet";
 import { Link } from "react-router";
 import type { Stop } from "~/data/StopDataProvider";
 import { useApp } from "../AppContext";
-import { REGIONS, type RegionId, getRegionConfig } from "../data/RegionConfig";
-import { type Estimate } from "../routes/estimates-$id";
+import { type RegionId, getRegionConfig } from "../data/RegionConfig";
+import { type ConsolidatedCirculation } from "../routes/stops-$id";
 import { ErrorDisplay } from "./ErrorDisplay";
 import LineIcon from "./LineIcon";
 import { StopAlert } from "./StopAlert";
+import { ConsolidatedCirculationCard } from "./Stops/ConsolidatedCirculationCard";
 import "./StopSheet.css";
 import { StopSheetSkeleton } from "./StopSheetSkeleton";
 
@@ -25,16 +26,19 @@ interface ErrorInfo {
   message?: string;
 }
 
-const loadStopData = async (
+const loadConsolidatedData = async (
   region: RegionId,
-  stopId: number,
-): Promise<Estimate[]> => {
+  stopId: number
+): Promise<ConsolidatedCirculation[]> => {
   const regionConfig = getRegionConfig(region);
-  const resp = await fetch(`${regionConfig.estimatesEndpoint}?id=${stopId}`, {
-    headers: {
-      Accept: "application/json",
-    },
-  });
+  const resp = await fetch(
+    `${regionConfig.consolidatedCirculationsEndpoint}?stopId=${stopId}`,
+    {
+      headers: {
+        Accept: "application/json",
+      },
+    }
+  );
 
   if (!resp.ok) {
     throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
@@ -50,7 +54,8 @@ export const StopSheet: React.FC<StopSheetProps> = ({
 }) => {
   const { t } = useTranslation();
   const { region } = useApp();
-  const [data, setData] = useState<Estimate[] | null>(null);
+  const regionConfig = getRegionConfig(region);
+  const [data, setData] = useState<ConsolidatedCirculation[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<ErrorInfo | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
@@ -82,7 +87,7 @@ export const StopSheet: React.FC<StopSheetProps> = ({
       setError(null);
       setData(null);
 
-      const stopData = await loadStopData(region, stop.stopId);
+      const stopData = await loadConsolidatedData(region, stop.stopId);
       setData(stopData);
       setLastUpdated(new Date());
     } catch (err) {
@@ -99,33 +104,15 @@ export const StopSheet: React.FC<StopSheetProps> = ({
     }
   }, [isOpen, stop.stopId, region]);
 
-  const formatTime = (minutes: number) => {
-    if (minutes > 15) {
-      const now = new Date();
-      const arrival = new Date(now.getTime() + minutes * 60000);
-      return Intl.DateTimeFormat(
-        typeof navigator !== "undefined" ? navigator.language : "en",
-        {
-          hour: "2-digit",
-          minute: "2-digit",
-        },
-      ).format(arrival);
-    } else {
-      return `${minutes} ${t("estimates.minutes", "min")}`;
-    }
-  };
-
-  const formatDistance = (meters: number) => {
-    if (meters > 1024) {
-      return `${(meters / 1000).toFixed(1)} km`;
-    } else {
-      return `${meters} ${t("estimates.meters", "m")}`;
-    }
-  };
-
   // Show only the next 4 arrivals
-  const limitedEstimates =
-    data?.sort((a, b) => a.minutes - b.minutes).slice(0, 4) || [];
+  const sortedData = data
+    ? [...data].sort(
+        (a, b) =>
+          (a.realTime?.minutes ?? a.schedule?.minutes ?? 999) -
+          (b.realTime?.minutes ?? b.schedule?.minutes ?? 999)
+      )
+    : [];
+  const limitedEstimates = sortedData.slice(0, 4);
 
   return (
     <Sheet isOpen={isOpen} onClose={onClose} detent="content">
@@ -158,7 +145,7 @@ export const StopSheet: React.FC<StopSheetProps> = ({
                 onRetry={loadData}
                 title={t(
                   "errors.estimates_title",
-                  "Error al cargar estimaciones",
+                  "Error al cargar estimaciones"
                 )}
                 className="compact"
               />
@@ -176,36 +163,15 @@ export const StopSheet: React.FC<StopSheetProps> = ({
                   ) : (
                     <div className="stop-sheet-estimates-list">
                       {limitedEstimates.map((estimate, idx) => (
-                        <div key={idx} className="stop-sheet-estimate-item">
-                          <div className="stop-sheet-estimate-line">
-                            <LineIcon line={estimate.line} region={region} />
-                          </div>
-                          <div className="stop-sheet-estimate-details">
-                            <div className="stop-sheet-estimate-route">
-                              {estimate.route}
-                            </div>
-                          </div>
-                          <div className="stop-sheet-estimate-arrival">
-                            <div
-                              className={`stop-sheet-estimate-time ${estimate.minutes <= 15 ? "is-minutes" : ""}`}
-                            >
-                              <Clock />
-                              {formatTime(estimate.minutes)}
-                            </div>
-                            {REGIONS[region].showMeters &&
-                              estimate.meters >= 0 && (
-                                <div className="stop-sheet-estimate-distance">
-                                  {formatDistance(estimate.meters)}
-                                </div>
-                              )}
-                          </div>
-                        </div>
+                        <ConsolidatedCirculationCard
+                          key={idx}
+                          estimate={estimate}
+                          regionConfig={regionConfig}
+                        />
                       ))}
                     </div>
                   )}
                 </div>
-
-
               </>
             ) : null}
           </div>
@@ -236,14 +202,11 @@ export const StopSheet: React.FC<StopSheetProps> = ({
               </button>
 
               <Link
-                to={`/estimates/${stop.stopId}`}
+                to={`/stops/${stop.stopId}`}
                 className="stop-sheet-view-all"
                 onClick={onClose}
               >
-                {t(
-                  "map.view_all_estimates",
-                  "Ver todas las estimaciones",
-                )}
+                {t("map.view_all_estimates", "Ver todas las estimaciones")}
               </Link>
             </div>
           </div>

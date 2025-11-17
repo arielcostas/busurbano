@@ -26,7 +26,7 @@ interface ErrorInfo {
 
 const loadTimetableData = async (
   region: RegionId,
-  stopId: string,
+  stopId: string
 ): Promise<ScheduledTable[]> => {
   const regionConfig = getRegionConfig(region);
 
@@ -45,7 +45,7 @@ const loadTimetableData = async (
       headers: {
         Accept: "application/json",
       },
-    },
+    }
   );
 
   if (!resp.ok) {
@@ -65,18 +65,18 @@ const timeToMinutes = (time: string): number => {
 const filterTimetableData = (
   data: ScheduledTable[],
   currentTime: string,
-  showPast: boolean = false,
+  showPast: boolean = false
 ): ScheduledTable[] => {
   if (showPast) return data;
 
   const currentMinutes = timeToMinutes(currentTime);
   const sortedData = [...data].sort(
-    (a, b) => timeToMinutes(a.calling_time) - timeToMinutes(b.calling_time),
+    (a, b) => timeToMinutes(a.calling_time) - timeToMinutes(b.calling_time)
   );
 
   // Find the current position
   const currentIndex = sortedData.findIndex(
-    (entry) => timeToMinutes(entry.calling_time) >= currentMinutes,
+    (entry) => timeToMinutes(entry.calling_time) >= currentMinutes
   );
 
   if (currentIndex === -1) {
@@ -161,7 +161,7 @@ export default function Timetable() {
   const filteredData = filterTimetableData(
     timetableData,
     currentTime,
-    showPastEntries,
+    showPastEntries
   );
 
   const parseError = (error: any): ErrorInfo => {
@@ -210,11 +210,11 @@ export default function Timetable() {
           const currentMinutes = timeToMinutes(currentTime);
           const sortedData = [...timetableBody].sort(
             (a, b) =>
-              timeToMinutes(a.calling_time) - timeToMinutes(b.calling_time),
+              timeToMinutes(a.calling_time) - timeToMinutes(b.calling_time)
           );
 
           const nextIndex = sortedData.findIndex(
-            (entry) => timeToMinutes(entry.calling_time) >= currentMinutes,
+            (entry) => timeToMinutes(entry.calling_time) >= currentMinutes
           );
 
           if (nextIndex !== -1 && nextEntryRef.current) {
@@ -293,13 +293,13 @@ export default function Timetable() {
           <p>
             {t(
               "timetable.noDataAvailable",
-              "No hay datos de horarios disponibles para hoy",
+              "No hay datos de horarios disponibles para hoy"
             )}
           </p>
           <p className="error-detail">
             {t(
               "timetable.errorDetail",
-              "Los horarios teóricos se actualizan diariamente. Inténtalo más tarde.",
+              "Los horarios teóricos se actualizan diariamente. Inténtalo más tarde."
             )}
           </p>
         </div>

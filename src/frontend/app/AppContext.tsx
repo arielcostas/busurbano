@@ -63,7 +63,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const [systemTheme, setSystemTheme] = useState<"light" | "dark">(
-    getPreferredScheme,
+    getPreferredScheme
   );
 
   const [theme, setTheme] = useState<Theme>(() => {
@@ -141,7 +141,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const toggleTableStyle = () => {
     setTableStyle((prevTableStyle) =>
-      prevTableStyle === "regular" ? "grouped" : "regular",
+      prevTableStyle === "regular" ? "grouped" : "regular"
     );
   };
 
@@ -155,7 +155,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     () => {
       const saved = localStorage.getItem("mapPositionMode");
       return saved === "last" ? "last" : "gps";
-    },
+    }
   );
 
   useEffect(() => {
@@ -263,7 +263,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
           (error) => {
             console.error("Error getting location:", error);
             setLocationPermission(false);
-          },
+          }
         );
       }
     }
