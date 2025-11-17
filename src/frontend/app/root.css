@@ -54,8 +54,8 @@
   --text-color: #ffffff;
   --subtitle-color: #bbbbbb;
   --border-color: #444444;
-  --button-background-color: #1e88e5;
-  --button-hover-background-color: #1565c0;
+  --button-background-color: #1f93f2;
+  --button-hover-background-color: #1872d9;
   --button-disabled-background-color: #555555;
   --star-color: #ffcc00;
   --message-background-color: #333333;
@@ -144,16 +144,17 @@ body {
 }
 
 .navigation-bar__link svg {
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 1.5rem;
+  height: 1.5rem;
   margin-bottom: 5px;
   fill: none;
   stroke-width: 2;
 }
 
 .navigation-bar__link span {
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1;
+  font-family: system-ui;
 }
 
 .navigation-bar__link.active {

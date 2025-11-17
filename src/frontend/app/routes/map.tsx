@@ -2,7 +2,7 @@ import StopDataProvider, { type Stop } from "../data/StopDataProvider";
 import "./map.css";
 
 import { useEffect, useRef, useState } from "react";
-import { useApp } from "../AppContext";
+import { useApp } from "~/AppContext";
 import Map, {
   AttributionControl,
   GeolocateControl,
@@ -163,6 +163,7 @@ export default function StopMap() {
       <Layer
         id="stops"
         type="symbol"
+        minzoom={13}
         source="stops-source"
         layout={{
           "icon-image": [
@@ -171,7 +172,7 @@ export default function StopMap() {
             `stop-${region}-cancelled`,
             `stop-${region}`,
           ],
-          "icon-size": ["interpolate", ["linear"], ["zoom"], 11, 0.7, 18, 1.0],
+          "icon-size": ["interpolate", ["linear"], ["zoom"], 13, 0.4, 14, 0.7, 18, 1.0],
           "icon-allow-overlap": true,
           "icon-ignore-placement": true,
         }}
