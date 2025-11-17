@@ -1,6 +1,7 @@
 # Typescript incremental build
 .tsbuildinfo
 *.tsbuildinfo
+.env
 
 # Python
 __pycache__/

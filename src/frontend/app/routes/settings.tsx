@@ -190,13 +190,6 @@ export default function Settings() {
           .
         </p>
       )}
-      {region === "santiago" && (
-        <p>
-          Datos obtenidos de app MaisBus (Concello de Santiago/TUSSA), gracias a
-          la documentación de [TP
-          Galicia](https://tpgalicia.github.io/urban/santiago/) en GitHub.
-        </p>
-      )}
 
       {showModal && (
         <div className="modal-overlay" onClick={cancelRegionChange}>

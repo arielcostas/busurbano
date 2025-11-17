@@ -53,32 +53,6 @@ const vigoLineColors: Record<string, LineColorInfo> = {
   u2: { background: "rgb(172, 100, 4)", text: "#ffffff" },
 };
 
-const santiagoLineColors: Record<string, LineColorInfo> = {
-  l1: { background: "#f32621", text: "#ffffff" },
-  l4: { background: "#ffcc33", text: "#000000" },
-  l5: { background: "#fa8405", text: "#ffffff" },
-  l6: { background: "#d73983", text: "#ffffff" },
-  l6a: { background: "#d73983", text: "#ffffff" },
-  l7: { background: "#488bc1", text: "#ffffff" },
-  l8: { background: "#6aaf48", text: "#ffffff" },
-  l9: { background: "#46b8bb", text: "#ffffff" },
-  c11: { background: "#aec741", text: "#000000" },
-  l12: { background: "#842e14", text: "#ffffff" },
-  l13: { background: "#336600", text: "#ffffff" },
-  l15: { background: "#7a4b2a", text: "#ffffff" },
-  c2: { background: "#283a87", text: "#ffffff" },
-  c4: { background: "#283a87", text: "#ffffff" },
-  c5: { background: "#999999", text: "#000000" },
-  c6: { background: "#006666", text: "#ffffff" },
-  p1: { background: "#537eb3", text: "#ffffff" },
-  p2: { background: "#d23354", text: "#ffffff" },
-  p3: { background: "#75bd96", text: "#000000" },
-  p4: { background: "#f1c54f", text: "#000000" },
-  p6: { background: "#999999", text: "#000000" },
-  p7: { background: "#d2438c", text: "#ffffff" },
-  p8: { background: "#e28c3a", text: "#ffffff" },
-};
-
 const defaultLineColor: LineColorInfo = {
   background: "#d32f2f",
   text: "#ffffff",
@@ -93,8 +67,6 @@ export function getLineColor(
 
   if (region === "vigo") {
     return vigoLineColors[formattedLine.toLowerCase().trim()] ?? defaultLineColor;
-  } else if (region === "santiago") {
-    return santiagoLineColors[formattedLine] ?? defaultLineColor;
   }
 
   return defaultLineColor;

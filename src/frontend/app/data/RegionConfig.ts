@@ -1,4 +1,4 @@
-export type RegionId = "vigo" | "santiago";
+export type RegionId = "vigo";
 
 export interface RegionConfig {
   id: RegionId;
@@ -33,23 +33,7 @@ export const REGIONS: Record<RegionId, RegionConfig> = {
     textColour: "#e72b37",
     defaultZoom: 14,
     showMeters: true,
-  },
-  santiago: {
-    id: "santiago",
-    name: "Santiago de Compostela",
-    stopsEndpoint: "/stops/santiago.json",
-    estimatesEndpoint: "/api/santiago/GetStopEstimates",
-    consolidatedCirculationsEndpoint: null, // Not available for Santiago
-    timetableEndpoint: null, // Not available for Santiago
-    defaultCenter: [42.8782, -8.5448],
-    bounds: {
-      sw: [-8.884454, 42.719102],
-      ne: [-8.243814, 43.02205],
-    },
-    textColour: "#6bb238",
-    defaultZoom: 14,
-    showMeters: false, // Santiago doesn't provide distance data
-  },
+  }
 };
 
 export const DEFAULT_REGION: RegionId = "vigo";
@@ -63,5 +47,5 @@ export function getAvailableRegions(): RegionConfig[] {
 }
 
 export function isValidRegion(regionId: string): regionId is RegionId {
-  return regionId === "vigo" || regionId === "santiago";
+  return regionId === "vigo";
 }
