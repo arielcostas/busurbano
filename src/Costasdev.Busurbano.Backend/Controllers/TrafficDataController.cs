@@ -38,6 +38,11 @@ public class TrafficDataController : ControllerBase
             return data.Result;
         });
 
+        if (string.IsNullOrEmpty(trafficData))
+        {
+            return StatusCode(404);
+        }
+
         return Content(trafficData, "application/json", Encoding.UTF8);
     }
 
@@ -48,8 +53,6 @@ public class TrafficDataController : ControllerBase
 
         var reader = new GeoJsonReader();
         var featureCollection = reader.Read<FeatureCollection>(body);
-
-        // Fitler by style=#SINDATOS; vehiculos=NULL and actualizacion NOT 2025 (or above)
 
         var filteredFeatures = new FeatureCollection();
         foreach (var kvp in featureCollection)
@@ -66,7 +69,7 @@ public class TrafficDataController : ControllerBase
 
             var updateParsed = DateTime.TryParseExact(
                 kvp.Attributes["actualizacion"].ToString(),
-                "dd/MM/yyyy HH:mm:ss",
+                "dd/MM/yyyy H:mm:ss",
                 null,
                 DateTimeStyles.None,
                 out var updatedAt
