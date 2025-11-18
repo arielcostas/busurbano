@@ -1731,6 +1731,7 @@
     "longitude": -8.669172606,
     "lines": [
       "15A",
+      "15B",
       "VTS"
     ]
   },
@@ -7379,7 +7380,7 @@
     "latitude": 42.23757846151978,
     "longitude": -8.721031378896738,
     "lines": [
-      "15B",
+      "A",
       "15C"
     ],
     "cancelled": true,
@@ -10362,7 +10363,7 @@
     "latitude": 42.238625474,
     "longitude": -8.723242095,
     "lines": [
-      "15B",
+      "A",
       "15C"
     ],
     "cancelled": true,
@@ -15013,7 +15014,7 @@
     "latitude": 42.240364985,
     "longitude": -8.724530974,
     "lines": [
-      "15B",
+      "A",
       "15C"
     ],
     "cancelled": true,
@@ -15077,7 +15078,7 @@
     "latitude": 42.237533428,
     "longitude": -8.722195046,
     "lines": [
-      "15B",
+      "A",
       "15C"
     ],
     "cancelled": true,
