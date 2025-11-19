@@ -1,0 +1,58 @@
+/* Stop map modal container */
+.stop-map-modal {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--background-color);
+}
+
+.stop-map-modal__map-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* Map floating controls */
+.map-modal-controls {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  display: flex;
+  gap: 8px;
+  z-index: 2;
+}
+
+.center-btn {
+  appearance: none;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: color-mix(
+    in oklab,
+    var(--background-color, #fff) 85%,
+    transparent
+  );
+  color: var(--text-primary, #111);
+  padding: 6px;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.center-btn:hover {
+  background: color-mix(
+    in oklab,
+    var(--background-color, #fff) 75%,
+    transparent
+  );
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.center-btn:active {
+  transform: scale(0.95);
+}

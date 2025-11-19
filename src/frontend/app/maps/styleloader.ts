@@ -1,10 +1,17 @@
 import type { StyleSpecification } from "react-map-gl/maplibre";
 import type { Theme } from "~/AppContext";
 
+export interface StyleLoaderOptions {
+  includeTraffic?: boolean;
+}
+
 export async function loadStyle(
   styleName: string,
-  colorScheme: Theme
+  colorScheme: Theme,
+  options?: StyleLoaderOptions
 ): Promise<StyleSpecification> {
+  const { includeTraffic = true } = options || {};
+
   if (colorScheme == "system") {
     const isDarkMode = window.matchMedia(
       "(prefers-color-scheme: dark)"
@@ -21,6 +28,15 @@ export async function loadStyle(
     }
 
     const style = await resp.json();
+
+    // Remove traffic layers if not requested
+    if (!includeTraffic) {
+      style.layers = (style.layers || []).filter(
+        (layer: any) => !layer.id?.startsWith("vigo_traffic")
+      );
+      delete style.sources?.vigo_traffic;
+    }
+
     return style as StyleSpecification;
   }
 
@@ -32,6 +48,14 @@ export async function loadStyle(
   }
 
   const style = await resp.json();
+
+  // Remove traffic layers if not requested
+  if (!includeTraffic) {
+    style.layers = (style.layers || []).filter(
+      (layer: any) => !layer.id?.startsWith("vigo_traffic")
+    );
+    delete style.sources?.vigo_traffic;
+  }
 
   const baseUrl = window.location.origin;
   const spritePath = style.sprite;

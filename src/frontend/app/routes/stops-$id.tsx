@@ -5,7 +5,7 @@ import { useParams } from "react-router";
 import { ErrorDisplay } from "~/components/ErrorDisplay";
 import LineIcon from "~/components/LineIcon";
 import { StopAlert } from "~/components/StopAlert";
-import { StopMap } from "~/components/StopMapSheet";
+import { StopMapModal } from "~/components/StopMapModal";
 import { ConsolidatedCirculationList } from "~/components/Stops/ConsolidatedCirculationList";
 import { ConsolidatedCirculationListSkeleton } from "~/components/Stops/ConsolidatedCirculationListSkeleton";
 import { type RegionId, getRegionConfig } from "~/config/RegionConfig";
@@ -77,6 +77,10 @@ export default function Estimates() {
 
   const [favourited, setFavourited] = useState(false);
   const [isManualRefreshing, setIsManualRefreshing] = useState(false);
+  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
+  const [selectedCirculationIdx, setSelectedCirculationIdx] = useState<
+    number | undefined
+  >(undefined);
   const { region } = useApp();
   const regionConfig = getRegionConfig(region);
 
@@ -195,15 +199,16 @@ export default function Estimates() {
       <div className="page-container stops-page">
         <div className="stops-header">
           <div>
-          <Star
-            className={`star-icon ${favourited ? "active" : ""}`}
-            onClick={toggleFavourite}
-            width={20}
-          />
-          <Edit2
-            className="edit-icon"
-            onClick={handleRename}
-            width={20} />
+            <Star
+              className={`star-icon ${favourited ? "active" : ""}`}
+              onClick={toggleFavourite}
+              width={20}
+            />
+            <Edit2
+              className="edit-icon"
+              onClick={handleRename}
+              width={20}
+            />
           </div>
 
           <button
@@ -247,12 +252,17 @@ export default function Estimates() {
               data={data}
               dataDate={dataDate}
               regionConfig={regionConfig}
+              onCirculationClick={(estimate, idx) => {
+                setSelectedCirculationIdx(idx);
+                setIsMapModalOpen(true);
+              }}
             />
           ) : null}
         </div>
 
+        {/* Map Modal - only render if we have stop data */}
         {stopData && (
-          <StopMap
+          <StopMapModal
             stop={stopData}
             region={region}
             circulations={(data ?? []).map((c) => ({
@@ -260,6 +270,9 @@ export default function Estimates() {
               route: c.route,
               currentPosition: c.currentPosition,
             }))}
+            isOpen={isMapModalOpen}
+            onClose={() => setIsMapModalOpen(false)}
+            selectedCirculationIndex={selectedCirculationIdx}
           />
         )}
       </div>

@@ -9,12 +9,14 @@ interface RegularTableProps {
   data: ConsolidatedCirculation[];
   dataDate: Date | null;
   regionConfig: RegionConfig;
+  onCirculationClick?: (estimate: ConsolidatedCirculation, index: number) => void;
 }
 
 export const ConsolidatedCirculationList: React.FC<RegularTableProps> = ({
   data,
   dataDate,
   regionConfig,
+  onCirculationClick,
 }) => {
   const { t } = useTranslation();
 
@@ -43,6 +45,7 @@ export const ConsolidatedCirculationList: React.FC<RegularTableProps> = ({
               key={idx}
               estimate={estimate}
               regionConfig={regionConfig}
+              onMapClick={() => onCirculationClick?.(estimate, idx)}
             />
           ))}
         </>

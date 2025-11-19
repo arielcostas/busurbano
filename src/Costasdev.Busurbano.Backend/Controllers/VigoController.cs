@@ -272,6 +272,7 @@ public class VigoController : ControllerBase
             {
                 Line = estimate.Line,
                 Route = estimate.Route,
+                NextStreets = [.. closestCirculation.NextStreets],
                 Schedule = new ScheduleData
                 {
                     Running = isRunning,

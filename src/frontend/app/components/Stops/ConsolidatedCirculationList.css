@@ -13,6 +13,7 @@
 }
 
 .consolidated-circulation-card {
+  all: unset;
   flex: 0 0 auto;
   display: flex;
   flex-direction: column;
@@ -21,11 +22,34 @@
   border-radius: 12px;
   border: 1px solid var(--border-color);
   padding: 0.65rem 0.85rem;
-  transition: box-shadow 0.2s ease;
+  transition: all 0.2s ease;
 }
 
-.consolidated-circulation-card:hover {
+.consolidated-circulation-card.has-gps {
+  cursor: pointer;
+}
+
+.consolidated-circulation-card.no-gps {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.consolidated-circulation-card.has-gps:hover {
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  border-color: var(--button-background-color);
+  background-color: color-mix(
+    in oklab,
+    var(--button-background-color) 5%,
+    var(--message-background-color)
+  );
+}
+
+.consolidated-circulation-card.has-gps:active {
+  transform: scale(0.98);
+}
+
+.consolidated-circulation-card:disabled {
+  pointer-events: none;
 }
 
 
@@ -147,6 +171,39 @@
   background: rgba(59, 130, 246, 0.17);
   border-color: rgba(59, 130, 246, 0.3);
   color: #1d4ed8;
+}
+
+/* GPS Indicator */
+.gps-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.gps-pulse {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #22c55e;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+  animation: gpsPulse 2s ease-in-out infinite;
+}
+
+@keyframes gpsPulse {
+  0% {
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.1);
+  }
+  100% {
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+  }
 }
 
 @media (max-width: 480px) {

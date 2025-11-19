@@ -63,6 +63,30 @@
   flex-shrink: 0;
 }
 
+.stops-header > div:first-child {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.star-icon,
+.edit-icon {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text-secondary);
+}
+
+.star-icon:hover,
+.edit-icon:hover {
+  color: var(--text-primary);
+  transform: scale(1.1);
+}
+
+.star-icon.active {
+  color: #fbbf24;
+  fill: #fbbf24;
+}
+
 .manual-refresh-button {
   display: flex;
   align-items: center;

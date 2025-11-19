@@ -9,6 +9,7 @@ import "./ConsolidatedCirculationList.css";
 interface ConsolidatedCirculationCardProps {
   estimate: ConsolidatedCirculation;
   regionConfig: RegionConfig;
+  onMapClick?: () => void;
 }
 
 // Utility function to parse service ID and get the turn number
@@ -70,7 +71,7 @@ const parseServiceId = (serviceId: string): string => {
 
 export const ConsolidatedCirculationCard: React.FC<
   ConsolidatedCirculationCardProps
-> = ({ estimate, regionConfig }) => {
+> = ({ estimate, regionConfig, onMapClick }) => {
   const { t } = useTranslation();
 
   const absoluteArrivalTime = (minutes: number) => {
@@ -168,8 +169,19 @@ export const ConsolidatedCirculationCard: React.FC<
     return chips;
   }, [delayChip, estimate.schedule, estimate.realTime]);
 
+  // Check if bus has GPS position (live tracking)
+  const hasGpsPosition = !!estimate.currentPosition;
+
   return (
-    <div className="consolidated-circulation-card">
+    <button
+      className={`consolidated-circulation-card ${
+        hasGpsPosition ? "has-gps" : "no-gps"
+      }`}
+      onClick={onMapClick}
+      type="button"
+      disabled={!hasGpsPosition}
+      aria-label={`${hasGpsPosition ? "View" : "No GPS data for"} ${estimate.line} to ${estimate.route}${hasGpsPosition ? " on map" : ""}`}
+    >
       <div className="card-row main">
         <div className="line-info">
           <LineIcon line={estimate.line} region={regionConfig.id} rounded />
@@ -183,6 +195,11 @@ export const ConsolidatedCirculationCard: React.FC<
             <span className="eta-unit">{etaUnit}</span>
           </div>
         </div>
+        {hasGpsPosition && (
+          <div className="gps-indicator" title="Live GPS tracking">
+            <span className="gps-pulse" />
+          </div>
+        )}
       </div>
       {metaChips.length > 0 && (
         <div className="card-row meta">
@@ -196,6 +213,6 @@ export const ConsolidatedCirculationCard: React.FC<
           ))}
         </div>
       )}
-    </div>
+    </button>
   );
 };
