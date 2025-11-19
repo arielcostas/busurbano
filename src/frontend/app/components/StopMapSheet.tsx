@@ -1,10 +1,6 @@
 import maplibregl from "maplibre-gl";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import Map, {
-  AttributionControl,
-  Marker,
-  type MapRef,
-} from "react-map-gl/maplibre";
+import Map, { Marker, type MapRef } from "react-map-gl/maplibre";
 import { useApp } from "~/AppContext";
 import type { RegionId } from "~/config/RegionConfig";
 import { getLineColor } from "~/data/LineColors";
@@ -47,6 +43,7 @@ export const StopMap: React.FC<StopMapProps> = ({
   const geoWatchId = useRef<number | null>(null);
   const [zoom, setZoom] = useState<number>(16);
   const [moveTick, setMoveTick] = useState<number>(0);
+  const [showAttribution, setShowAttribution] = useState(false);
 
   type Pt = { lat: number; lon: number };
   const haversineKm = (a: Pt, b: Pt) => {
@@ -311,8 +308,6 @@ export const StopMap: React.FC<StopMapProps> = ({
             setMoveTick((t) => (t + 1) % 1000000);
           }}
         >
-          {/* Compact attribution (closed by default) */}
-          <AttributionControl position="bottom-left" compact />
 
           {/* Stop marker (center) */}
           {stop.latitude && stop.longitude && (
@@ -489,6 +484,28 @@ export const StopMap: React.FC<StopMapProps> = ({
             />
           </svg>
         </button>
+      </div>
+
+      <div className={`map-attribution ${showAttribution ? "open" : ""}`}>
+        <button
+          type="button"
+          aria-label="Mostrar atribución del mapa"
+          aria-expanded={showAttribution}
+          onClick={() => setShowAttribution((open) => !open)}
+          className="map-attribution__toggle"
+        >
+          i
+        </button>
+        <div className="map-attribution__panel">
+          <span>OpenFreeMap © OpenMapTiles data from </span>
+          <a
+            href="https://www.openstreetmap.org/copyright"
+            target="_blank"
+            rel="noreferrer"
+          >
+            OpenStreetMap
+          </a>
+        </div>
       </div>
     </div>
   );

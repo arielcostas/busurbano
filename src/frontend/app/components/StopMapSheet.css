@@ -76,15 +76,61 @@
   animation: userPulse 1.8s ease-out infinite;
 }
 
-.stop-map-container small {
+/* Map attribution */
+.map-attribution {
   position: absolute;
-  bottom: 4px;
-  left: 4px;
-  font-size: 12px;
-  color: var(--text-secondary);
-  background-color: rgba(255, 255, 255, 0.7);
-  padding: 2px 4px;
-  border-radius: 4px;
+  left: 8px;
+  bottom: 8px;
+  display: flex;
+  align-items: flex-end;
+  gap: 0.4rem;
+  z-index: 2;
+}
+
+.map-attribution__toggle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.9);
+  color: #111;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .map-attribution__toggle {
+  background: rgba(17, 24, 39, 0.9);
+  color: #f8fafc;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.map-attribution__panel {
+  font-size: 0.7rem;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  max-width: 220px;
+  opacity: 0;
+  transform: translateX(-6px) scale(0.98);
+  transform-origin: left bottom;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+  line-height: 1.2;
+}
+
+.map-attribution__panel a {
+  color: inherit;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.map-attribution.open .map-attribution__panel {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+  pointer-events: auto;
 }
 
 @keyframes userPulse {

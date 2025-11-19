@@ -25,7 +25,7 @@ const LineIcon: React.FC<LineIconProps> = ({
       style={
         {
           "--line-colour": `var(${cssVarName})`,
-          "--line-text-colour": `var(${cssTextVarName}, unset)`,
+          "--line-text-colour": `var(${cssTextVarName}, #000000)`,
         } as React.CSSProperties
       }
     >

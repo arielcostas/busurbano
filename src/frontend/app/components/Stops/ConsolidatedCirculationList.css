@@ -14,25 +14,29 @@
 
 .consolidated-circulation-card {
   flex: 0 0 auto;
-
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
   background-color: var(--message-background-color);
-  border-radius: 8px;
+  border-radius: 12px;
   border: 1px solid var(--border-color);
-  overflow: hidden;
+  padding: 0.65rem 0.85rem;
   transition: box-shadow 0.2s ease;
 }
 
 .consolidated-circulation-card:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
 }
 
-.consolidated-circulation-card .card-header {
+
+.consolidated-circulation-card .card-row {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.875rem 1rem;
+  gap: 0.65rem;
+}
+
+.consolidated-circulation-card .card-row.main {
+  min-height: 48px;
 }
 
 .consolidated-circulation-card .line-info {
@@ -45,101 +49,116 @@
 }
 
 .consolidated-circulation-card .route-info strong {
-  font-size: 0.95rem;
+  font-size: 1rem;
   color: var(--text-color);
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
-  display: block;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.25;
 }
 
-.consolidated-circulation-card .time-info {
+.consolidated-circulation-card .eta-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem 0.45rem;
+  border-radius: 12px;
+}
+
+.consolidated-circulation-card .eta-text {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  gap: 0.25rem;
-  flex-shrink: 0;
-}
-
-.consolidated-circulation-card .arrival-time {
-  display: flex;
   align-items: center;
+  line-height: 1;
+}
+
+.consolidated-circulation-card .eta-value {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.consolidated-circulation-card .eta-unit {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.consolidated-circulation-card .eta-badge.time-running {
+  background: rgba(34, 197, 94, 0.12);
+  color: #1a9e56;
+}
+
+.consolidated-circulation-card .eta-badge.time-delayed {
+  background: rgba(255, 106, 0, 0.12);
+  color: #d06100;
+}
+
+.consolidated-circulation-card .eta-badge.time-scheduled {
+  background: rgba(11, 61, 145, 0.12);
+  color: #0b3d91;
+}
+
+[data-theme="dark"] .consolidated-circulation-card .eta-badge.time-scheduled {
+  color: #8fb4ff;
+}
+
+.consolidated-circulation-card .card-row.meta {
+  flex-wrap: wrap;
+  justify-content: flex-start;
   gap: 0.4rem;
-  font-size: 1.05rem;
-  font-weight: 600;
 }
 
-.consolidated-circulation-card .arrival-time svg {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-}
-
-/* Time color states */
-.consolidated-circulation-card .arrival-time.time-running,
-.consolidated-circulation-card .arrival-time.time-running svg {
-  color: #22c55e;
-}
-
-.consolidated-circulation-card .arrival-time.time-delayed,
-.consolidated-circulation-card .arrival-time.time-delayed svg {
-  color: #ff6a00;
-}
-
-.consolidated-circulation-card .arrival-time.time-scheduled,
-.consolidated-circulation-card .arrival-time.time-scheduled svg {
-  color: #0b3d91; /* dark blue */
-}
-
-[data-theme="dark"] .consolidated-circulation-card .arrival-time.time-scheduled,
-[data-theme="dark"]
-  .consolidated-circulation-card
-  .arrival-time.time-scheduled
-  svg {
-  color: #8fb4ff; /* lighten for dark backgrounds */
-}
-
-.consolidated-circulation-card .distance-info {
+.meta-chip {
   font-size: 0.75rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.03);
   color: var(--subtitle-color);
-  text-align: right;
-}
-
-.consolidated-circulation-card .card-footer {
-  padding: 0.5rem 1rem 0.75rem 1rem;
-  border-top: 1px solid var(--border-color);
-  background-color: rgba(0, 0, 0, 0.02);
+  border: 1px solid var(--border-color);
 }
 
 @media (prefers-color-scheme: dark) {
-  .consolidated-circulation-card .card-footer {
-    background-color: rgba(255, 255, 255, 0.03);
+  .meta-chip {
+    background: rgba(255, 255, 255, 0.05);
   }
 }
 
-.consolidated-circulation-card .status-text {
-  font-size: 0.8rem;
-  color: var(--subtitle-color);
-  line-height: 1.4;
-  display: block;
+.meta-chip.delay-ok {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: rgba(34, 197, 94, 0.3);
+  color: #1a9e56;
 }
 
-/* Responsive adjustments */
+.meta-chip.delay-warn {
+  background: rgba(251, 191, 36, 0.25);
+  border-color: rgba(251, 191, 36, 0.5);
+  color: #fbbf24;
+}
+
+.meta-chip.delay-critical {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #b91c1c;
+}
+
+.meta-chip.delay-early {
+  background: rgba(59, 130, 246, 0.17);
+  border-color: rgba(59, 130, 246, 0.3);
+  color: #1d4ed8;
+}
+
 @media (max-width: 480px) {
-  .consolidated-circulation-card .card-header {
+  .consolidated-circulation-card {
+    padding: 0.65rem 0.75rem;
+  }
+
+  .consolidated-circulation-card .card-row {
     gap: 0.5rem;
-    padding: 0.5rem 0.65rem;
   }
 
-  .consolidated-circulation-card .arrival-time {
-    font-size: 1rem;
-  }
-
-  .consolidated-circulation-card .card-footer {
-    padding: 0.5rem 0.875rem 0.625rem 0.875rem;
-  }
-
-  .consolidated-circulation-card .status-text {
-    font-size: 0.9rem;
+  .consolidated-circulation-card .eta-badge {
+    padding: 0.25rem 0.4rem;
   }
 }

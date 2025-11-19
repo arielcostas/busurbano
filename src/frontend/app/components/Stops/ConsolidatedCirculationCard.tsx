@@ -1,4 +1,4 @@
-import { Clock } from "lucide-react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { type RegionConfig } from "~/config/RegionConfig";
 import LineIcon from "~components/LineIcon";
@@ -88,25 +88,8 @@ export const ConsolidatedCirculationCard: React.FC<
   const formatDistance = (meters: number) => {
     if (meters > 1024) {
       return `${(meters / 1000).toFixed(1)} km`;
-    } else {
-      return `${meters} ${t("estimates.meters", "m")}`;
     }
-  };
-
-  const getDelayText = (estimate: ConsolidatedCirculation): string | null => {
-    if (!estimate.schedule || !estimate.realTime) {
-      return null;
-    }
-
-    const delay = estimate.realTime.minutes - estimate.schedule.minutes;
-
-    if (delay >= -1 && delay <= 2) {
-      return "OK";
-    } else if (delay > 2) {
-      return "R" + delay;
-    } else {
-      return "A" + Math.abs(delay);
-    }
+    return `${meters} ${t("estimates.meters", "m")}`;
   };
 
   const getTripIdDisplay = (tripId: string): string => {
@@ -114,67 +97,105 @@ export const ConsolidatedCirculationCard: React.FC<
     return parts.length > 1 ? parts[1] : tripId;
   };
 
-  const getTimeClass = (estimate: ConsolidatedCirculation): string => {
+  const etaMinutes =
+    estimate.realTime?.minutes ?? estimate.schedule?.minutes ?? null;
+  const etaValue =
+    etaMinutes === null ? "--" : Math.max(0, Math.round(etaMinutes)).toString();
+  const etaUnit = t("estimates.minutes", "min");
+
+  const timeClass = useMemo(() => {
     if (estimate.realTime && estimate.schedule?.running) {
       return "time-running";
     }
-
     if (estimate.realTime && !estimate.schedule) {
       return "time-running";
-    } else if (estimate.realTime && !estimate.schedule?.running) {
+    }
+    if (estimate.realTime && !estimate.schedule?.running) {
       return "time-delayed";
     }
-
     return "time-scheduled";
-  };
+  }, [estimate.realTime, estimate.schedule]);
 
-  const displayMinutes =
-    estimate.realTime?.minutes ?? estimate.schedule?.minutes ?? 0;
-  const timeClass = getTimeClass(estimate);
-  const delayText = getDelayText(estimate);
+  const delayChip = useMemo(() => {
+    if (!estimate.schedule || !estimate.realTime) {
+      return null;
+    }
+
+    const delta = Math.round(estimate.realTime.minutes - estimate.schedule.minutes);
+    const absDelta = Math.abs(delta);
+
+    if (delta === 0) {
+      return {
+        label: t("estimates.delay_on_time", "En hora (0 min)"),
+        tone: "delay-ok",
+      } as const;
+    }
+
+    if (delta > 0) {
+      const tone = delta <= 2 ? "delay-ok" : delta <= 10 ? "delay-warn" : "delay-critical";
+      return {
+        label: t("estimates.delay_positive", "Retraso de {{minutes}} min", {
+          minutes: delta,
+        }),
+        tone,
+      } as const;
+    }
+
+    const tone = absDelta <= 2 ? "delay-ok" : "delay-early";
+    return {
+      label: t("estimates.delay_negative", "Adelanto de {{minutes}} min", {
+        minutes: absDelta,
+      }),
+      tone,
+    } as const;
+  }, [estimate.schedule, estimate.realTime, t]);
+
+  const metaChips = useMemo(() => {
+    const chips: Array<{ label: string; tone?: string }> = [];
+    if (delayChip) {
+      chips.push(delayChip);
+    }
+    if (estimate.schedule) {
+      chips.push({
+        label: `${parseServiceId(estimate.schedule.serviceId)} · ${getTripIdDisplay(
+          estimate.schedule.tripId
+        )}`,
+      });
+    }
+    if (estimate.realTime && estimate.realTime.distance >= 0) {
+      chips.push({ label: formatDistance(estimate.realTime.distance) });
+    }
+    return chips;
+  }, [delayChip, estimate.schedule, estimate.realTime]);
 
   return (
     <div className="consolidated-circulation-card">
-      <div className="card-header">
+      <div className="card-row main">
         <div className="line-info">
-          <LineIcon line={estimate.line} region={regionConfig.id} />
+          <LineIcon line={estimate.line} region={regionConfig.id} rounded />
         </div>
-
         <div className="route-info">
           <strong>{estimate.route}</strong>
         </div>
-
-        <div className="time-info">
-          <div className={`arrival-time ${timeClass}`}>
-            <Clock />
-            {estimate.realTime
-              ? `${displayMinutes} ${t("estimates.minutes", "min")}`
-              : absoluteArrivalTime(displayMinutes)}
-          </div>
-          <div className="distance-info">
-            {estimate.schedule && (
-              <>
-                {parseServiceId(estimate.schedule.serviceId)} (
-                {getTripIdDisplay(estimate.schedule.tripId)})
-              </>
-            )}
-
-            {estimate.schedule &&
-              estimate.realTime &&
-              estimate.realTime.distance >= 0 && <> &middot; </>}
-
-            {estimate.realTime && estimate.realTime.distance >= 0 && (
-              <>{formatDistance(estimate.realTime.distance)}</>
-            )}
-
-            {estimate.schedule &&
-              estimate.realTime &&
-              estimate.realTime.distance >= 0 && <> &middot; </>}
-
-            {delayText}
+        <div className={`eta-badge ${timeClass}`}>
+          <div className="eta-text">
+            <span className="eta-value">{etaValue}</span>
+            <span className="eta-unit">{etaUnit}</span>
           </div>
         </div>
       </div>
+      {metaChips.length > 0 && (
+        <div className="card-row meta">
+          {metaChips.map((chip, idx) => (
+            <span
+              key={`${chip.label}-${idx}`}
+              className={`meta-chip ${chip.tone ?? ""}`.trim()}
+            >
+              {chip.label}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
