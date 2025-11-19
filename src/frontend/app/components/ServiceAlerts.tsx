@@ -6,7 +6,7 @@ const ServiceAlerts: React.FC = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="service-alerts-container">
+    <div className="service-alerts-container stoplist-section">
       <h2 className="page-subtitle">{t("stoplist.service_alerts")}</h2>
       <div className="service-alert info">
         <div className="alert-icon">ℹ️</div>

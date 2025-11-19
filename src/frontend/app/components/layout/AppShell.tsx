@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Outlet } from "react-router";
 import { PageTitleProvider, usePageTitleContext } from "~/contexts/PageTitleContext";
 import NavBar from "../NavBar";
+import { ThemeColorManager } from "../ThemeColorManager";
 import "./AppShell.css";
 import { Drawer } from "./Drawer";
 import { Header } from "./Header";
@@ -12,6 +13,7 @@ const AppShellContent: React.FC = () => {
 
   return (
     <div className="app-shell">
+      <ThemeColorManager />
       <Header
         className="app-shell__header"
         title={title}

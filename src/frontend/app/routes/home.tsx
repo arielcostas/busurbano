@@ -2,10 +2,8 @@
 import Fuse from "fuse.js";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { REGIONS } from "~/config/RegionConfig";
 import { usePageTitle } from "~/contexts/PageTitleContext";
 import { useApp } from "../AppContext";
-import ServiceAlerts from "../components/ServiceAlerts";
 import StopGallery from "../components/StopGallery";
 import StopItem from "../components/StopItem";
 import StopItemSkeleton from "../components/StopItemSkeleton";
@@ -249,26 +247,19 @@ export default function StopList() {
   };
 
   return (
-    <div className="page-container stoplist-page">
-      <h1 className="page-title">BusUrbano - {REGIONS[region].name}</h1>
-
-      <form className="search-form">
-        <div className="form-group">
-          <label className="form-label" htmlFor="stopName">
-            {t("stoplist.search_label", "Buscar paradas")}
-          </label>
-          <input
-            className="form-input"
-            type="text"
-            placeholder={randomPlaceholder}
-            id="stopName"
-            onChange={handleStopSearch}
-          />
-        </div>
-      </form>
+    <div className="stoplist-page">
+      <div className="stoplist-section search-container">
+        <h3 className="page-subtitle">{t("stoplist.search_label", "Buscar paradas")}</h3>
+        <input
+          type="search"
+          placeholder={randomPlaceholder}
+          onChange={handleStopSearch}
+          className="search-bar"
+        />
+      </div>
 
       {searchResults && searchResults.length > 0 && (
-        <div className="list-container">
+        <div className="stoplist-section list-container">
           <h2 className="page-subtitle">
             {t("stoplist.search_results", "Resultados de la búsqueda")}
           </h2>
@@ -295,9 +286,9 @@ export default function StopList() {
         />
       )}
 
-      <ServiceAlerts />
+      {/*<ServiceAlerts />*/}
 
-      <div className="list-container">
+      <div className="stoplist-section list-container">
         <h2 className="page-subtitle">
           {userLocation
             ? t("stoplist.nearby_stops", "Nearby stops")

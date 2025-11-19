@@ -1,9 +1,9 @@
 import {
-    isRouteErrorResponse,
-    Links,
-    Meta,
-    Scripts,
-    ScrollRestoration
+  isRouteErrorResponse,
+  Links,
+  Meta,
+  Scripts,
+  ScrollRestoration
 } from "react-router";
 
 import "@fontsource-variable/roboto";
@@ -37,12 +37,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-
         <link rel="icon" type="image/jpg" href="/logo-512.jpg" />
         <link rel="icon" href="/favicon.ico" sizes="64x64" />
         <link rel="apple-touch-icon" href="/logo-512.jpg" sizes="512x512" />
-        <meta name="theme-color" content="#007bff" />
-
+        <meta name="theme-color" content="#ffffff" />
         <link rel="canonical" href="https://busurbano.costas.dev/" />
 
         <meta

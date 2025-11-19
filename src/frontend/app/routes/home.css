@@ -1,33 +1,59 @@
 /* Common page styles */
-.page-title {
-  font-size: 1.4rem;
-  margin-bottom: 1rem;
-  font-weight: 600;
-  color: var(--text-color);
+.stoplist-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1rem 0 2rem;
 }
 
-.page-subtitle {
-  font-size: 1.4rem;
-  margin-top: 1.5rem;
-  margin-bottom: 0.75rem;
-  font-weight: 500;
+.stoplist-section {
+  width: 100%;
+  padding: 0 1rem;
+  box-sizing: border-box;
+}
+
+.search-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.search-bar {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  background-color: var(--card-background, var(--background-color));
+  color: var(--text-color);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-bar::placeholder {
   color: var(--subtitle-color);
+  opacity: 0.8;
+}
+
+.search-bar:focus {
+  outline: none;
+  border-color: var(--button-background-color);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
 }
 
 /* Form styles */
 .search-form {
-  margin-bottom: 1.5rem;
+  margin: 0;
 }
 
 .form-group {
-  margin-bottom: 1rem;
+  margin: 0;
   display: flex;
   flex-direction: column;
 }
 
 .form-label {
-  font-size: 0.9rem;
-  margin-bottom: 0.25rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
   font-weight: 500;
 }
 
@@ -38,41 +64,25 @@
   border-radius: 8px;
 }
 
-.form-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-
-  padding: 0.75rem 1rem;
-  background-color: var(--button-background-color);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  width: 100%;
-  margin-top: 0.5rem;
-}
-
-.form-button:hover {
-  background-color: var(--button-hover-background-color);
-}
-
 /* List styles */
 .list-container {
-  margin-bottom: 1.5rem;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .list {
   list-style: none;
   padding: 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .list-item {
-  padding: 1rem;
+  padding: 0.75rem;
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -80,7 +90,7 @@
   display: block;
   color: var(--text-color);
   text-decoration: none;
-  font-size: 1.1rem; /* Increased font size for stop name */
+  font-size: 1rem; /* Reduced font size */
 }
 
 .list-item-link:hover {

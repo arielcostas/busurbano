@@ -1,7 +1,7 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { type Stop } from "../data/StopDataProvider";
-import StopGalleryItem from "./StopGalleryItem";
 import "./StopGallery.css";
+import StopGalleryItem from "./StopGalleryItem";
 
 interface StopGalleryProps {
   stops: Stop[];
@@ -19,7 +19,9 @@ const StopGallery: React.FC<StopGalleryProps> = ({
 
   useEffect(() => {
     const element = scrollRef.current;
-    if (!element) return;
+    if (!element || stops.length === 0) {
+      return;
+    }
 
     const handleScroll = () => {
       const scrollLeft = element.scrollLeft;
@@ -34,9 +36,11 @@ const StopGallery: React.FC<StopGalleryProps> = ({
 
   if (stops.length === 0 && emptyMessage) {
     return (
-      <div className="gallery-container">
-        <h2 className="page-subtitle">{title}</h2>
-        <p className="message">{emptyMessage}</p>
+      <div className="gallery-container stoplist-section">
+        <h3 className="page-subtitle">{title}</h3>
+        <div className="gallery-empty-state">
+          <p className="message">{emptyMessage}</p>
+        </div>
       </div>
     );
   }
@@ -46,29 +50,27 @@ const StopGallery: React.FC<StopGalleryProps> = ({
   }
 
   return (
-    <div className="gallery-container">
+    <div className="gallery-container stoplist-section">
       <div className="gallery-header">
-        <h2 className="page-subtitle">{title}</h2>
+        <h3 className="page-subtitle">{title}</h3>
+        <span className="gallery-counter">{stops.length}</span>
       </div>
 
-      <div className="gallery-scroll-container" ref={scrollRef}>
+      <div ref={scrollRef} className="gallery-scroll-container">
         <div className="gallery-track">
           {stops.map((stop) => (
             <StopGalleryItem key={stop.stopId} stop={stop} />
           ))}
         </div>
       </div>
-
-      {stops.length > 1 && (
-        <div className="gallery-indicators">
-          {stops.map((_, index) => (
-            <div
-              key={index}
-              className={`gallery-indicator ${index === activeIndex ? "active" : ""}`}
-            />
-          ))}
-        </div>
-      )}
+      <div className="gallery-dots">
+        {stops.map((_, index) => (
+          <span
+            key={index}
+            className={`dot ${index === activeIndex ? "active" : ""}`}
+          ></span>
+        ))}
+      </div>
     </div>
   );
 };

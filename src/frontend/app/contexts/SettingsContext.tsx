@@ -30,6 +30,7 @@ interface SettingsContextProps {
 
   region: RegionId;
   setRegion: (region: RegionId) => void;
+  resolvedTheme: "light" | "dark";
 }
 
 const SettingsContext = createContext<SettingsContextProps | undefined>(
@@ -182,6 +183,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
         setMapPositionMode,
         region,
         setRegion,
+        resolvedTheme,
       }}
     >
       {children}
