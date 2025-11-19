@@ -1,22 +1,20 @@
 import {
-  isRouteErrorResponse,
-  Link,
-  Links,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration,
+    isRouteErrorResponse,
+    Links,
+    Meta,
+    Scripts,
+    ScrollRestoration
 } from "react-router";
 
-import type { Route } from "./+types/root";
 import "@fontsource-variable/roboto";
+import type { Route } from "./+types/root";
 import "./root.css";
 
 //#region Maplibre setup
+import maplibregl from "maplibre-gl";
 import "maplibre-theme/icons.default.css";
 import "maplibre-theme/modern.css";
 import { Protocol } from "pmtiles";
-import maplibregl from "maplibre-gl";
 import { AppProvider } from "./AppContext";
 const pmtiles = new Protocol();
 maplibregl.addProtocol("pmtiles", pmtiles.tile);
@@ -87,7 +85,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-import NavBar from "./components/NavBar";
+import { AppShell } from "./components/layout/AppShell";
 
 export default function App() {
   if ("serviceWorker" in navigator) {
@@ -98,12 +96,7 @@ export default function App() {
 
   return (
     <AppProvider>
-      <main className="main-content">
-        <Outlet />
-      </main>
-      <footer>
-        <NavBar />
-      </footer>
+      <AppShell />
     </AppProvider>
   );
 }

@@ -1,5 +1,5 @@
 import { useApp } from "../AppContext";
-import { getAvailableRegions } from "../data/RegionConfig";
+import { getAvailableRegions } from "../config/RegionConfig";
 import "./RegionSelector.css";
 
 export function RegionSelector() {

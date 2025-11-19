@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { type RegionConfig } from "~data/RegionConfig";
+import { type RegionConfig } from "~/config/RegionConfig";
 import { type ConsolidatedCirculation } from "~routes/stops-$id";
 import { ConsolidatedCirculationCard } from "./ConsolidatedCirculationCard";
 

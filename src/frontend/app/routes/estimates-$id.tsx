@@ -15,7 +15,7 @@ import {
 } from "~/components/SchedulesTableSkeleton";
 import { StopAlert } from "~/components/StopAlert";
 import { TimetableSkeleton } from "~/components/TimetableSkeleton";
-import { type RegionId, getRegionConfig } from "~/data/RegionConfig";
+import { type RegionId, getRegionConfig } from "~/config/RegionConfig";
 import { useAutoRefresh } from "~/hooks/useAutoRefresh";
 import { useApp } from "../AppContext";
 import { GroupedTable } from "../components/GroupedTable";

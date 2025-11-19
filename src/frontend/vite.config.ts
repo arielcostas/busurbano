@@ -1,9 +1,15 @@
+import { reactRouter } from "@react-router/dev/vite";
+import { execSync } from "child_process";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
-import { reactRouter } from "@react-router/dev/vite";
+
+const commitHash = execSync("git rev-parse --short HEAD").toString().trim();
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  define: {
+    __COMMIT_HASH__: JSON.stringify(commitHash),
+  },
   plugins: [reactRouter(), tsconfigPaths()],
   server: {
     proxy: {

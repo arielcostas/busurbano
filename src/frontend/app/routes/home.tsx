@@ -1,18 +1,20 @@
 "use client";
-import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import StopDataProvider, { type Stop } from "../data/StopDataProvider";
+import Fuse from "fuse.js";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { REGIONS } from "~/config/RegionConfig";
+import { usePageTitle } from "~/contexts/PageTitleContext";
+import { useApp } from "../AppContext";
+import ServiceAlerts from "../components/ServiceAlerts";
+import StopGallery from "../components/StopGallery";
 import StopItem from "../components/StopItem";
 import StopItemSkeleton from "../components/StopItemSkeleton";
-import StopGallery from "../components/StopGallery";
-import ServiceAlerts from "../components/ServiceAlerts";
-import Fuse from "fuse.js";
+import StopDataProvider, { type Stop } from "../data/StopDataProvider";
 import "./home.css";
-import { useTranslation } from "react-i18next";
-import { useApp } from "../AppContext";
-import { REGIONS } from "~/data/RegionConfig";
 
 export default function StopList() {
   const { t } = useTranslation();
+  usePageTitle(t("navbar.stops", "Paradas"));
   const { region } = useApp();
   const [data, setData] = useState<Stop[] | null>(null);
   const [loading, setLoading] = useState(true);

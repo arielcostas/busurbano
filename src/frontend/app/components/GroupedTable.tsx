@@ -1,6 +1,6 @@
+import { type RegionConfig } from "../config/RegionConfig";
 import { type Estimate } from "../routes/estimates-$id";
 import LineIcon from "./LineIcon";
-import { type RegionConfig } from "../data/RegionConfig";
 
 interface GroupedTable {
   data: Estimate[];

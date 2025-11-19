@@ -1,4 +1,4 @@
-import type { RegionId } from "./RegionConfig";
+import type { RegionId } from "../config/RegionConfig";
 
 interface LineColorInfo {
   background: string;

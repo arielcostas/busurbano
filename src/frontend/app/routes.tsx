@@ -8,4 +8,6 @@ export default [
   route("/estimates/:id", "routes/estimates-$id.tsx"),
   route("/timetable/:id", "routes/timetable-$id.tsx"),
   route("/settings", "routes/settings.tsx"),
+  route("/about", "routes/about.tsx"),
+  route("/favourites", "routes/favourites.tsx"),
 ] satisfies RouteConfig;

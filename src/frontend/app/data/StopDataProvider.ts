@@ -1,4 +1,4 @@
-import { type RegionId, getRegionConfig } from "./RegionConfig";
+import { type RegionId, getRegionConfig } from "../config/RegionConfig";
 
 export interface CachedStopList {
   timestamp: number;

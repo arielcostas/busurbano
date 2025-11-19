@@ -128,7 +128,7 @@
 @media (max-width: 480px) {
   .consolidated-circulation-card .card-header {
     gap: 0.5rem;
-    padding: 0.75rem 0.875rem;
+    padding: 0.5rem 0.65rem;
   }
 
   .consolidated-circulation-card .arrival-time {

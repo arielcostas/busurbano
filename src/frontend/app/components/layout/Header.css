@@ -1,0 +1,41 @@
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  background-color: var(--background-color);
+  border-bottom: 1px solid var(--border-color);
+  height: 60px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.app-header__left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.app-header__menu-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-color);
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.app-header__menu-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.app-header__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-color);
+}

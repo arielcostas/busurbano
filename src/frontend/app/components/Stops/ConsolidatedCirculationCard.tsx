@@ -1,7 +1,7 @@
 import { Clock } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { type RegionConfig } from "~/config/RegionConfig";
 import LineIcon from "~components/LineIcon";
-import { type RegionConfig } from "~data/RegionConfig";
 import { type ConsolidatedCirculation } from "~routes/stops-$id";
 
 import "./ConsolidatedCirculationList.css";

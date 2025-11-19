@@ -1,0 +1,7 @@
+.about-version {
+  margin-top: 2rem;
+  text-align: center;
+  color: var(--subtitle-color);
+  border-top: 1px solid var(--border-color);
+  padding-top: 1rem;
+}

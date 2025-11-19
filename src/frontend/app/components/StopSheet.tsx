@@ -5,7 +5,7 @@ import { Sheet } from "react-modal-sheet";
 import { Link } from "react-router";
 import type { Stop } from "~/data/StopDataProvider";
 import { useApp } from "../AppContext";
-import { type RegionId, getRegionConfig } from "../data/RegionConfig";
+import { type RegionId, getRegionConfig } from "../config/RegionConfig";
 import { type ConsolidatedCirculation } from "../routes/stops-$id";
 import { ErrorDisplay } from "./ErrorDisplay";
 import LineIcon from "./LineIcon";

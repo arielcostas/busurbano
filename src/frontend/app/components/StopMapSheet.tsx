@@ -1,13 +1,13 @@
 import maplibregl from "maplibre-gl";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import Map, {
-    AttributionControl,
-    Marker,
-    type MapRef,
+  AttributionControl,
+  Marker,
+  type MapRef,
 } from "react-map-gl/maplibre";
 import { useApp } from "~/AppContext";
+import type { RegionId } from "~/config/RegionConfig";
 import { getLineColor } from "~/data/LineColors";
-import type { RegionId } from "~/data/RegionConfig";
 import type { Stop } from "~/data/StopDataProvider";
 import { loadStyle } from "~/maps/styleloader";
 import "./StopMapSheet.css";

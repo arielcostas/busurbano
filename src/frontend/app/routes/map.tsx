@@ -6,17 +6,18 @@ import type { Feature as GeoJsonFeature, Point } from "geojson";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Map, {
-    GeolocateControl,
-    Layer,
-    NavigationControl,
-    Source,
-    type MapLayerMouseEvent,
-    type MapRef,
-    type StyleSpecification
+  GeolocateControl,
+  Layer,
+  NavigationControl,
+  Source,
+  type MapLayerMouseEvent,
+  type MapRef,
+  type StyleSpecification
 } from "react-map-gl/maplibre";
-import { useApp } from "~/AppContext";
 import { StopSheet } from "~/components/StopSheet";
-import { REGIONS } from "~/data/RegionConfig";
+import { getRegionConfig } from "~/config/RegionConfig";
+import { usePageTitle } from "~/contexts/PageTitleContext";
+import { useApp } from "../AppContext";
 
 // Default minimal fallback style before dynamic loading
 const defaultStyle: StyleSpecification = {
@@ -30,6 +31,7 @@ const defaultStyle: StyleSpecification = {
 // Componente principal del mapa
 export default function StopMap() {
   const { t } = useTranslation();
+  usePageTitle(t("navbar.map", "Mapa"));
   const [stops, setStops] = useState<
     GeoJsonFeature<
       Point,
@@ -162,8 +164,8 @@ export default function StopMap() {
       }}
       attributionControl={{ compact: false }}
       maxBounds={
-        REGIONS[region].bounds
-          ? [REGIONS[region].bounds!.sw, REGIONS[region].bounds!.ne]
+        getRegionConfig(region).bounds
+          ? [getRegionConfig(region).bounds!.sw, getRegionConfig(region).bounds!.ne]
           : undefined
       }
     >
@@ -218,7 +220,7 @@ export default function StopMap() {
           "text-size": ["interpolate", ["linear"], ["zoom"], 11, 8, 22, 16],
         }}
         paint={{
-          "text-color": `${REGIONS[region].textColour || "#000"}`,
+          "text-color": `${getRegionConfig(region).textColour || "#000"}`,
           "text-halo-color": "#FFF",
           "text-halo-width": 1,
         }}

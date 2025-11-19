@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
+import { type RegionId } from "../config/RegionConfig";
 import "./LineIcon.css";
-import { type RegionId } from "../data/RegionConfig";
 
 interface LineIconProps {
   line: string;

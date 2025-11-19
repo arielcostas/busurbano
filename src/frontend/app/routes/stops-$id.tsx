@@ -8,7 +8,8 @@ import { StopAlert } from "~/components/StopAlert";
 import { StopMap } from "~/components/StopMapSheet";
 import { ConsolidatedCirculationList } from "~/components/Stops/ConsolidatedCirculationList";
 import { ConsolidatedCirculationListSkeleton } from "~/components/Stops/ConsolidatedCirculationListSkeleton";
-import { type RegionId, getRegionConfig } from "~/data/RegionConfig";
+import { type RegionId, getRegionConfig } from "~/config/RegionConfig";
+import { usePageTitle } from "~/contexts/PageTitleContext";
 import { useAutoRefresh } from "~/hooks/useAutoRefresh";
 import { useApp } from "../AppContext";
 import StopDataProvider, { type Stop } from "../data/StopDataProvider";
@@ -78,6 +79,16 @@ export default function Estimates() {
   const [isManualRefreshing, setIsManualRefreshing] = useState(false);
   const { region } = useApp();
   const regionConfig = getRegionConfig(region);
+
+  // Helper function to get the display name for the stop
+  const getStopDisplayName = useCallback(() => {
+    if (customName) return customName;
+    if (stopData?.name.intersect) return stopData.name.intersect;
+    if (stopData?.name.original) return stopData.name.original;
+    return `Parada ${stopIdNum}`;
+  }, [customName, stopData, stopIdNum]);
+
+  usePageTitle(getStopDisplayName());
 
   const parseError = (error: any): ErrorInfo => {
     if (!navigator.onLine) {
@@ -165,14 +176,6 @@ export default function Estimates() {
     }
   };
 
-  // Helper function to get the display name for the stop
-  const getStopDisplayName = () => {
-    if (customName) return customName;
-    if (stopData?.name.intersect) return stopData.name.intersect;
-    if (stopData?.name.original) return stopData.name.original;
-    return `Parada ${stopIdNum}`;
-  };
-
   const handleRename = () => {
     const current = getStopDisplayName();
     const input = window.prompt("Custom name for this stop:", current);
@@ -202,9 +205,6 @@ export default function Estimates() {
             onClick={handleRename}
             width={20} />
           </div>
-          <h1 className="page-title">
-            {getStopDisplayName()}
-          </h1>
 
           <button
             className="manual-refresh-button"
@@ -229,12 +229,6 @@ export default function Estimates() {
         )}
 
         {stopData && <StopAlert stop={stopData} />}
-
-        <div className="experimental-notice">
-          <strong>
-            {t("estimates.experimental_feature", "Experimental feature")}
-          </strong>
-        </div>
 
         <div className="estimates-list-container">
           {dataLoading ? (

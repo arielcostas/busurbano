@@ -1,21 +1,21 @@
-import { useEffect, useState, useRef } from "react";
-import { useParams, Link } from "react-router";
-import StopDataProvider from "../data/StopDataProvider";
 import {
-  ArrowLeft,
-  Eye,
-  EyeOff,
-  ChevronUp,
-  ChevronDown,
-  Clock,
+    ArrowLeft,
+    ChevronDown,
+    ChevronUp,
+    Clock,
+    Eye,
+    EyeOff,
 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Link, useParams } from "react-router";
+import { useApp } from "~/AppContext";
+import { ErrorDisplay } from "~/components/ErrorDisplay";
 import { type ScheduledTable } from "~/components/SchedulesTable";
 import { TimetableSkeleton } from "~/components/TimetableSkeleton";
-import { ErrorDisplay } from "~/components/ErrorDisplay";
+import { type RegionId, getRegionConfig } from "~/config/RegionConfig";
 import LineIcon from "../components/LineIcon";
-import { useTranslation } from "react-i18next";
-import { type RegionId, getRegionConfig } from "~/data/RegionConfig";
-import { useApp } from "~/AppContext";
+import StopDataProvider from "../data/StopDataProvider";
 import "./timetable-$id.css";
 
 interface ErrorInfo {

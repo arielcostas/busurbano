@@ -76,8 +76,7 @@
     "trip": "viaxe",
     "last_updated": "Actualizado ás",
     "reload": "Recargar",
-    "unknown_service": "Servizo descoñecido. Pode tratarse dun reforzo ou de que o servizo leva un nome distinto ó planificado.",
-    "experimental_feature": "Función experimental"
+    "unknown_service": "Servizo descoñecido. Pode tratarse dun reforzo ou de que o servizo leva un nome distinto ó planificado."
   },
   "timetable": {
     "fullCaption": "Horarios teóricos da parada",

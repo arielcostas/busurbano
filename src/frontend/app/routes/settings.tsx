@@ -1,12 +1,14 @@
-import { type Theme, useApp } from "../AppContext";
-import "./settings.css";
-import { useTranslation } from "react-i18next";
 import { useState } from "react";
-import { getAvailableRegions, REGIONS } from "../data/RegionConfig";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
+import { usePageTitle } from "~/contexts/PageTitleContext";
+import { type Theme, useApp } from "../AppContext";
+import { getAvailableRegions } from "../config/RegionConfig";
+import "./settings.css";
 
 export default function Settings() {
   const { t, i18n } = useTranslation();
+  usePageTitle(t("navbar.settings", "Ajustes"));
   const navigate = useNavigate();
   const {
     theme,
@@ -46,8 +48,6 @@ export default function Settings() {
 
   return (
     <div className="page-container">
-      <h1 className="page-title">{t("about.title")}</h1>
-      <p className="about-description">{t("about.description")}</p>
       <section className="settings-section">
         <h2>{t("about.settings")}</h2>
         <div className="settings-content-inline">
@@ -151,45 +151,6 @@ export default function Settings() {
           </dl>
         </details>
       </section>
-      <h2>{t("about.credits")}</h2>
-      <p>
-        <a
-          href="https://github.com/arielcostas/busurbano"
-          className="about-link"
-          rel="nofollow noreferrer noopener"
-        >
-          {t("about.github")}
-        </a>{" "}
-        - {t("about.developed_by")}{" "}
-        <a
-          href="https://www.costas.dev"
-          className="about-link"
-          rel="nofollow noreferrer noopener"
-        >
-          Ariel Costas
-        </a>
-      </p>
-      {region === "vigo" && (
-        <p>
-          {t("about.data_source_prefix")}{" "}
-          <a
-            href="https://datos.vigo.org"
-            className="about-link"
-            rel="nofollow noreferrer noopener"
-          >
-            datos.vigo.org
-          </a>{" "}
-          {t("about.data_source_middle")}{" "}
-          <a
-            href="https://opendefinition.org/licenses/odc-by/"
-            className="about-link"
-            rel="nofollow noreferrer noopener"
-          >
-            Open Data Commons Attribution License
-          </a>
-          .
-        </p>
-      )}
 
       {showModal && (
         <div className="modal-overlay" onClick={cancelRegionChange}>
