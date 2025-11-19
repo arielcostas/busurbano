@@ -1,5 +1,6 @@
 .page-title {
   margin-block: 0;
+  font-size: 1.5rem;
 }
 
 .estimates-content-wrapper {
@@ -269,7 +270,7 @@
   background-color: #fff3cd;
   border: 1px solid #ffc107;
   border-radius: 8px;
-  padding: 1rem;
+  padding: 0.5rem 1rem;
   color: #856404;
   flex-shrink: 0;
 }

@@ -1,9 +1,9 @@
 import maplibregl from "maplibre-gl";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import Map, {
-  AttributionControl,
-  Marker,
-  type MapRef,
+    AttributionControl,
+    Marker,
+    type MapRef,
 } from "react-map-gl/maplibre";
 import { useApp } from "~/AppContext";
 import { getLineColor } from "~/data/LineColors";
@@ -184,8 +184,26 @@ export const StopMap: React.FC<StopMapProps> = ({
   useEffect(() => {
     if (!styleSpec || !mapRef.current || hasFitBounds.current) return;
 
+    const map = mapRef.current.getMap();
+
+    // Handle missing sprite images to suppress console warnings
+    const handleStyleImageMissing = (e: any) => {
+      if (!map || map.hasImage(e.id)) return;
+      // Add a transparent 1x1 placeholder
+      map.addImage(e.id, {
+        width: 1,
+        height: 1,
+        data: new Uint8Array(4),
+      });
+    };
+
+    map.on("styleimagemissing", handleStyleImageMissing);
+
     const points = computeFocusPoints();
-    if (points.length === 0) return;
+    if (points.length === 0) {
+      map.off("styleimagemissing", handleStyleImageMissing);
+      return;
+    }
 
     let minLat = points[0].lat,
       maxLat = points[0].lat,
@@ -223,6 +241,15 @@ export const StopMap: React.FC<StopMapProps> = ({
       }
       hasFitBounds.current = true;
     } catch {}
+
+    return () => {
+      if (mapRef.current) {
+        const map = mapRef.current.getMap();
+        if (map) {
+          map.off("styleimagemissing", handleStyleImageMissing);
+        }
+      }
+    };
   }, [styleSpec, stop.latitude, stop.longitude, busPositions, userPosition]);
 
   const handleCenter = () => {
@@ -435,7 +462,7 @@ export const StopMap: React.FC<StopMapProps> = ({
           })()}
         </Map>
       )}
-      {/* Floating controls */}
+
       <div className="map-floating-controls">
         <button
           type="button"

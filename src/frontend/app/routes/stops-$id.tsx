@@ -191,14 +191,19 @@ export default function Estimates() {
     <>
       <div className="page-container stops-page">
         <div className="stops-header">
+          <div>
+          <Star
+            className={`star-icon ${favourited ? "active" : ""}`}
+            onClick={toggleFavourite}
+            width={20}
+          />
+          <Edit2
+            className="edit-icon"
+            onClick={handleRename}
+            width={20} />
+          </div>
           <h1 className="page-title">
-            <Star
-              className={`star-icon ${favourited ? "active" : ""}`}
-              onClick={toggleFavourite}
-            />
-            <Edit2 className="edit-icon" onClick={handleRename} />
-            {getStopDisplayName()}{" "}
-            <span className="estimates-stop-id">({stopIdNum})</span>
+            {getStopDisplayName()}
           </h1>
 
           <button

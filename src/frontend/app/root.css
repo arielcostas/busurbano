@@ -144,9 +144,8 @@ body {
 }
 
 .navigation-bar__link svg {
-  width: 1.5rem;
-  height: 1.5rem;
-  margin-bottom: 5px;
+  width: 1.375rem;
+  height: 1.375rem;
   fill: none;
   stroke-width: 2;
 }

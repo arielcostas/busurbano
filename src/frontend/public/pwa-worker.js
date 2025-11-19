@@ -1,4 +1,4 @@
-const CACHE_VERSION = "20251107a";
+const CACHE_VERSION = "20251118a";
 const STATIC_CACHE_NAME = `static-cache-${CACHE_VERSION}`;
 const STATIC_CACHE_ASSETS = ["/favicon.ico", "/logo-256.png", "/logo-512.jpg"];
 
@@ -9,7 +9,6 @@ const ESTIMATES_MIN_AGE = 15 * 1000;
 const ESTIMATES_MAX_AGE = 30 * 1000;
 
 self.addEventListener("install", (event) => {
-  console.log("SW: Install event in progress. Cache version: ", CACHE_VERSION);
   event.waitUntil(
     caches
       .open(STATIC_CACHE_NAME)
@@ -67,17 +66,14 @@ async function handleStaticRequest(request) {
   const cache = await caches.open(STATIC_CACHE_NAME);
   const cachedResponse = await cache.match(request);
   if (cachedResponse) {
-    console.log("SW handleStaticRequest: HIT for ", request.url);
     return cachedResponse;
   }
 
   try {
     const netResponse = await fetch(request);
     if (netResponse.ok) cache.put(request, netResponse.clone());
-    console.log("SW handleStaticRequest: MISS for ", request.url);
     return netResponse;
   } catch (err) {
-    console.error("SW handleStaticRequest: FAIL for ", request.url, err);
     return null;
   }
 }

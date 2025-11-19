@@ -1,22 +1,21 @@
 import StopDataProvider, { type Stop } from "../data/StopDataProvider";
 import "./map.css";
 
-import { useEffect, useRef, useState } from "react";
-import { useApp } from "~/AppContext";
-import Map, {
-  AttributionControl,
-  GeolocateControl,
-  Layer,
-  NavigationControl,
-  Source,
-  type MapRef,
-  type MapLayerMouseEvent,
-  type StyleSpecification,
-} from "react-map-gl/maplibre";
 import { loadStyle } from "app/maps/styleloader";
 import type { Feature as GeoJsonFeature, Point } from "geojson";
-import { StopSheet } from "~/components/StopSheet";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import Map, {
+    GeolocateControl,
+    Layer,
+    NavigationControl,
+    Source,
+    type MapLayerMouseEvent,
+    type MapRef,
+    type StyleSpecification
+} from "react-map-gl/maplibre";
+import { useApp } from "~/AppContext";
+import { StopSheet } from "~/components/StopSheet";
 import { REGIONS } from "~/data/RegionConfig";
 
 // Default minimal fallback style before dynamic loading
@@ -96,10 +95,26 @@ export default function StopMap() {
       updateMapState([center.lat, center.lng], zoom);
     };
 
+    const handleStyleImageMissing = (e: any) => {
+      // Suppress warnings for missing sprite images from base style
+      // This prevents console noise from OpenFreeMap's missing icons
+      if (!mapRef.current) return;
+      const map = mapRef.current.getMap();
+      if (!map || map.hasImage(e.id)) return;
+
+      // Add a transparent 1x1 placeholder to prevent repeated warnings
+      map.addImage(e.id, {
+        width: 1,
+        height: 1,
+        data: new Uint8Array(4),
+      });
+    };
+
     if (mapRef.current) {
       const map = mapRef.current.getMap();
       if (map) {
         map.on("moveend", handleMapChange);
+        map.on("styleimagemissing", handleStyleImageMissing);
       }
     }
 
@@ -108,6 +123,7 @@ export default function StopMap() {
         const map = mapRef.current.getMap();
         if (map) {
           map.off("moveend", handleMapChange);
+          map.off("styleimagemissing", handleStyleImageMissing);
         }
       }
     };
@@ -168,7 +184,7 @@ export default function StopMap() {
         layout={{
           "icon-image": [
             "case",
-            ["boolean", ["get", "cancelled"], false],
+            ["coalesce", ["get", "cancelled"], false],
             `stop-${region}-cancelled`,
             `stop-${region}`,
           ],
