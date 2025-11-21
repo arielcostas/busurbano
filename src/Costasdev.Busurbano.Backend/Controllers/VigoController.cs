@@ -211,9 +211,11 @@ public class VigoController : ControllerBase
             // 1) Prefer a started trip whose scheduled calling time is close to the estimated arrival.
             // 2) If no good started match, pick the next not-started trip (soonest in the future).
             // 3) Reject matches where scheduled time is >10 minutes AFTER realtime (data inconsistency).
-            // 4) Fallbacks: if no future trips, use the best started one even if far.
+            // 4) Reject matches where the bus would arrive >3 minutes BEFORE schedule (too early).
+            // 5) Fallbacks: if no future trips, use the best started one even if far.
             const int startedMatchToleranceMinutes = 15; // how close a started trip must be to consider it a match
             const int maxScheduleDelayMinutes = 10; // reject if scheduled is this much later than realtime
+            const int maxEarlyArrivalMinutes = 3; // reject if bus arrives more than 3 minutes before schedule
 
             var startedCandidates = possibleCirculations
                 .Where(c => c.StartingDateTime()!.Value <= now)
@@ -240,7 +242,8 @@ public class VigoController : ControllerBase
             // Check best started candidate
             if (bestStarted != null &&
                 bestStarted.AbsDiff <= startedMatchToleranceMinutes &&
-                bestStarted.TimeDiff <= maxScheduleDelayMinutes) // reject if scheduled too far after realtime
+                bestStarted.TimeDiff <= maxScheduleDelayMinutes && // reject if scheduled too far after realtime
+                bestStarted.TimeDiff >= -maxEarlyArrivalMinutes) // reject if bus arrives too early
             {
                 closestCirculation = bestStarted.Circulation;
             }
@@ -254,7 +257,9 @@ public class VigoController : ControllerBase
                 }
                 // Otherwise, leave it null (no valid match)
             }
-            else if (bestStarted != null && bestStarted.TimeDiff <= maxScheduleDelayMinutes)
+            else if (bestStarted != null &&
+                     bestStarted.TimeDiff <= maxScheduleDelayMinutes &&
+                     bestStarted.TimeDiff >= -maxEarlyArrivalMinutes)
             {
                 // nothing upcoming today; fallback to the closest started one (if timing is reasonable)
                 closestCirculation = bestStarted.Circulation;
