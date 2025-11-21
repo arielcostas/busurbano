@@ -53,8 +53,8 @@ public class VigoController : ControllerBase
     )
     {
         // Include a significant number of previous points to ensure continuity and context
-        // Backtrack 50 points to cover any potential gaps or dense point sequences
-        var adjustedStartIndex = Math.Max(0, startPointIndex - 50);
+        // Backtrack 15 points to cover any potential gaps or dense point sequences
+        var adjustedStartIndex = Math.Max(0, startPointIndex - 15);
         var path = await _shapeService.GetShapePathAsync(shapeId, adjustedStartIndex);
         if (path == null)
         {
@@ -208,53 +208,27 @@ public class VigoController : ControllerBase
             ScheduledArrival? closestCirculation = null;
 
             // Matching strategy:
-            // 1) Prefer a started trip whose scheduled calling time is close to the estimated arrival.
-            // 2) If no good started match, pick the next not-started trip (soonest in the future).
-            // 3) Reject matches where the bus would arrive >3 minutes BEFORE schedule (too early).
-            // 4) Fallbacks: if no future trips, use the best started one even if far.
-            const int startedMatchToleranceMinutes = 15; // how close a started trip must be to consider it a match
-            const int maxEarlyArrivalMinutes = 3; // reject if bus arrives more than 3 minutes before schedule
+            // 1) Filter trips that are not "too early" (TimeDiff <= 3).
+            //    TimeDiff = Schedule - Realtime.
+            //    If TimeDiff > 3, bus is > 3 mins early. Reject.
+            // 2) From the valid trips, pick the one with smallest Abs(TimeDiff).
+            //    This handles "as late as it gets" (large negative TimeDiff) by preferring smaller delays if available,
+            //    but accepting large delays if that's the only option (and better than an invalid early trip).
+            const int maxEarlyArrivalMinutes = 3;
 
-            var startedCandidates = possibleCirculations
-                .Where(c => c.StartingDateTime()!.Value <= now)
-                .Select(c => new
-                {
-                    Circulation = c,
-                    AbsDiff = Math.Abs((estimatedArrivalTime - c.CallingDateTime()!.Value).TotalMinutes),
-                    TimeDiff = (c.CallingDateTime()!.Value - estimatedArrivalTime).TotalMinutes // positive if scheduled is later
-                })
-                .OrderBy(x => x.AbsDiff)
-                .ToList();
-
-            var bestStarted = startedCandidates.FirstOrDefault();
-
-            var futureCandidates = possibleCirculations
-                .Where(c => c.StartingDateTime()!.Value > now)
+            var bestMatch = possibleCirculations
                 .Select(c => new
                 {
                     Circulation = c,
                     TimeDiff = (c.CallingDateTime()!.Value - estimatedArrivalTime).TotalMinutes
                 })
-                .ToList();
+                .Where(x => x.TimeDiff <= maxEarlyArrivalMinutes)
+                .OrderBy(x => Math.Abs(x.TimeDiff))
+                .FirstOrDefault();
 
-            // Check best started candidate
-            if (bestStarted != null &&
-                bestStarted.AbsDiff <= startedMatchToleranceMinutes &&
-                bestStarted.TimeDiff >= -maxEarlyArrivalMinutes) // reject if bus arrives too early
+            if (bestMatch != null)
             {
-                closestCirculation = bestStarted.Circulation;
-            }
-            else if (futureCandidates.Count > 0)
-            {
-                // Pick the soonest upcoming trip
-                var soonest = futureCandidates.First();
-                closestCirculation = soonest.Circulation;
-            }
-            else if (bestStarted != null &&
-                     bestStarted.TimeDiff >= -maxEarlyArrivalMinutes)
-            {
-                // nothing upcoming today; fallback to the closest started one (if timing is reasonable)
-                closestCirculation = bestStarted.Circulation;
+                closestCirculation = bestMatch.Circulation;
             }
 
             if (closestCirculation == null)
