@@ -1,8 +1,8 @@
 import maplibregl from "maplibre-gl";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import Map, { Marker, type MapRef } from "react-map-gl/maplibre";
+import Map, { Layer, Marker, Source, type MapRef } from "react-map-gl/maplibre";
 import { useApp } from "~/AppContext";
-import type { RegionId } from "~/config/RegionConfig";
+import { getRegionConfig, type RegionId } from "~/config/RegionConfig";
 import { getLineColor } from "~/data/LineColors";
 import type { Stop } from "~/data/StopDataProvider";
 import { loadStyle } from "~/maps/styleloader";
@@ -12,12 +12,16 @@ export interface Position {
   latitude: number;
   longitude: number;
   orientationDegrees: number;
+  shapeIndex?: number;
 }
 
 export interface ConsolidatedCirculationForMap {
   line: string;
   route: string;
   currentPosition?: Position;
+  schedule?: {
+    shapeId?: string;
+  };
 }
 
 interface StopMapProps {
@@ -44,6 +48,36 @@ export const StopMap: React.FC<StopMapProps> = ({
   const [zoom, setZoom] = useState<number>(16);
   const [moveTick, setMoveTick] = useState<number>(0);
   const [showAttribution, setShowAttribution] = useState(false);
+  const [shapes, setShapes] = useState<Record<string, any>>({});
+
+  const regionConfig = getRegionConfig(region);
+
+  useEffect(() => {
+    circulations.forEach((c) => {
+      if (
+        c.schedule?.shapeId &&
+        c.currentPosition?.shapeIndex !== undefined &&
+        regionConfig.shapeEndpoint
+      ) {
+        const key = `${c.schedule.shapeId}_${c.currentPosition.shapeIndex}`;
+        if (!shapes[key]) {
+          fetch(
+            `${regionConfig.shapeEndpoint}?shapeId=${c.schedule.shapeId}&startPointIndex=${c.currentPosition.shapeIndex}`
+          )
+            .then((res) => {
+              if (res.ok) return res.json();
+              return null;
+            })
+            .then((data) => {
+              if (data) {
+                setShapes((prev) => ({ ...prev, [key]: data }));
+              }
+            })
+            .catch((err) => console.error("Failed to load shape", err));
+        }
+      }
+    });
+  }, [circulations, regionConfig.shapeEndpoint, shapes]);
 
   type Pt = { lat: number; lon: number };
   const haversineKm = (a: Pt, b: Pt) => {
@@ -308,6 +342,44 @@ export const StopMap: React.FC<StopMapProps> = ({
             setMoveTick((t) => (t + 1) % 1000000);
           }}
         >
+          {/* Shapes */}
+          {circulations.map((c, idx) => {
+            if (
+              !c.schedule?.shapeId ||
+              c.currentPosition?.shapeIndex === undefined
+            )
+              return null;
+            const key = `${c.schedule.shapeId}_${c.currentPosition.shapeIndex}`;
+            const shapeData = shapes[key];
+            if (!shapeData) return null;
+            const lineColor = getLineColor(region, c.line);
+
+            return (
+              <Source
+                key={idx}
+                id={`shape-${idx}`}
+                type="geojson"
+                data={shapeData}
+              >
+                <Layer
+                  id={`layer-border-${idx}`}
+                  type="line"
+                  paint={{
+                    "line-color": "#000000",
+                    "line-width": 6,
+                  }}
+                />
+                <Layer
+                  id={`layer-inner-${idx}`}
+                  type="line"
+                  paint={{
+                    "line-color": lineColor.background,
+                    "line-width": 4,
+                  }}
+                />
+              </Source>
+            );
+          })}
 
           {/* Stop marker (center) */}
           {stop.latitude && stop.longitude && (

@@ -23,6 +23,7 @@ export interface ConsolidatedCirculation {
     minutes: number;
     serviceId: string;
     tripId: string;
+    shapeId?: string;
   };
   realTime?: {
     minutes: number;
@@ -32,6 +33,7 @@ export interface ConsolidatedCirculation {
     latitude: number;
     longitude: number;
     orientationDegrees: number;
+    shapeIndex?: number;
   };
 }
 
@@ -269,6 +271,11 @@ export default function Estimates() {
               line: c.line,
               route: c.route,
               currentPosition: c.currentPosition,
+              schedule: c.schedule
+                ? {
+                    shapeId: c.schedule.shapeId,
+                  }
+                : undefined,
             }))}
             isOpen={isMapModalOpen}
             onClose={() => setIsMapModalOpen(false)}

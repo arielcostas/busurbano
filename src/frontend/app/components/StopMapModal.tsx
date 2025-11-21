@@ -1,12 +1,14 @@
 import maplibregl from "maplibre-gl";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Map, {
-    Marker,
-    type MapRef
+  Layer,
+  Marker,
+  Source,
+  type MapRef
 } from "react-map-gl/maplibre";
 import { Sheet } from "react-modal-sheet";
 import { useApp } from "~/AppContext";
-import type { RegionId } from "~/config/RegionConfig";
+import { getRegionConfig, type RegionId } from "~/config/RegionConfig";
 import { getLineColor } from "~/data/LineColors";
 import type { Stop } from "~/data/StopDataProvider";
 import { loadStyle } from "~/maps/styleloader";
@@ -16,12 +18,16 @@ export interface Position {
   latitude: number;
   longitude: number;
   orientationDegrees: number;
+  shapeIndex?: number;
 }
 
 export interface ConsolidatedCirculationForMap {
   line: string;
   route: string;
   currentPosition?: Position;
+  schedule?: {
+    shapeId?: string;
+  };
 }
 
 interface StopMapModalProps {
@@ -45,6 +51,9 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
   const [styleSpec, setStyleSpec] = useState<any | null>(null);
   const mapRef = useRef<MapRef | null>(null);
   const hasFitBounds = useRef(false);
+  const [shapeData, setShapeData] = useState<any | null>(null);
+
+  const regionConfig = getRegionConfig(region);
 
   // Filter circulations that have GPS coordinates
   const busesWithPosition = useMemo(
@@ -117,7 +126,7 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
           .easeTo({ center: [only.lon, only.lat], zoom: 16, duration: 450 });
       } else {
         mapRef.current.fitBounds(bounds, {
-          padding: 24,
+          padding: 80,
           duration: 500,
           maxZoom: 17,
         } as any);
@@ -190,8 +199,41 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
   useEffect(() => {
     if (!isOpen) {
       hasFitBounds.current = false;
+      setShapeData(null);
     }
   }, [isOpen]);
+
+  // Fetch shape for selected bus
+  useEffect(() => {
+    if (
+      !isOpen ||
+      !selectedBus ||
+      !selectedBus.schedule?.shapeId ||
+      selectedBus.currentPosition?.shapeIndex === undefined ||
+      !regionConfig.shapeEndpoint
+    ) {
+      setShapeData(null);
+      return;
+    }
+
+    const shapeId = selectedBus.schedule.shapeId;
+    const shapeIndex = selectedBus.currentPosition.shapeIndex;
+
+    fetch(
+      `${regionConfig.shapeEndpoint}?shapeId=${shapeId}&startPointIndex=${shapeIndex}`
+    )
+      .then((res) => {
+        if (res.ok) return res.json();
+        return null;
+      })
+      .then((data) => {
+        if (data) {
+          setShapeData(data);
+          handleCenter();
+        }
+      })
+      .catch((err) => console.error("Failed to load shape", err));
+  }, [isOpen, selectedBus, regionConfig.shapeEndpoint]);
 
   if (busesWithPosition.length === 0) {
     return null; // Don't render if no buses with GPS coordinates
@@ -217,12 +259,45 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
                     longitude: center.longitude,
                     zoom: 16,
                   }}
-                  style={{ width: "100%", height: "320px" }}
+                  style={{ width: "100%", height: "50vh" }}
                   mapStyle={styleSpec}
-                  attributionControl={false}
+                  attributionControl={{compact: false, customAttribution: "Concello de Vigo & Viguesa de Transportes SL"}}
                   ref={mapRef}
                   interactive={true}
                 >
+                  {/* Shape Layer */}
+                  {shapeData && selectedBus && (
+                    <Source id="route-shape" type="geojson" data={shapeData}>
+                      <Layer
+                        id="route-shape-border"
+                        type="line"
+                        paint={{
+                          "line-color": "#000000",
+                          "line-width": 5,
+                          "line-opacity": 0.6,
+                        }}
+                        layout={{
+                          "line-cap": "round",
+                          "line-join": "round",
+                        }}
+                      />
+                      <Layer
+                        id="route-shape-inner"
+                        type="line"
+                        paint={{
+                          "line-color": getLineColor(region, selectedBus.line)
+                            .background,
+                          "line-width": 3,
+                          "line-opacity": 0.7,
+                        }}
+                        layout={{
+                          "line-cap": "round",
+                          "line-join": "round",
+                        }}
+                      />
+                    </Source>
+                  )}
+
                   {/* Stop marker */}
                   {stop.latitude && stop.longitude && (
                     <Marker
@@ -290,7 +365,7 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
                           <path
                             d="M12 2 L22 22 L12 17 L2 22 Z"
                             fill={getLineColor(region, selectedBus.line).background}
-                            stroke="#fff"
+                            stroke="#000"
                             strokeWidth="2"
                             strokeLinejoin="round"
                           />

@@ -46,6 +46,38 @@ public class VigoController : ControllerBase
         }
     }
 
+    [HttpGet("GetShape")]
+    public async Task<IActionResult> GetShape(
+        [FromQuery] string shapeId,
+        [FromQuery] int startPointIndex = 0
+    )
+    {
+        // Include a significant number of previous points to ensure continuity and context
+        // Backtrack 50 points to cover any potential gaps or dense point sequences
+        var adjustedStartIndex = Math.Max(0, startPointIndex - 50);
+        var path = await _shapeService.GetShapePathAsync(shapeId, adjustedStartIndex);
+        if (path == null)
+        {
+            return NotFound();
+        }
+
+        // Convert to GeoJSON LineString
+        var coordinates = path.Select(p => new[] { p.Longitude, p.Latitude }).ToList();
+
+        var geoJson = new
+        {
+            type = "Feature",
+            geometry = new
+            {
+                type = "LineString",
+                coordinates = coordinates
+            },
+            properties = new { }
+        };
+
+        return Ok(geoJson);
+    }
+
     [HttpGet("GetStopTimetable")]
     public async Task<IActionResult> GetStopTimetable(
         [FromQuery] int stopId,
@@ -278,6 +310,7 @@ public class VigoController : ControllerBase
                     Minutes = (int)(closestCirculation.CallingDateTime()!.Value - now).TotalMinutes,
                     TripId = closestCirculation.TripId,
                     ServiceId = closestCirculation.ServiceId,
+                    ShapeId = closestCirculation.ShapeId,
                 },
                 RealTime = new RealTimeData
                 {
@@ -316,6 +349,7 @@ public class VigoController : ControllerBase
                         Minutes = (int)(sched.CallingDateTime()!.Value - now).TotalMinutes,
                         TripId = sched.TripId,
                         ServiceId = sched.ServiceId,
+                        ShapeId = sched.ShapeId,
                     },
                     RealTime = null
                 });

@@ -60,6 +60,23 @@ public class ShapeTraversalService
         }
     }
 
+    public async Task<List<Position>?> GetShapePathAsync(string shapeId, int startIndex)
+    {
+        var shape = await LoadShapeAsync(shapeId);
+        if (shape == null) return null;
+
+        var result = new List<Position>();
+        // Ensure startIndex is within bounds
+        if (startIndex < 0) startIndex = 0;
+        if (startIndex >= shape.Points.Count) return result;
+
+        for (int i = startIndex; i < shape.Points.Count; i++)
+        {
+            result.Add(TransformToLatLng(shape.Points[i]));
+        }
+        return result;
+    }
+
     /// <summary>
     /// Calculates the bus position by reverse-traversing the shape from the stop location
     /// </summary>
@@ -78,12 +95,14 @@ public class ShapeTraversalService
         int closestPointIndex = FindClosestPointIndex(shape.Points, stopLocation);
 
         // Traverse backwards from the closest point to find the position at the given distance
-        var (busPoint, forwardPoint) = TraverseBackwards(shape.Points.ToArray(), closestPointIndex, distanceMeters);
+        var (busPoint, forwardIndex) = TraverseBackwards(shape.Points.ToArray(), closestPointIndex, distanceMeters);
 
         if (busPoint == null)
         {
             return null;
         }
+
+        var forwardPoint = shape.Points[forwardIndex];
 
         // Compute orientation in EPSG:25829 (meters): 0°=North, 90°=East (azimuth)
         var dx = forwardPoint.X - busPoint.X; // Easting difference
@@ -94,19 +113,20 @@ public class ShapeTraversalService
         // Transform from EPSG:25829 (meters) to EPSG:4326 (lat/lng)
         var pos = TransformToLatLng(busPoint);
         pos.OrientationDegrees = (int)Math.Round(bearing);
+        pos.ShapeIndex = forwardIndex;
         return pos;
     }
 
     /// <summary>
     /// Traverses backwards along the shape from a starting point by the specified distance
     /// </summary>
-    private (Epsg25829 point, Epsg25829 forward) TraverseBackwards(Epsg25829[] shapePoints, int startIndex, double distanceMeters)
+    private (Epsg25829 point, int forwardIndex) TraverseBackwards(Epsg25829[] shapePoints, int startIndex, double distanceMeters)
     {
         if (startIndex <= 0)
         {
             // Already at the beginning, return the first point
             var forwardIdx = Math.Min(1, shapePoints.Length - 1);
-            return (shapePoints[0], shapePoints[forwardIdx]);
+            return (shapePoints[0], forwardIdx);
         }
 
         double remainingDistance = distanceMeters;
@@ -123,7 +143,7 @@ public class ShapeTraversalService
                 var ratio = remainingDistance / segmentDistance;
                 var interpolated = InterpolatePoint(shapePoints[currentIndex], shapePoints[currentIndex - 1], ratio);
                 // Forward direction is towards the stop (increasing index direction)
-                return (interpolated, shapePoints[currentIndex]);
+                return (interpolated, currentIndex);
             }
 
             remainingDistance -= segmentDistance;
@@ -131,7 +151,7 @@ public class ShapeTraversalService
         }
 
         // We've reached the beginning of the shape
-        var fwd = shapePoints[Math.Min(1, shapePoints.Length - 1)];
+        var fwd = Math.Min(1, shapePoints.Length - 1);
         return (shapePoints[0], fwd);
     }
 

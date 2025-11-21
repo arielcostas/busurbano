@@ -23,6 +23,7 @@ public class ScheduleData
     public required int Minutes { get; set; }
     public required string ServiceId { get; set; }
     public required string TripId { get; set; }
+    public string? ShapeId { get; set; }
 }
 
 public class Position
@@ -30,4 +31,5 @@ public class Position
     public required double Latitude { get; set; }
     public required double Longitude { get; set; }
     public int OrientationDegrees { get; set; }
+    public int ShapeIndex { get; set; }
 }

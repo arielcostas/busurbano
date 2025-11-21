@@ -7,6 +7,7 @@ export interface RegionConfig {
   estimatesEndpoint: string;
   consolidatedCirculationsEndpoint: string | null;
   timetableEndpoint: string | null;
+  shapeEndpoint: string | null;
   defaultCenter: [number, number]; // [lat, lng]
   bounds?: {
     sw: [number, number];
@@ -25,6 +26,7 @@ export const REGIONS: Record<RegionId, RegionConfig> = {
     estimatesEndpoint: "/api/vigo/GetStopEstimates",
     consolidatedCirculationsEndpoint: "/api/vigo/GetConsolidatedCirculations",
     timetableEndpoint: "/api/vigo/GetStopTimetable",
+    shapeEndpoint: "/api/vigo/GetShape",
     defaultCenter: [42.229188855975046, -8.72246955783102],
     bounds: {
       sw: [-8.951059, 42.098923],
