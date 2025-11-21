@@ -8,6 +8,7 @@ public class ConsolidatedCirculation
     public ScheduleData? Schedule { get; set; }
     public RealTimeData? RealTime { get; set; }
     public Position? CurrentPosition { get; set; }
+    public int? StopShapeIndex { get; set; }
     public string[] NextStreets { get; set; } = [];
 }
 

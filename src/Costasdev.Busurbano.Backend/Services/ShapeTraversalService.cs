@@ -68,13 +68,31 @@ public class ShapeTraversalService
         var result = new List<Position>();
         // Ensure startIndex is within bounds
         if (startIndex < 0) startIndex = 0;
+        // If startIndex is beyond the end, return empty list
         if (startIndex >= shape.Points.Count) return result;
 
         for (int i = startIndex; i < shape.Points.Count; i++)
         {
-            result.Add(TransformToLatLng(shape.Points[i]));
+            var pos = TransformToLatLng(shape.Points[i]);
+            pos.ShapeIndex = i;
+            result.Add(pos);
         }
         return result;
+    }
+
+    public async Task<int?> FindClosestPointIndexAsync(string shapeId, double lat, double lon)
+    {
+        var shape = await LoadShapeAsync(shapeId);
+        if (shape == null) return null;
+
+        // Transform input WGS84 to EPSG:25829
+        // Input is [Longitude, Latitude]
+        var inverseTransform = _transformation.MathTransform.Inverse();
+        var transformed = inverseTransform.Transform(new[] { lon, lat });
+        
+        var location = new Epsg25829 { X = transformed[0], Y = transformed[1] };
+        
+        return FindClosestPointIndex(shape.Points, location);
     }
 
     /// <summary>
@@ -83,12 +101,12 @@ public class ShapeTraversalService
     /// <param name="shape">The shape points (in EPSG:25829 meters)</param>
     /// <param name="stopLocation">The stop location (in EPSG:25829 meters)</param>
     /// <param name="distanceMeters">Distance in meters from the stop to traverse backwards</param>
-    /// <returns>The lat/lng position of the bus, or null if not calculable</returns>
-    public Position? GetBusPosition(Shape shape, Epsg25829 stopLocation, int distanceMeters)
+    /// <returns>The lat/lng position of the bus and the stop index on the shape</returns>
+    public (Position? BusPosition, int StopIndex) GetBusPosition(Shape shape, Epsg25829 stopLocation, int distanceMeters)
     {
         if (shape.Points.Count == 0 || distanceMeters <= 0)
         {
-            return null;
+            return (null, -1);
         }
 
         // Find the closest point on the shape to the stop
@@ -99,7 +117,7 @@ public class ShapeTraversalService
 
         if (busPoint == null)
         {
-            return null;
+            return (null, closestPointIndex);
         }
 
         var forwardPoint = shape.Points[forwardIndex];
@@ -114,7 +132,7 @@ public class ShapeTraversalService
         var pos = TransformToLatLng(busPoint);
         pos.OrientationDegrees = (int)Math.Round(bearing);
         pos.ShapeIndex = forwardIndex;
-        return pos;
+        return (pos, closestPointIndex);
     }
 
     /// <summary>

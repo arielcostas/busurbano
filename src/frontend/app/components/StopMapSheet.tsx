@@ -19,6 +19,7 @@ export interface ConsolidatedCirculationForMap {
   line: string;
   route: string;
   currentPosition?: Position;
+  stopShapeIndex?: number;
   schedule?: {
     shapeId?: string;
   };
@@ -61,9 +62,14 @@ export const StopMap: React.FC<StopMapProps> = ({
       ) {
         const key = `${c.schedule.shapeId}_${c.currentPosition.shapeIndex}`;
         if (!shapes[key]) {
-          fetch(
-            `${regionConfig.shapeEndpoint}?shapeId=${c.schedule.shapeId}&startPointIndex=${c.currentPosition.shapeIndex}`
-          )
+          let url = `${regionConfig.shapeEndpoint}?shapeId=${c.schedule.shapeId}&busShapeIndex=${c.currentPosition.shapeIndex}`;
+          if (c.stopShapeIndex !== undefined) {
+            url += `&stopShapeIndex=${c.stopShapeIndex}`;
+          } else {
+            url += `&stopLat=${stop.latitude}&stopLon=${stop.longitude}`;
+          }
+
+          fetch(url)
             .then((res) => {
               if (res.ok) return res.json();
               return null;

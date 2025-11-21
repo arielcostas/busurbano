@@ -49,16 +49,58 @@ public class VigoController : ControllerBase
     [HttpGet("GetShape")]
     public async Task<IActionResult> GetShape(
         [FromQuery] string shapeId,
-        [FromQuery] int startPointIndex = 0
+        [FromQuery] int? startPointIndex = null,
+        [FromQuery] double? busLat = null,
+        [FromQuery] double? busLon = null,
+        [FromQuery] int? busShapeIndex = null,
+        [FromQuery] double? stopLat = null,
+        [FromQuery] double? stopLon = null,
+        [FromQuery] int? stopShapeIndex = null
     )
     {
-        // Include a significant number of previous points to ensure continuity and context
-        // Backtrack 15 points to cover any potential gaps or dense point sequences
-        var adjustedStartIndex = Math.Max(0, startPointIndex - 15);
-        var path = await _shapeService.GetShapePathAsync(shapeId, adjustedStartIndex);
+        var path = await _shapeService.GetShapePathAsync(shapeId, 0);
         if (path == null)
         {
             return NotFound();
+        }
+
+        // Determine bus point
+        object? busPoint = null;
+        if (busShapeIndex.HasValue && busShapeIndex.Value >= 0 && busShapeIndex.Value < path.Count)
+        {
+            var p = path[busShapeIndex.Value];
+            busPoint = new { lat = p.Latitude, lon = p.Longitude, index = busShapeIndex.Value };
+        }
+        else if (busLat.HasValue && busLon.HasValue)
+        {
+            var idx = await _shapeService.FindClosestPointIndexAsync(shapeId, busLat.Value, busLon.Value);
+            if (idx.HasValue && idx.Value >= 0 && idx.Value < path.Count)
+            {
+                var p = path[idx.Value];
+                busPoint = new { lat = p.Latitude, lon = p.Longitude, index = idx.Value };
+            }
+        }
+        else if (startPointIndex.HasValue && startPointIndex.Value >= 0 && startPointIndex.Value < path.Count)
+        {
+            var p = path[startPointIndex.Value];
+            busPoint = new { lat = p.Latitude, lon = p.Longitude, index = startPointIndex.Value };
+        }
+
+        // Determine stop point
+        object? stopPoint = null;
+        if (stopShapeIndex.HasValue && stopShapeIndex.Value >= 0 && stopShapeIndex.Value < path.Count)
+        {
+            var p = path[stopShapeIndex.Value];
+            stopPoint = new { lat = p.Latitude, lon = p.Longitude, index = stopShapeIndex.Value };
+        }
+        else if (stopLat.HasValue && stopLon.HasValue)
+        {
+            var idx = await _shapeService.FindClosestPointIndexAsync(shapeId, stopLat.Value, stopLon.Value);
+            if (idx.HasValue && idx.Value >= 0 && idx.Value < path.Count)
+            {
+                var p = path[idx.Value];
+                stopPoint = new { lat = p.Latitude, lon = p.Longitude, index = idx.Value };
+            }
         }
 
         // Convert to GeoJSON LineString
@@ -72,7 +114,11 @@ public class VigoController : ControllerBase
                 type = "LineString",
                 coordinates = coordinates
             },
-            properties = new { }
+            properties = new
+            {
+                busPoint,
+                stopPoint
+            }
         };
 
         return Ok(geoJson);
@@ -214,7 +260,7 @@ public class VigoController : ControllerBase
             // 2) From the valid trips, pick the one with smallest Abs(TimeDiff).
             //    This handles "as late as it gets" (large negative TimeDiff) by preferring smaller delays if available,
             //    but accepting large delays if that's the only option (and better than an invalid early trip).
-            const int maxEarlyArrivalMinutes = 3;
+            const int maxEarlyArrivalMinutes = 5;
 
             var bestMatch = possibleCirculations
                 .Select(c => new
@@ -259,6 +305,7 @@ public class VigoController : ControllerBase
 
             var isRunning = closestCirculation.StartingDateTime()!.Value <= now;
             Position? currentPosition = null;
+            int? stopShapeIndex = null;
 
             // Calculate bus position only for realtime trips that have already departed
             if (isRunning && !string.IsNullOrEmpty(closestCirculation.ShapeId))
@@ -266,7 +313,9 @@ public class VigoController : ControllerBase
                 var shape = await _shapeService.LoadShapeAsync(closestCirculation.ShapeId);
                 if (shape != null && stopLocation != null)
                 {
-                    currentPosition = _shapeService.GetBusPosition(shape, stopLocation, estimate.Meters);
+                    var result = _shapeService.GetBusPosition(shape, stopLocation, estimate.Meters);
+                    currentPosition = result.BusPosition;
+                    stopShapeIndex = result.StopIndex;
                 }
             }
 
@@ -288,7 +337,8 @@ public class VigoController : ControllerBase
                     Minutes = estimate.Minutes,
                     Distance = estimate.Meters
                 },
-                CurrentPosition = currentPosition
+                CurrentPosition = currentPosition,
+                StopShapeIndex = stopShapeIndex
             });
 
             usedTripIds.Add(closestCirculation.TripId);
@@ -310,6 +360,12 @@ public class VigoController : ControllerBase
                     continue; // already represented via a matched realtime
                 }
 
+                var minutes = (int)(sched.CallingDateTime()!.Value - now).TotalMinutes;
+                if (minutes == 0)
+                {
+                    continue;
+                }
+
                 consolidatedCirculations.Add(new ConsolidatedCirculation
                 {
                     Line = sched.Line,
@@ -317,7 +373,7 @@ public class VigoController : ControllerBase
                     Schedule = new ScheduleData
                     {
                         Running = sched.StartingDateTime()!.Value <= now,
-                        Minutes = (int)(sched.CallingDateTime()!.Value - now).TotalMinutes,
+                        Minutes = minutes,
                         TripId = sched.TripId,
                         ServiceId = sched.ServiceId,
                         ShapeId = sched.ShapeId,

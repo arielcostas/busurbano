@@ -25,6 +25,7 @@ export interface ConsolidatedCirculationForMap {
   line: string;
   route: string;
   currentPosition?: Position;
+  stopShapeIndex?: number;
   schedule?: {
     shapeId?: string;
   };
@@ -90,15 +91,32 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
     if (!mapRef.current) return;
     const points: { lat: number; lon: number }[] = [];
 
-    if (stop.latitude && stop.longitude) {
-      points.push({ lat: stop.latitude, lon: stop.longitude });
-    }
+    if (
+      shapeData?.properties?.busPoint &&
+      shapeData?.properties?.stopPoint &&
+      shapeData?.geometry?.coordinates
+    ) {
+      const busIdx = shapeData.properties.busPoint.index;
+      const stopIdx = shapeData.properties.stopPoint.index;
+      const coords = shapeData.geometry.coordinates;
 
-    if (selectedBus?.currentPosition) {
-      points.push({
-        lat: selectedBus.currentPosition.latitude,
-        lon: selectedBus.currentPosition.longitude,
-      });
+      const start = Math.min(busIdx, stopIdx);
+      const end = Math.max(busIdx, stopIdx);
+
+      for (let i = start; i <= end; i++) {
+        points.push({ lat: coords[i][1], lon: coords[i][0] });
+      }
+    } else {
+      if (stop.latitude && stop.longitude) {
+        points.push({ lat: stop.latitude, lon: stop.longitude });
+      }
+
+      if (selectedBus?.currentPosition) {
+        points.push({
+          lat: selectedBus.currentPosition.latitude,
+          lon: selectedBus.currentPosition.longitude,
+        });
+      }
     }
 
     if (points.length === 0) return;
@@ -132,7 +150,7 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
         } as any);
       }
     } catch {}
-  }, [stop, selectedBus]);
+  }, [stop, selectedBus, shapeData]);
 
   // Load style without traffic layers for the stop map
   useEffect(() => {
@@ -218,10 +236,18 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
 
     const shapeId = selectedBus.schedule.shapeId;
     const shapeIndex = selectedBus.currentPosition.shapeIndex;
+    const stopShapeIndex = selectedBus.stopShapeIndex;
+    const stopLat = stop.latitude;
+    const stopLon = stop.longitude;
 
-    fetch(
-      `${regionConfig.shapeEndpoint}?shapeId=${shapeId}&startPointIndex=${shapeIndex}`
-    )
+    let url = `${regionConfig.shapeEndpoint}?shapeId=${shapeId}&busShapeIndex=${shapeIndex}`;
+    if (stopShapeIndex !== undefined) {
+      url += `&stopShapeIndex=${stopShapeIndex}`;
+    } else {
+      url += `&stopLat=${stopLat}&stopLon=${stopLon}`;
+    }
+
+    fetch(url)
       .then((res) => {
         if (res.ok) return res.json();
         return null;
