@@ -167,6 +167,7 @@ export const StopSheet: React.FC<StopSheetProps> = ({
                           key={idx}
                           estimate={estimate}
                           regionConfig={regionConfig}
+                          readonly
                         />
                       ))}
                     </div>

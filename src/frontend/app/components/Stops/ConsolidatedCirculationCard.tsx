@@ -10,6 +10,7 @@ interface ConsolidatedCirculationCardProps {
   estimate: ConsolidatedCirculation;
   regionConfig: RegionConfig;
   onMapClick?: () => void;
+  readonly?: boolean;
 }
 
 // Utility function to parse service ID and get the turn number
@@ -71,7 +72,7 @@ const parseServiceId = (serviceId: string): string => {
 
 export const ConsolidatedCirculationCard: React.FC<
   ConsolidatedCirculationCardProps
-> = ({ estimate, regionConfig, onMapClick }) => {
+> = ({ estimate, regionConfig, onMapClick, readonly }) => {
   const { t } = useTranslation();
 
   const absoluteArrivalTime = (minutes: number) => {
@@ -172,15 +173,30 @@ export const ConsolidatedCirculationCard: React.FC<
   // Check if bus has GPS position (live tracking)
   const hasGpsPosition = !!estimate.currentPosition;
 
+  const Tag = readonly ? "div" : "button";
+  const interactiveProps = readonly
+    ? {}
+    : {
+        onClick: onMapClick,
+        type: "button" as const,
+        disabled: !hasGpsPosition,
+      };
+
   return (
-    <button
+    <Tag
       className={`consolidated-circulation-card ${
-        hasGpsPosition ? "has-gps" : "no-gps"
+        readonly
+          ? !hasGpsPosition
+            ? "no-gps"
+            : ""
+          : hasGpsPosition
+          ? "has-gps"
+          : "no-gps"
       }`}
-      onClick={onMapClick}
-      type="button"
-      disabled={!hasGpsPosition}
-      aria-label={`${hasGpsPosition ? "View" : "No GPS data for"} ${estimate.line} to ${estimate.route}${hasGpsPosition ? " on map" : ""}`}
+      {...interactiveProps}
+      aria-label={`${hasGpsPosition ? "View" : "No GPS data for"} ${
+        estimate.line
+      } to ${estimate.route}${hasGpsPosition ? " on map" : ""}`}
     >
       <div className="card-row main">
         <div className="line-info">
@@ -189,17 +205,17 @@ export const ConsolidatedCirculationCard: React.FC<
         <div className="route-info">
           <strong>{estimate.route}</strong>
         </div>
+        {hasGpsPosition && (
+          <div className="gps-indicator" title="Live GPS tracking">
+            <span className="gps-pulse" />
+          </div>
+        )}
         <div className={`eta-badge ${timeClass}`}>
           <div className="eta-text">
             <span className="eta-value">{etaValue}</span>
             <span className="eta-unit">{etaUnit}</span>
           </div>
         </div>
-        {hasGpsPosition && (
-          <div className="gps-indicator" title="Live GPS tracking">
-            <span className="gps-pulse" />
-          </div>
-        )}
       </div>
       {metaChips.length > 0 && (
         <div className="card-row meta">
@@ -213,6 +229,6 @@ export const ConsolidatedCirculationCard: React.FC<
           ))}
         </div>
       )}
-    </button>
+    </Tag>
   );
 };
