@@ -89,9 +89,9 @@ public class ShapeTraversalService
         // Input is [Longitude, Latitude]
         var inverseTransform = _transformation.MathTransform.Inverse();
         var transformed = inverseTransform.Transform(new[] { lon, lat });
-        
+
         var location = new Epsg25829 { X = transformed[0], Y = transformed[1] };
-        
+
         return FindClosestPointIndex(shape.Points, location);
     }
 
