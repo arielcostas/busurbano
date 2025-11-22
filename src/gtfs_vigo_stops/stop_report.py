@@ -145,40 +145,49 @@ def is_next_day_service(time_str: str) -> bool:
 
 def parse_trip_id_components(trip_id: str) -> Optional[Tuple[str, str, int]]:
     """
-    Parse a trip ID in format XXXYYY-Z where:
+    Parse a trip ID in format XXXYYY-Z or XXXYYY_Z where:
     - XXX = line number (e.g., 003)
     - YYY = shift/internal ID (e.g., 001)
     - Z = trip number (e.g., 12)
     
-    Full trip ID format is typically: service_id_date_XXXYYY-Z
-    (e.g., "VIGO_20241122_003001-12")
+    Supported formats:
+    1. ..._XXXYYY_Z (e.g. "C1 01SNA00_001001_18")
+    2. ..._XXXYYY-Z (e.g. "VIGO_20241122_003001-12")
     
     Returns tuple of (line, shift_id, trip_number) or None if parsing fails.
     """
     try:
-        # Split by underscore - full format is service_id_date_XXXYYY-Z
-        # We need at least 3 parts: service, date, and the actual trip ID
         parts = trip_id.split("_")
-        if len(parts) < 3:
+        if len(parts) < 2:
             return None
-        
+
+        # Try format 1: ..._XXXYYY_Z
+        # Check if second to last part is 6 digits (XXXYYY) and last part is numeric
+        if len(parts) >= 2:
+            shift_part = parts[-2]
+            trip_num_str = parts[-1]
+            
+            if len(shift_part) == 6 and shift_part.isdigit() and trip_num_str.isdigit():
+                line = shift_part[:3]
+                shift_id = shift_part[3:6]
+                trip_number = int(trip_num_str)
+                return (line, shift_id, trip_number)
+
+        # Try format 2: ..._XXXYYY-Z
         # The trip ID is the last part in format XXXYYY-Z
-        trip_part = parts[-1]  # Get the last part (e.g., "003001-12")
+        trip_part = parts[-1]
         
-        if "-" not in trip_part:
-            return None
-        
-        shift_part, trip_num_str = trip_part.split("-", 1)
-        
-        # shift_part should be 6 digits: XXXYYY
-        if len(shift_part) != 6:
-            return None
-        
-        line = shift_part[:3]  # First 3 digits
-        shift_id = shift_part[3:6]  # Next 3 digits
-        trip_number = int(trip_num_str)
-        
-        return (line, shift_id, trip_number)
+        if "-" in trip_part:
+            shift_part, trip_num_str = trip_part.split("-", 1)
+            
+            # shift_part should be 6 digits: XXXYYY
+            if len(shift_part) == 6 and shift_part.isdigit():
+                line = shift_part[:3]  # First 3 digits
+                shift_id = shift_part[3:6]  # Next 3 digits
+                trip_number = int(trip_num_str)
+                return (line, shift_id, trip_number)
+                
+        return None
     except (ValueError, IndexError):
         return None
 

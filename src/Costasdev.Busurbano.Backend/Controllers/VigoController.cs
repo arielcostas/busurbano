@@ -310,21 +310,38 @@ public class VigoController : ControllerBase
             // Calculate bus position for realtime trips
             if (!string.IsNullOrEmpty(closestCirculation.ShapeId))
             {
-                string shapeIdToUse = closestCirculation.ShapeId;
-                
-                // If the trip hasn't started yet but has a previous trip shape, use that instead
-                // This handles cases where the bus is still on the previous trip approaching the terminus
-                if (!isRunning && !string.IsNullOrEmpty(closestCirculation.PreviousTripShapeId))
+                // Check if we are likely on the previous trip
+                // If the bus is further away than the distance from the start of the trip to the stop,
+                // it implies the bus is on the previous trip (or earlier).
+                double distOnPrevTrip = estimate.Meters - closestCirculation.ShapeDistTraveled;
+                bool usePreviousShape = !isRunning && 
+                                        !string.IsNullOrEmpty(closestCirculation.PreviousTripShapeId) && 
+                                        distOnPrevTrip > 0;
+
+                if (usePreviousShape)
                 {
-                    shapeIdToUse = closestCirculation.PreviousTripShapeId;
+                    var prevShape = await _shapeService.LoadShapeAsync(closestCirculation.PreviousTripShapeId);
+                    if (prevShape != null && prevShape.Points.Count > 0)
+                    {
+                        // The bus is on the previous trip.
+                        // We treat the end of the previous shape as the "stop" for the purpose of calculation.
+                        // The distance to traverse backwards from the end of the previous shape is 'distOnPrevTrip'.
+                        var lastPoint = prevShape.Points[prevShape.Points.Count - 1];
+                        var result = _shapeService.GetBusPosition(prevShape, lastPoint, (int)distOnPrevTrip);
+                        currentPosition = result.BusPosition;
+                        stopShapeIndex = result.StopIndex;
+                    }
                 }
-                
-                var shape = await _shapeService.LoadShapeAsync(shapeIdToUse);
-                if (shape != null && stopLocation != null)
+                else
                 {
-                    var result = _shapeService.GetBusPosition(shape, stopLocation, estimate.Meters);
-                    currentPosition = result.BusPosition;
-                    stopShapeIndex = result.StopIndex;
+                    // Normal case: bus is on the current trip shape
+                    var shape = await _shapeService.LoadShapeAsync(closestCirculation.ShapeId);
+                    if (shape != null && stopLocation != null)
+                    {
+                        var result = _shapeService.GetBusPosition(shape, stopLocation, estimate.Meters);
+                        currentPosition = result.BusPosition;
+                        stopShapeIndex = result.StopIndex;
+                    }
                 }
             }
 
