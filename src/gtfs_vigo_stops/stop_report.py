@@ -185,6 +185,7 @@ def parse_trip_id_components(trip_id: str) -> Optional[Tuple[str, str, int]]:
                 shift_id = shift_part[3:6]  # Next 3 digits
                 trip_number = int(trip_num_str)
                 return (line, shift_id, trip_number)
+
         return None
     except (ValueError, IndexError):
         return None
@@ -418,6 +419,10 @@ def get_stop_arrivals(feed_dir: str, date: str) -> Dict[str, List[Dict[str, Any]
                 is_current_mode = (mode == "current")
 
                 for i, (stop_time, _) in enumerate(trip_stop_pairs):
+                    # Skip the last stop of the trip (terminus) to avoid duplication
+                    if i == len(trip_stop_pairs) - 1:
+                        continue
+
                     stop_code = stop_id_to_code.get(stop_time.stop_id)
 
                     if not stop_code:

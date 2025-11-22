@@ -207,7 +207,11 @@ export const ConsolidatedCirculationCard: React.FC<
         </div>
         {hasGpsPosition && (
           <div className="gps-indicator" title="Live GPS tracking">
-            <span className="gps-pulse" />
+            <span
+              className={`gps-pulse ${
+                estimate.isPreviousTrip ? "previous-trip" : ""
+              }`}
+            />
           </div>
         )}
         <div className={`eta-badge ${timeClass}`}>

@@ -35,6 +35,8 @@ export interface ConsolidatedCirculation {
     orientationDegrees: number;
     shapeIndex?: number;
   };
+  isPreviousTrip?: boolean;
+  previousTripShapeId?: string;
 }
 
 export const getCirculationId = (c: ConsolidatedCirculation): string => {
@@ -279,6 +281,8 @@ export default function Estimates() {
               line: c.line,
               route: c.route,
               currentPosition: c.currentPosition,
+              isPreviousTrip: c.isPreviousTrip,
+              previousTripShapeId: c.previousTripShapeId,
               schedule: c.schedule
                 ? {
                     shapeId: c.schedule.shapeId,

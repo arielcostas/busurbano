@@ -27,6 +27,8 @@ export interface ConsolidatedCirculationForMap {
   route: string;
   currentPosition?: Position;
   stopShapeIndex?: number;
+  isPreviousTrip?: boolean;
+  previousTripShapeId?: string;
   schedule?: {
     shapeId?: string;
   };
@@ -54,6 +56,7 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
   const mapRef = useRef<MapRef | null>(null);
   const hasFitBounds = useRef(false);
   const [shapeData, setShapeData] = useState<any | null>(null);
+  const [previousShapeData, setPreviousShapeData] = useState<any | null>(null);
 
   const regionConfig = getRegionConfig(region);
 
@@ -94,22 +97,29 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
     if (!mapRef.current) return;
     const points: { lat: number; lon: number }[] = [];
 
-    if (
-      shapeData?.properties?.busPoint &&
-      shapeData?.properties?.stopPoint &&
-      shapeData?.geometry?.coordinates
-    ) {
-      const busIdx = shapeData.properties.busPoint.index;
-      const stopIdx = shapeData.properties.stopPoint.index;
-      const coords = shapeData.geometry.coordinates;
+    const addShapePoints = (data: any) => {
+      if (
+        data?.properties?.busPoint &&
+        data?.properties?.stopPoint &&
+        data?.geometry?.coordinates
+      ) {
+        const busIdx = data.properties.busPoint.index;
+        const stopIdx = data.properties.stopPoint.index;
+        const coords = data.geometry.coordinates;
 
-      const start = Math.min(busIdx, stopIdx);
-      const end = Math.max(busIdx, stopIdx);
+        const start = Math.min(busIdx, stopIdx);
+        const end = Math.max(busIdx, stopIdx);
 
-      for (let i = start; i <= end; i++) {
-        points.push({ lat: coords[i][1], lon: coords[i][0] });
+        for (let i = start; i <= end; i++) {
+          points.push({ lat: coords[i][1], lon: coords[i][0] });
+        }
       }
-    } else {
+    };
+
+    addShapePoints(shapeData);
+    addShapePoints(previousShapeData);
+
+    if (points.length === 0) {
       if (stop.latitude && stop.longitude) {
         points.push({ lat: stop.latitude, lon: stop.longitude });
       }
@@ -153,7 +163,7 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
         } as any);
       }
     } catch {}
-  }, [stop, selectedBus, shapeData]);
+  }, [stop, selectedBus, shapeData, previousShapeData]);
 
   // Load style without traffic layers for the stop map
   useEffect(() => {
@@ -221,6 +231,7 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
     if (!isOpen) {
       hasFitBounds.current = false;
       setShapeData(null);
+      setPreviousShapeData(null);
     }
   }, [isOpen]);
 
@@ -234,6 +245,7 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
       !regionConfig.shapeEndpoint
     ) {
       setShapeData(null);
+      setPreviousShapeData(null);
       return;
     }
 
@@ -243,25 +255,81 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
     const stopLat = stop.latitude;
     const stopLon = stop.longitude;
 
-    let url = `${regionConfig.shapeEndpoint}?shapeId=${shapeId}&busShapeIndex=${shapeIndex}`;
-    if (stopShapeIndex !== undefined) {
-      url += `&stopShapeIndex=${stopShapeIndex}`;
-    } else {
-      url += `&stopLat=${stopLat}&stopLon=${stopLon}`;
-    }
+    const fetchShape = async (
+      sId: string,
+      bIndex?: number,
+      sIndex?: number,
+      sLat?: number,
+      sLon?: number
+    ) => {
+      let url = `${regionConfig.shapeEndpoint}?shapeId=${sId}`;
+      if (bIndex !== undefined) url += `&busShapeIndex=${bIndex}`;
+      if (sIndex !== undefined) url += `&stopShapeIndex=${sIndex}`;
+      else if (sLat && sLon) url += `&stopLat=${sLat}&stopLon=${sLon}`;
 
-    fetch(url)
-      .then((res) => {
-        if (res.ok) return res.json();
-        return null;
-      })
-      .then((data) => {
-        if (data) {
-          setShapeData(data);
-          handleCenter();
+      const res = await fetch(url);
+      if (res.ok) return res.json();
+      return null;
+    };
+
+    const loadShapes = async () => {
+      if (selectedBus.isPreviousTrip && selectedBus.previousTripShapeId) {
+        // Bus is on previous trip
+        // 1. Load previous shape (where bus is)
+        const prevData = await fetchShape(
+          selectedBus.previousTripShapeId,
+          shapeIndex,
+          stopShapeIndex
+        );
+
+        // 2. Load current scheduled shape (where bus is going)
+        // Bus is not on this shape yet, so no bus index
+        const currData = await fetchShape(
+          shapeId,
+          undefined,
+          undefined,
+          stopLat,
+          stopLon
+        );
+
+        if (
+          prevData &&
+          prevData.geometry &&
+          prevData.geometry.coordinates &&
+          prevData.properties?.busPoint?.index !== undefined
+        ) {
+          const busIdx = prevData.properties.busPoint.index;
+          const coords = prevData.geometry.coordinates;
+          // Slice from busIdx - 5 (clamped to 0) to end
+          const startIdx = Math.max(0, busIdx - 5);
+          const slicedCoords = coords.slice(startIdx);
+
+          // Join with the first point of the next shape to close the gap
+          if (currData?.geometry?.coordinates?.length > 0) {
+            slicedCoords.push(currData.geometry.coordinates[0]);
+          }
+
+          prevData.geometry.coordinates = slicedCoords;
         }
-      })
-      .catch((err) => console.error("Failed to load shape", err));
+
+        setPreviousShapeData(prevData);
+        setShapeData(currData);
+      } else {
+        // Normal case
+        const data = await fetchShape(
+          shapeId,
+          shapeIndex,
+          stopShapeIndex,
+          stopLat,
+          stopLon
+        );
+        setShapeData(data);
+        setPreviousShapeData(null);
+      }
+      handleCenter();
+    };
+
+    loadShapes().catch((err) => console.error("Failed to load shape", err));
   }, [isOpen, selectedBus, regionConfig.shapeEndpoint]);
 
   if (busesWithPosition.length === 0) {
@@ -294,6 +362,58 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
                   ref={mapRef}
                   interactive={true}
                 >
+                  {/* Previous Shape Layer */}
+                  {previousShapeData && selectedBus && (
+                    <Source
+                      id="prev-route-shape"
+                      type="geojson"
+                      data={previousShapeData}
+                    >
+                      {/* 1. Black border */}
+                      <Layer
+                        id="prev-route-shape-border"
+                        type="line"
+                        paint={{
+                          "line-color": "#000000",
+                          "line-width": 6,
+                          "line-opacity": 0.8,
+                        }}
+                        layout={{
+                          "line-cap": "round",
+                          "line-join": "round",
+                        }}
+                      />
+                      {/* 2. White background */}
+                      <Layer
+                        id="prev-route-shape-white"
+                        type="line"
+                        paint={{
+                          "line-color": "#FFFFFF",
+                          "line-width": 4,
+                        }}
+                        layout={{
+                          "line-cap": "round",
+                          "line-join": "round",
+                        }}
+                      />
+                      {/* 3. Colored dashes */}
+                      <Layer
+                        id="prev-route-shape-inner"
+                        type="line"
+                        paint={{
+                          "line-color": getLineColor(region, selectedBus.line)
+                            .background,
+                          "line-width": 4,
+                          "line-dasharray": [2, 2],
+                        }}
+                        layout={{
+                          "line-cap": "round",
+                          "line-join": "round",
+                        }}
+                      />
+                    </Source>
+                  )}
+
                   {/* Shape Layer */}
                   {shapeData && selectedBus && (
                     <Source id="route-shape" type="geojson" data={shapeData}>
