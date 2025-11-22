@@ -186,6 +186,8 @@ public class VigoController : ControllerBase
         var realtimeTask = _api.GetStopEstimates(stopId);
         var todayDate = nowLocal.Date.ToString("yyyy-MM-dd");
 
+        Console.WriteLine($"Loading consolidated circulations for stop {stopId} on {todayDate} at local time {nowLocal}");
+
         // Load both today's and tomorrow's schedules to handle night services
         var timetableTask = LoadStopArrivalsProto(stopId.ToString(), todayDate);
 
