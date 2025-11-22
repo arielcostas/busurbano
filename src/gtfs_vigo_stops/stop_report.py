@@ -150,15 +150,19 @@ def parse_trip_id_components(trip_id: str) -> Optional[Tuple[str, str, int]]:
     - YYY = shift/internal ID (e.g., 001)
     - Z = trip number (e.g., 12)
     
+    Full trip ID format is typically: service_id_date_XXXYYY-Z
+    (e.g., "VIGO_20241122_003001-12")
+    
     Returns tuple of (line, shift_id, trip_number) or None if parsing fails.
     """
     try:
-        # Split by underscore to get the actual trip ID (last part)
+        # Split by underscore - full format is service_id_date_XXXYYY-Z
+        # We need at least 3 parts: service, date, and the actual trip ID
         parts = trip_id.split("_")
         if len(parts) < 3:
             return None
         
-        # The trip ID is in format XXXYYY-Z
+        # The trip ID is the last part in format XXXYYY-Z
         trip_part = parts[-1]  # Get the last part (e.g., "003001-12")
         
         if "-" not in trip_part:
@@ -242,11 +246,13 @@ def build_trip_previous_shape_map(
             current_trip, current_num, current_start_stop, _ = shift_trips[i]
             prev_trip, prev_num, _, prev_end_stop = shift_trips[i - 1]
             
-            # Check if trips are consecutive (trip numbers differ by 1)
-            # and if previous trip's terminus matches current trip's start
+            # Check if trips are consecutive (trip numbers differ by 1),
+            # if previous trip's terminus matches current trip's start,
+            # and if both trips have valid shape IDs
             if (current_num == prev_num + 1 and 
                 prev_end_stop == current_start_stop and 
-                prev_trip.shape_id):
+                prev_trip.shape_id and
+                current_trip.shape_id):
                 trip_previous_shape[current_trip.trip_id] = prev_trip.shape_id
     
     return trip_previous_shape
