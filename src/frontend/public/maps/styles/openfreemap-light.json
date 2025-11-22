@@ -5927,14 +5927,6 @@
       "filter": [
         "all",
         [
-          "\u003C=",
-          [
-            "get",
-            "ref_length"
-          ],
-          6
-        ],
-        [
           "match",
           [
             "geometry-type"
@@ -6004,14 +5996,6 @@
       "minzoom": 7,
       "filter": [
         "all",
-        [
-          "\u003C=",
-          [
-            "get",
-            "ref_length"
-          ],
-          6
-        ],
         [
           "match",
           [
@@ -6086,14 +6070,6 @@
       "minzoom": 9,
       "filter": [
         "all",
-        [
-          "\u003C=",
-          [
-            "get",
-            "ref_length"
-          ],
-          6
-        ],
         [
           "match",
           [

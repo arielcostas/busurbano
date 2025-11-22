@@ -2270,14 +2270,6 @@
       "filter": [
         "all",
         [
-          "<=",
-          [
-            "get",
-            "ref_length"
-          ],
-          6
-        ],
-        [
           "match",
           [
             "geometry-type"
@@ -2347,14 +2339,6 @@
       "minzoom": 11,
       "filter": [
         "all",
-        [
-          "<=",
-          [
-            "get",
-            "ref_length"
-          ],
-          6
-        ],
         [
           "match",
           [
@@ -2429,14 +2413,6 @@
       "minzoom": 12,
       "filter": [
         "all",
-        [
-          "<=",
-          [
-            "get",
-            "ref_length"
-          ],
-          6
-        ],
         [
           "match",
           [
