@@ -10,18 +10,19 @@ class TripLine:
     """
     Class representing a trip line in the GTFS data.
     """
-    def __init__(self, route_id: str, service_id: str, trip_id: str, headsign: str, direction_id: int, shape_id: str|None = None):
+    def __init__(self, route_id: str, service_id: str, trip_id: str, headsign: str, direction_id: int, shape_id: str|None = None, block_id: str|None = None):
         self.route_id = route_id
         self.service_id = service_id
         self.trip_id = trip_id
         self.headsign = headsign
         self.direction_id = direction_id
         self.shape_id = shape_id
+        self.block_id = block_id
         self.route_short_name = ""
         self.route_color = ""
 
     def __str__(self):
-        return f"TripLine({self.route_id=}, {self.service_id=}, {self.trip_id=}, {self.headsign=}, {self.direction_id=}, {self.shape_id=})"
+        return f"TripLine({self.route_id=}, {self.service_id=}, {self.trip_id=}, {self.headsign=}, {self.direction_id=}, {self.shape_id=}, {self.block_id=})"
 
 
 TRIPS_BY_SERVICE_ID: dict[str, dict[str, list[TripLine]]] = {}
@@ -74,6 +75,13 @@ def get_trips_for_services(feed_dir: str, service_ids: list[str]) -> dict[str, l
             else:
                 logger.warning("shape_id column not found in trips.txt")
 
+            # Check if block_id column exists
+            block_id_index = None
+            if 'block_id' in header:
+                block_id_index = header.index('block_id')
+            else:
+                logger.info("block_id column not found in trips.txt")
+
             # Initialize cache for this feed directory
             TRIPS_BY_SERVICE_ID[feed_dir] = {}
             
@@ -96,6 +104,11 @@ def get_trips_for_services(feed_dir: str, service_ids: list[str]) -> dict[str, l
                 if shape_id_index is not None and shape_id_index < len(parts):
                     shape_id = parts[shape_id_index] if parts[shape_id_index] else None
 
+                # Get block_id if available
+                block_id = None
+                if block_id_index is not None and block_id_index < len(parts):
+                    block_id = parts[block_id_index] if parts[block_id_index] else None
+
                 trip_line = TripLine(
                     route_id=parts[route_id_index],
                     service_id=service_id,
@@ -103,7 +116,8 @@ def get_trips_for_services(feed_dir: str, service_ids: list[str]) -> dict[str, l
                     headsign=parts[headsign_index],
                     direction_id=int(
                         parts[direction_id_index] if parts[direction_id_index] else -1),
-                    shape_id=shape_id
+                    shape_id=shape_id,
+                    block_id=block_id
                 )
                 
                 TRIPS_BY_SERVICE_ID[feed_dir][service_id].append(trip_line)

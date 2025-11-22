@@ -25,10 +25,10 @@ namespace Costasdev.Busurbano.Backend.Types {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "ChNzdG9wX3NjaGVkdWxlLnByb3RvEgVwcm90byIhCglFcHNnMjU4MjkSCQoB",
-            "eBgBIAEoARIJCgF5GAIgASgBIuMDCgxTdG9wQXJyaXZhbHMSDwoHc3RvcF9p",
+            "eBgBIAEoARIJCgF5GAIgASgBIoMECgxTdG9wQXJyaXZhbHMSDwoHc3RvcF9p",
             "ZBgBIAEoCRIiCghsb2NhdGlvbhgDIAEoCzIQLnByb3RvLkVwc2cyNTgyORI2",
             "CghhcnJpdmFscxgFIAMoCzIkLnByb3RvLlN0b3BBcnJpdmFscy5TY2hlZHVs",
-            "ZWRBcnJpdmFsGuUCChBTY2hlZHVsZWRBcnJpdmFsEhIKCnNlcnZpY2VfaWQY",
+            "ZWRBcnJpdmFsGoUDChBTY2hlZHVsZWRBcnJpdmFsEhIKCnNlcnZpY2VfaWQY",
             "ASABKAkSDwoHdHJpcF9pZBgCIAEoCRIMCgRsaW5lGAMgASgJEg0KBXJvdXRl",
             "GAQgASgJEhAKCHNoYXBlX2lkGAUgASgJEhsKE3NoYXBlX2Rpc3RfdHJhdmVs",
             "ZWQYBiABKAESFQoNc3RvcF9zZXF1ZW5jZRgLIAEoDRIUCgxuZXh0X3N0cmVl",
@@ -36,14 +36,15 @@ namespace Costasdev.Busurbano.Backend.Types {
             "YW1lGBYgASgJEhUKDXN0YXJ0aW5nX3RpbWUYFyABKAkSFAoMY2FsbGluZ190",
             "aW1lGCEgASgJEhMKC2NhbGxpbmdfc3NtGCIgASgNEhUKDXRlcm1pbnVzX2Nv",
             "ZGUYKSABKAkSFQoNdGVybWludXNfbmFtZRgqIAEoCRIVCg10ZXJtaW51c190",
-            "aW1lGCsgASgJIjsKBVNoYXBlEhAKCHNoYXBlX2lkGAEgASgJEiAKBnBvaW50",
-            "cxgDIAMoCzIQLnByb3RvLkVwc2cyNTgyOUIkqgIhQ29zdGFzZGV2LkJ1c3Vy",
-            "YmFuby5CYWNrZW5kLlR5cGVzYgZwcm90bzM="));
+            "aW1lGCsgASgJEh4KFnByZXZpb3VzX3RyaXBfc2hhcGVfaWQYMyABKAkiOwoF",
+            "U2hhcGUSEAoIc2hhcGVfaWQYASABKAkSIAoGcG9pbnRzGAMgAygLMhAucHJv",
+            "dG8uRXBzZzI1ODI5QiSqAiFDb3N0YXNkZXYuQnVzdXJiYW5vLkJhY2tlbmQu",
+            "VHlwZXNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Costasdev.Busurbano.Backend.Types.Epsg25829), global::Costasdev.Busurbano.Backend.Types.Epsg25829.Parser, new[]{ "X", "Y" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Costasdev.Busurbano.Backend.Types.StopArrivals), global::Costasdev.Busurbano.Backend.Types.StopArrivals.Parser, new[]{ "StopId", "Location", "Arrivals" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Costasdev.Busurbano.Backend.Types.StopArrivals.Types.ScheduledArrival), global::Costasdev.Busurbano.Backend.Types.StopArrivals.Types.ScheduledArrival.Parser, new[]{ "ServiceId", "TripId", "Line", "Route", "ShapeId", "ShapeDistTraveled", "StopSequence", "NextStreets", "StartingCode", "StartingName", "StartingTime", "CallingTime", "CallingSsm", "TerminusCode", "TerminusName", "TerminusTime" }, null, null, null, null)}),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Costasdev.Busurbano.Backend.Types.StopArrivals), global::Costasdev.Busurbano.Backend.Types.StopArrivals.Parser, new[]{ "StopId", "Location", "Arrivals" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Costasdev.Busurbano.Backend.Types.StopArrivals.Types.ScheduledArrival), global::Costasdev.Busurbano.Backend.Types.StopArrivals.Types.ScheduledArrival.Parser, new[]{ "ServiceId", "TripId", "Line", "Route", "ShapeId", "ShapeDistTraveled", "StopSequence", "NextStreets", "StartingCode", "StartingName", "StartingTime", "CallingTime", "CallingSsm", "TerminusCode", "TerminusName", "TerminusTime", "PreviousTripShapeId" }, null, null, null, null)}),
             new pbr::GeneratedClrTypeInfo(typeof(global::Costasdev.Busurbano.Backend.Types.Shape), global::Costasdev.Busurbano.Backend.Types.Shape.Parser, new[]{ "ShapeId", "Points" }, null, null, null, null)
           }));
     }
@@ -51,7 +52,6 @@ namespace Costasdev.Busurbano.Backend.Types {
 
   }
   #region Messages
-  [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
   public sealed partial class Epsg25829 : pb::IMessage<Epsg25829>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -236,11 +236,7 @@ namespace Costasdev.Busurbano.Backend.Types {
     #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
-      if ((tag & 7) == 4) {
-        // Abort on any end group tag.
-        return;
-      }
-      switch(tag) {
+        switch(tag) {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
@@ -263,11 +259,7 @@ namespace Costasdev.Busurbano.Backend.Types {
     void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
-      if ((tag & 7) == 4) {
-        // Abort on any end group tag.
-        return;
-      }
-      switch(tag) {
+        switch(tag) {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
@@ -286,7 +278,6 @@ namespace Costasdev.Busurbano.Backend.Types {
 
   }
 
-  [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
   public sealed partial class StopArrivals : pb::IMessage<StopArrivals>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -492,11 +483,7 @@ namespace Costasdev.Busurbano.Backend.Types {
     #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
-      if ((tag & 7) == 4) {
-        // Abort on any end group tag.
-        return;
-      }
-      switch(tag) {
+        switch(tag) {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
@@ -526,11 +513,7 @@ namespace Costasdev.Busurbano.Backend.Types {
     void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
-      if ((tag & 7) == 4) {
-        // Abort on any end group tag.
-        return;
-      }
-      switch(tag) {
+        switch(tag) {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
@@ -559,7 +542,6 @@ namespace Costasdev.Busurbano.Backend.Types {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static partial class Types {
-      [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
       public sealed partial class ScheduledArrival : pb::IMessage<ScheduledArrival>
       #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
           , pb::IBufferMessage
@@ -610,6 +592,7 @@ namespace Costasdev.Busurbano.Backend.Types {
           terminusCode_ = other.terminusCode_;
           terminusName_ = other.terminusName_;
           terminusTime_ = other.terminusTime_;
+          previousTripShapeId_ = other.previousTripShapeId_;
           _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
         }
 
@@ -810,6 +793,21 @@ namespace Costasdev.Busurbano.Backend.Types {
           }
         }
 
+        /// <summary>Field number for the "previous_trip_shape_id" field.</summary>
+        public const int PreviousTripShapeIdFieldNumber = 51;
+        private string previousTripShapeId_ = "";
+        /// <summary>
+        /// Shape ID of the previous trip when the bus comes from another trip that ends at the starting point
+        /// </summary>
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+        public string PreviousTripShapeId {
+          get { return previousTripShapeId_; }
+          set {
+            previousTripShapeId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+          }
+        }
+
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public override bool Equals(object other) {
@@ -841,6 +839,7 @@ namespace Costasdev.Busurbano.Backend.Types {
           if (TerminusCode != other.TerminusCode) return false;
           if (TerminusName != other.TerminusName) return false;
           if (TerminusTime != other.TerminusTime) return false;
+          if (PreviousTripShapeId != other.PreviousTripShapeId) return false;
           return Equals(_unknownFields, other._unknownFields);
         }
 
@@ -864,6 +863,7 @@ namespace Costasdev.Busurbano.Backend.Types {
           if (TerminusCode.Length != 0) hash ^= TerminusCode.GetHashCode();
           if (TerminusName.Length != 0) hash ^= TerminusName.GetHashCode();
           if (TerminusTime.Length != 0) hash ^= TerminusTime.GetHashCode();
+          if (PreviousTripShapeId.Length != 0) hash ^= PreviousTripShapeId.GetHashCode();
           if (_unknownFields != null) {
             hash ^= _unknownFields.GetHashCode();
           }
@@ -943,6 +943,10 @@ namespace Costasdev.Busurbano.Backend.Types {
             output.WriteRawTag(218, 2);
             output.WriteString(TerminusTime);
           }
+          if (PreviousTripShapeId.Length != 0) {
+            output.WriteRawTag(154, 3);
+            output.WriteString(PreviousTripShapeId);
+          }
           if (_unknownFields != null) {
             _unknownFields.WriteTo(output);
           }
@@ -1014,6 +1018,10 @@ namespace Costasdev.Busurbano.Backend.Types {
             output.WriteRawTag(218, 2);
             output.WriteString(TerminusTime);
           }
+          if (PreviousTripShapeId.Length != 0) {
+            output.WriteRawTag(154, 3);
+            output.WriteString(PreviousTripShapeId);
+          }
           if (_unknownFields != null) {
             _unknownFields.WriteTo(ref output);
           }
@@ -1069,6 +1077,9 @@ namespace Costasdev.Busurbano.Backend.Types {
           }
           if (TerminusTime.Length != 0) {
             size += 2 + pb::CodedOutputStream.ComputeStringSize(TerminusTime);
+          }
+          if (PreviousTripShapeId.Length != 0) {
+            size += 2 + pb::CodedOutputStream.ComputeStringSize(PreviousTripShapeId);
           }
           if (_unknownFields != null) {
             size += _unknownFields.CalculateSize();
@@ -1128,6 +1139,9 @@ namespace Costasdev.Busurbano.Backend.Types {
           if (other.TerminusTime.Length != 0) {
             TerminusTime = other.TerminusTime;
           }
+          if (other.PreviousTripShapeId.Length != 0) {
+            PreviousTripShapeId = other.PreviousTripShapeId;
+          }
           _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
         }
 
@@ -1139,11 +1153,7 @@ namespace Costasdev.Busurbano.Backend.Types {
         #else
           uint tag;
           while ((tag = input.ReadTag()) != 0) {
-          if ((tag & 7) == 4) {
-            // Abort on any end group tag.
-            return;
-          }
-          switch(tag) {
+            switch(tag) {
               default:
                 _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
                 break;
@@ -1211,6 +1221,10 @@ namespace Costasdev.Busurbano.Backend.Types {
                 TerminusTime = input.ReadString();
                 break;
               }
+              case 410: {
+                PreviousTripShapeId = input.ReadString();
+                break;
+              }
             }
           }
         #endif
@@ -1222,11 +1236,7 @@ namespace Costasdev.Busurbano.Backend.Types {
         void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
           uint tag;
           while ((tag = input.ReadTag()) != 0) {
-          if ((tag & 7) == 4) {
-            // Abort on any end group tag.
-            return;
-          }
-          switch(tag) {
+            switch(tag) {
               default:
                 _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
                 break;
@@ -1294,6 +1304,10 @@ namespace Costasdev.Busurbano.Backend.Types {
                 TerminusTime = input.ReadString();
                 break;
               }
+              case 410: {
+                PreviousTripShapeId = input.ReadString();
+                break;
+              }
             }
           }
         }
@@ -1306,7 +1320,6 @@ namespace Costasdev.Busurbano.Backend.Types {
 
   }
 
-  [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
   public sealed partial class Shape : pb::IMessage<Shape>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -1480,11 +1493,7 @@ namespace Costasdev.Busurbano.Backend.Types {
     #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
-      if ((tag & 7) == 4) {
-        // Abort on any end group tag.
-        return;
-      }
-      switch(tag) {
+        switch(tag) {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
@@ -1507,11 +1516,7 @@ namespace Costasdev.Busurbano.Backend.Types {
     void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
-      if ((tag & 7) == 4) {
-        // Abort on any end group tag.
-        return;
-      }
-      switch(tag) {
+        switch(tag) {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;

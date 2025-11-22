@@ -4,7 +4,7 @@ import shutil
 import sys
 import time
 import traceback
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from src.shapes import process_shapes
 from src.common import get_all_feed_dates
@@ -13,10 +13,10 @@ from src.logger import get_logger
 from src.report_writer import write_stop_json, write_stop_protobuf
 from src.routes import load_routes
 from src.services import get_active_services
-from src.stop_times import get_stops_for_trips
+from src.stop_times import get_stops_for_trips, StopTime
 from src.stops import get_all_stops, get_all_stops_by_code, get_numeric_code
 from src.street_name import get_street_name, normalise_stop_name
-from src.trips import get_trips_for_services
+from src.trips import get_trips_for_services, TripLine
 
 logger = get_logger("stop_report")
 
@@ -143,6 +143,74 @@ def is_next_day_service(time_str: str) -> bool:
         return False
 
 
+def build_trip_previous_shape_map(
+    trips: Dict[str, List[TripLine]],
+    stops_for_all_trips: Dict[str, List[StopTime]],
+) -> Dict[str, Optional[str]]:
+    """
+    Build a mapping from trip_id to previous_trip_shape_id.
+    
+    For trips in the same block (or same route if no block_id), if a trip's
+    starting stop matches the previous trip's terminus stop, we link them.
+    
+    Args:
+        trips: Dictionary of service_id -> list of trips
+        stops_for_all_trips: Dictionary of trip_id -> list of stop times
+        
+    Returns:
+        Dictionary mapping trip_id to previous_trip_shape_id (or None)
+    """
+    trip_previous_shape: Dict[str, Optional[str]] = {}
+    
+    # Collect all trips across all services
+    all_trips_list: List[TripLine] = []
+    for trip_list in trips.values():
+        all_trips_list.extend(trip_list)
+    
+    # Group trips by block_id (or route_id if no block_id)
+    trips_by_block: Dict[str, List[TripLine]] = {}
+    for trip in all_trips_list:
+        # Use block_id if available, otherwise group by route_id + service_id
+        group_key = trip.block_id if trip.block_id else f"{trip.route_id}_{trip.service_id}"
+        if group_key not in trips_by_block:
+            trips_by_block[group_key] = []
+        trips_by_block[group_key].append(trip)
+    
+    # For each block, sort trips by start time and link consecutive trips
+    for block_key, block_trips in trips_by_block.items():
+        # Sort trips by their departure time from first stop
+        trips_with_times: List[tuple[TripLine, str, str, str]] = []
+        for trip in block_trips:
+            trip_stops = stops_for_all_trips.get(trip.trip_id)
+            if not trip_stops or len(trip_stops) < 2:
+                continue
+            first_stop = trip_stops[0]
+            last_stop = trip_stops[-1]
+            trips_with_times.append((
+                trip,
+                first_stop.departure_time,
+                first_stop.stop_id,
+                last_stop.stop_id
+            ))
+        
+        # Sort by departure time
+        trips_with_times.sort(key=lambda x: time_to_seconds(x[1]))
+        
+        # Link consecutive trips if their stops match
+        for i in range(len(trips_with_times)):
+            current_trip, _, current_start_stop, _ = trips_with_times[i]
+            
+            # Check if there's a previous trip in this block
+            if i > 0:
+                prev_trip, _, _, prev_end_stop = trips_with_times[i - 1]
+                
+                # If previous trip's terminus matches current trip's start
+                if prev_end_stop == current_start_stop and prev_trip.shape_id:
+                    trip_previous_shape[current_trip.trip_id] = prev_trip.shape_id
+    
+    return trip_previous_shape
+
+
 def get_stop_arrivals(feed_dir: str, date: str) -> Dict[str, List[Dict[str, Any]]]:
     """
     Process trips for the given date and organize stop arrivals.
@@ -191,6 +259,10 @@ def get_stop_arrivals(feed_dir: str, date: str) -> Dict[str, List[Dict[str, Any]
     # Get stops for all trips
     stops_for_all_trips = get_stops_for_trips(feed_dir, all_trip_ids)
     logger.info(f"Precomputed stops for {len(stops_for_all_trips)} trips.")
+
+    # Build mapping from trip_id to previous trip's shape_id
+    trip_previous_shape_map = build_trip_previous_shape_map(trips, stops_for_all_trips)
+    logger.info(f"Built previous trip shape mapping for {len(trip_previous_shape_map)} trips.")
 
     # Load routes information
     routes = load_routes(feed_dir)
@@ -335,6 +407,9 @@ def get_stop_arrivals(feed_dir: str, date: str) -> Dict[str, List[Dict[str, Any]
                         next_streets = []
 
                     trip_id_fmt = "_".join(trip_id.split("_")[1:3])
+                    
+                    # Get previous trip shape_id if available
+                    previous_trip_shape_id = trip_previous_shape_map.get(trip_id, "")
 
                     stop_arrivals[stop_code].append(
                         {
@@ -356,6 +431,7 @@ def get_stop_arrivals(feed_dir: str, date: str) -> Dict[str, List[Dict[str, Any]
                             "terminus_code": terminus_code,
                             "terminus_name": terminus_name,
                             "terminus_time": final_terminus_time,
+                            "previous_trip_shape_id": previous_trip_shape_id,
                         }
                     )
 

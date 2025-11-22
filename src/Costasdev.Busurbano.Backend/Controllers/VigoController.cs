@@ -307,10 +307,19 @@ public class VigoController : ControllerBase
             Position? currentPosition = null;
             int? stopShapeIndex = null;
 
-            // Calculate bus position only for realtime trips that have already departed
-            if (isRunning && !string.IsNullOrEmpty(closestCirculation.ShapeId))
+            // Calculate bus position for realtime trips
+            if (!string.IsNullOrEmpty(closestCirculation.ShapeId))
             {
-                var shape = await _shapeService.LoadShapeAsync(closestCirculation.ShapeId);
+                string shapeIdToUse = closestCirculation.ShapeId;
+                
+                // If the trip hasn't started yet but has a previous trip shape, use that instead
+                // This handles cases where the bus is still on the previous trip approaching the terminus
+                if (!isRunning && !string.IsNullOrEmpty(closestCirculation.PreviousTripShapeId))
+                {
+                    shapeIdToUse = closestCirculation.PreviousTripShapeId;
+                }
+                
+                var shape = await _shapeService.LoadShapeAsync(shapeIdToUse);
                 if (shape != null && stopLocation != null)
                 {
                     var result = _shapeService.GetBusPosition(shape, stopLocation, estimate.Meters);
