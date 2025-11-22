@@ -50,14 +50,4 @@
   .app-shell__bottom-nav {
     display: none;
   }
-
-  /* Override NavBar styles for sidebar */
-  .app-shell__sidebar .navigation-bar {
-    flex-direction: column;
-    height: 100%;
-    justify-content: flex-start;
-    padding-top: 1rem;
-    gap: 1rem;
-    border-top: none;
-  }
 }

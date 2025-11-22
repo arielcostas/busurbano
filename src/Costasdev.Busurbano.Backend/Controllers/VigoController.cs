@@ -254,13 +254,13 @@ public class VigoController : ControllerBase
             ScheduledArrival? closestCirculation = null;
 
             // Matching strategy:
-            // 1) Filter trips that are not "too early" (TimeDiff <= 3).
+            // 1) Filter trips that are not "too early" (TimeDiff <= 7).
             //    TimeDiff = Schedule - Realtime.
-            //    If TimeDiff > 3, bus is > 3 mins early. Reject.
+            //    If TimeDiff > 7, bus is > 7 mins early. Reject.
             // 2) From the valid trips, pick the one with smallest Abs(TimeDiff).
             //    This handles "as late as it gets" (large negative TimeDiff) by preferring smaller delays if available,
             //    but accepting large delays if that's the only option (and better than an invalid early trip).
-            const int maxEarlyArrivalMinutes = 5;
+            const int maxEarlyArrivalMinutes = 7;
 
             var bestMatch = possibleCirculations
                 .Select(c => new
@@ -280,7 +280,7 @@ public class VigoController : ControllerBase
             if (closestCirculation == null)
             {
                 // No scheduled match: include realtime-only entry
-                _logger.LogWarning("No schedule match for realtime line {Line} towards {Route} in {Minutes} minutes", estimate.Line, estimate.Route, estimate.Minutes);
+                _logger.LogWarning("No schedule match for realtime line {Line} towards {Route} in {Minutes} minutes (tried matching {NormalizedRoute})", estimate.Line, estimate.Route, estimate.Minutes, NormalizeRouteName(estimate.Route));
                 consolidatedCirculations.Add(new ConsolidatedCirculation
                 {
                     Line = estimate.Line,
@@ -423,6 +423,7 @@ public class VigoController : ControllerBase
         var normalized = route.Trim().ToLowerInvariant();
         // Remove diacritics/accents first, then filter to alphanumeric
         normalized = RemoveDiacritics(normalized);
+        normalized = RenameCustom(normalized);
         return new string(normalized.Where(char.IsLetterOrDigit).ToArray());
     }
 
@@ -441,6 +442,13 @@ public class VigoController : ControllerBase
         }
 
         return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
+    }
+
+    private static string RenameCustom(string text)
+    {
+        // Custom replacements for known problematic route names
+        return text
+            .Replace("praza", "p");
     }
 }
 

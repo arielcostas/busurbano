@@ -1,8 +1,9 @@
-import { Link } from "react-router";
 import { Map, MapPin, Settings } from "lucide-react";
-import { useApp } from "../AppContext";
 import type { LngLatLike } from "maplibre-gl";
 import { useTranslation } from "react-i18next";
+import { Link, useLocation } from "react-router";
+import { useApp } from "../../AppContext";
+import styles from "./NavBar.module.css";
 
 // Helper: check if coordinates are within Vigo bounds
 function isWithinVigo(lngLat: LngLatLike): boolean {
@@ -19,9 +20,14 @@ function isWithinVigo(lngLat: LngLatLike): boolean {
   return lat >= 42.18 && lat <= 42.3 && lng >= -8.78 && lng <= -8.65;
 }
 
-export default function NavBar() {
+interface NavBarProps {
+  orientation?: "horizontal" | "vertical";
+}
+
+export default function NavBar({ orientation = "horizontal" }: NavBarProps) {
   const { t } = useTranslation();
   const { mapState, updateMapState, mapPositionMode } = useApp();
+  const location = useLocation();
 
   const navItems = [
     {
@@ -63,7 +69,11 @@ export default function NavBar() {
   ];
 
   return (
-    <nav className="navigation-bar">
+    <nav
+      className={`${styles.navBar} ${
+        orientation === "vertical" ? styles.vertical : ""
+      }`}
+    >
       {navItems.map((item) => {
         const Icon = item.icon;
         const isActive = item.exact
@@ -74,7 +84,7 @@ export default function NavBar() {
           <Link
             key={item.name}
             to={item.path}
-            className={`navigation-bar__link ${isActive ? "active" : ""}`}
+            className={`${styles.link} ${isActive ? styles.active : ""}`}
             onClick={item.callback ? item.callback : undefined}
             title={item.name}
             aria-label={item.name}

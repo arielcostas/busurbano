@@ -170,7 +170,7 @@ export default function StopMap() {
       }
     >
       <NavigationControl position="top-right" />
-      <GeolocateControl position="top-right" trackUserLocation={true} />
+      <GeolocateControl position="top-right" trackUserLocation={true} positionOptions={{enableHighAccuracy: false}} />
 
       <Source
         id="stops-source"
