@@ -55,6 +55,7 @@ export default function StopMap() {
       return;
     }
     const feature = features[0];
+    console.debug("Map click feature:", feature);
     const props: any = feature.properties;
 
     handlePointClick(feature);
@@ -141,15 +142,26 @@ export default function StopMap() {
 
   const handlePointClick = (feature: any) => {
     const props: any = feature.properties;
+    if (!props || !props.stopId) {
+      console.warn("Invalid feature properties:", props);
+      return;
+    }
+
+    const stopId = parseInt(props.stopId, 10);
+
     // fetch full stop to get lines array
-    StopDataProvider.getStopById(region, props.stopId).then((stop) => {
-      if (!stop) {
-        console.warn("Stop not found:", props.stopId);
-        return;
-      }
-      setSelectedStop(stop);
-      setIsSheetOpen(true);
-    });
+    StopDataProvider.getStopById(region, stopId)
+      .then((stop) => {
+        if (!stop) {
+          console.warn("Stop not found:", stopId);
+          return;
+        }
+        setSelectedStop(stop);
+        setIsSheetOpen(true);
+      })
+      .catch((err) => {
+        console.error("Error fetching stop details:", err);
+      });
   };
 
   return (
