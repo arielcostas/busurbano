@@ -51,6 +51,7 @@ def write_stop_protobuf(
                 terminus_code=arrival["terminus_code"],
                 terminus_name=arrival["terminus_name"],
                 terminus_time=arrival["terminus_time"],
+                previous_trip_shape_id=arrival.get("previous_trip_shape_id", ""),
             )
             for arrival in arrivals
         ],

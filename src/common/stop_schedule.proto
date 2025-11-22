@@ -31,6 +31,9 @@ message StopArrivals {
         string terminus_code = 41;
         string terminus_name = 42;
         string terminus_time = 43;
+
+        // Shape ID of the previous trip when the bus comes from another trip that ends at the starting point
+        string previous_trip_shape_id = 51;
     }
 
     string stop_id = 1;
