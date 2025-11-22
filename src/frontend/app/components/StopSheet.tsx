@@ -176,8 +176,9 @@ export const StopSheet: React.FC<StopSheetProps> = ({
               </>
             ) : null}
           </div>
+        </Sheet.Content>
 
-          <div className="stop-sheet-footer">
+        <div className="stop-sheet-footer">
             {lastUpdated && (
               <div className="stop-sheet-timestamp">
                 {t("estimates.last_updated", "Actualizado a las")}{" "}
@@ -211,7 +212,6 @@ export const StopSheet: React.FC<StopSheetProps> = ({
               </Link>
             </div>
           </div>
-        </Sheet.Content>
       </Sheet.Container>
       <Sheet.Backdrop onTap={onClose} />
     </Sheet>
