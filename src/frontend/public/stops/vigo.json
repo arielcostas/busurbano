@@ -1124,7 +1124,6 @@
       "6",
       "9B",
       "15B",
-      "15C",
       "28"
     ]
   },
@@ -1139,7 +1138,6 @@
       "6",
       "9B",
       "15B",
-      "15C",
       "28"
     ]
   },
@@ -1172,7 +1170,8 @@
       "15B",
       "15C",
       "28",
-      "N4"
+      "N4",
+      "H1"
     ]
   },
   {
@@ -3497,9 +3496,7 @@
     "longitude": -8.720164905,
     "lines": [
       "A",
-      "5A",
       "11",
-      "15C",
       "16"
     ],
     "alert": "warning",
@@ -3550,8 +3547,7 @@
     "latitude": 42.226287696,
     "longitude": -8.737475832,
     "lines": [
-      "15B",
-      "15C"
+      "15B"
     ]
   },
   {
@@ -6021,6 +6017,7 @@
       "15C",
       "16",
       "17",
+      "18A",
       "18B",
       "18H",
       "24",
@@ -7373,25 +7370,6 @@
     ]
   },
   {
-    "stopId": 6620,
-    "name": {
-      "original": "Rúa de Policarpo Sanz, 40"
-    },
-    "latitude": 42.23757846151978,
-    "longitude": -8.721031378896738,
-    "lines": [
-      "A",
-      "15C"
-    ],
-    "cancelled": true,
-    "title": "Parada movida a Colón 12",
-    "message": "Con motivo del corte por las atracciones navideñas, las líneas se deben coger en Colón 12 (20208), excepto la línea 9B que arranca en Urzaiz-Príncipe.",
-    "amenities": [
-      "shelter",
-      "display"
-    ]
-  },
-  {
     "stopId": 6640,
     "name": {
       "original": "Rúa do Porriño (fronte Instituto)"
@@ -7700,6 +7678,7 @@
       "10",
       "11",
       "12A",
+      "12B",
       "13",
       "15A",
       "29",
@@ -7788,7 +7767,6 @@
     "longitude": -8.73619635,
     "lines": [
       "C3i",
-      "A",
       "15B",
       "15C",
       "N1"
@@ -10356,22 +10334,6 @@
     ]
   },
   {
-    "stopId": 14121,
-    "name": {
-      "original": "Rúa da Reconquista, 2"
-    },
-    "latitude": 42.238625474,
-    "longitude": -8.723242095,
-    "lines": [
-      "A",
-      "15C"
-    ],
-    "cancelled": true,
-    "alert": "error",
-    "title": "Cerrada por navidad",
-    "message": "Con motivo de las atracciones navideñas, esta parada queda anulada.\nLínea 9B comienza en Urzaiz-Príncipe.\nLínea 24 se puede tomar en Colón 12 (provisional).\nResto de líneas en Marqués de Valladares (fronte 19) - subiendo Reconquista, primera calle a la derecha.\n"
-  },
-  {
     "stopId": 14122,
     "name": {
       "original": "Avda. do Alcalde Gregorio Espino, 9"
@@ -11739,7 +11701,6 @@
       "17",
       "24",
       "N1",
-      "H1",
       "VTS"
     ]
   },
@@ -12494,7 +12455,8 @@
       "15B",
       "15C",
       "28",
-      "N4"
+      "N4",
+      "H1"
     ]
   },
   {
@@ -14492,6 +14454,7 @@
     "lines": [
       "6",
       "12B",
+      "H1",
       "H3"
     ]
   },
@@ -15007,22 +14970,6 @@
     ]
   },
   {
-    "stopId": 20194,
-    "name": {
-      "original": "Rúa de Cánovas del Castillo, 28"
-    },
-    "latitude": 42.240364985,
-    "longitude": -8.724530974,
-    "lines": [
-      "A",
-      "15C"
-    ],
-    "cancelled": true,
-    "alert": "error",
-    "title": "Cerrada por navidad",
-    "message": "Con motivo de las atracciones navideñas, esta parada queda anulada.\nLa parada más cercana es Cánovas del Castillo, 18 (frente CC A Laxe).\n"
-  },
-  {
     "stopId": 20195,
     "name": {
       "original": "Praza de Compostela (fronte 35)"
@@ -15068,25 +15015,6 @@
     "lines": [
       "5B",
       "12A"
-    ]
-  },
-  {
-    "stopId": 20198,
-    "name": {
-      "original": "Rúa de Policarpo Sanz, 26"
-    },
-    "latitude": 42.237533428,
-    "longitude": -8.722195046,
-    "lines": [
-      "A",
-      "15C"
-    ],
-    "cancelled": true,
-    "alert": "error",
-    "title": "Parada movida a Marqués de Valladares (fronte 19)",
-    "message": "Con motivo del corte por las atracciones navideñas, las líneas se deben coger en Marqués de Valladares (fronte 19), excepto la línea 9B que arranca en Urzaiz-Príncipe y la 24 que para en Colón 12 (provisional).",
-    "amenities": [
-      "shelter"
     ]
   },
   {
@@ -15145,7 +15073,8 @@
       "15B",
       "15C",
       "28",
-      "N4"
+      "N4",
+      "H1"
     ]
   },
   {
@@ -15163,7 +15092,8 @@
       "15B",
       "15C",
       "28",
-      "N4"
+      "N4",
+      "H1"
     ]
   },
   {
@@ -15283,8 +15213,7 @@
     "longitude": -8.716444794,
     "lines": [
       "C3d",
-      "10",
-      "H1"
+      "10"
     ]
   },
   {
