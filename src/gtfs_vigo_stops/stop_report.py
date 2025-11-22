@@ -4,7 +4,7 @@ import shutil
 import sys
 import time
 import traceback
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from src.shapes import process_shapes
 from src.common import get_all_feed_dates
@@ -143,6 +143,42 @@ def is_next_day_service(time_str: str) -> bool:
         return False
 
 
+def parse_trip_id_components(trip_id: str) -> Optional[Tuple[str, str, int]]:
+    """
+    Parse a trip ID in format XXXYYY-Z where:
+    - XXX = line number (e.g., 003)
+    - YYY = shift/internal ID (e.g., 001)
+    - Z = trip number (e.g., 12)
+    
+    Returns tuple of (line, shift_id, trip_number) or None if parsing fails.
+    """
+    try:
+        # Split by underscore to get the actual trip ID (last part)
+        parts = trip_id.split("_")
+        if len(parts) < 3:
+            return None
+        
+        # The trip ID is in format XXXYYY-Z
+        trip_part = parts[-1]  # Get the last part (e.g., "003001-12")
+        
+        if "-" not in trip_part:
+            return None
+        
+        shift_part, trip_num_str = trip_part.split("-", 1)
+        
+        # shift_part should be 6 digits: XXXYYY
+        if len(shift_part) != 6:
+            return None
+        
+        line = shift_part[:3]  # First 3 digits
+        shift_id = shift_part[3:6]  # Next 3 digits
+        trip_number = int(trip_num_str)
+        
+        return (line, shift_id, trip_number)
+    except (ValueError, IndexError):
+        return None
+
+
 def build_trip_previous_shape_map(
     trips: Dict[str, List[TripLine]],
     stops_for_all_trips: Dict[str, List[StopTime]],
@@ -150,8 +186,9 @@ def build_trip_previous_shape_map(
     """
     Build a mapping from trip_id to previous_trip_shape_id.
     
-    For trips in the same block (or same route if no block_id), if a trip's
-    starting stop matches the previous trip's terminus stop, we link them.
+    Links trips based on trip ID structure (XXXYYY-Z) where trips with the same
+    XXX (line) and YYY (shift) and sequential Z (trip numbers) are connected
+    if the terminus of trip N matches the start of trip N+1.
     
     Args:
         trips: Dictionary of service_id -> list of trips
@@ -167,46 +204,50 @@ def build_trip_previous_shape_map(
     for trip_list in trips.values():
         all_trips_list.extend(trip_list)
     
-    # Group trips by block_id (or route_id if no block_id)
-    trips_by_block: Dict[str, List[TripLine]] = {}
-    for trip in all_trips_list:
-        # Use block_id if available, otherwise group by route_id + service_id
-        group_key = trip.block_id if trip.block_id else f"{trip.route_id}_{trip.service_id}"
-        if group_key not in trips_by_block:
-            trips_by_block[group_key] = []
-        trips_by_block[group_key].append(trip)
+    # Group trips by shift ID (line + shift combination)
+    trips_by_shift: Dict[str, List[Tuple[TripLine, int, str, str]]] = {}
     
-    # For each block, sort trips by start time and link consecutive trips
-    for block_key, block_trips in trips_by_block.items():
-        # Sort trips by their departure time from first stop
-        trips_with_times: List[tuple[TripLine, str, str, str]] = []
-        for trip in block_trips:
-            trip_stops = stops_for_all_trips.get(trip.trip_id)
-            if not trip_stops or len(trip_stops) < 2:
-                continue
-            first_stop = trip_stops[0]
-            last_stop = trip_stops[-1]
-            trips_with_times.append((
-                trip,
-                first_stop.departure_time,
-                first_stop.stop_id,
-                last_stop.stop_id
-            ))
+    for trip in all_trips_list:
+        parsed = parse_trip_id_components(trip.trip_id)
+        if not parsed:
+            continue
         
-        # Sort by departure time
-        trips_with_times.sort(key=lambda x: time_to_seconds(x[1]))
+        line, shift_id, trip_number = parsed
+        shift_key = f"{line}{shift_id}"
+        
+        trip_stops = stops_for_all_trips.get(trip.trip_id)
+        if not trip_stops or len(trip_stops) < 2:
+            continue
+        
+        first_stop = trip_stops[0]
+        last_stop = trip_stops[-1]
+        
+        if shift_key not in trips_by_shift:
+            trips_by_shift[shift_key] = []
+        
+        trips_by_shift[shift_key].append((
+            trip,
+            trip_number,
+            first_stop.stop_id,
+            last_stop.stop_id
+        ))
+    
+    # For each shift, sort trips by trip number and link consecutive trips
+    for shift_key, shift_trips in trips_by_shift.items():
+        # Sort by trip number
+        shift_trips.sort(key=lambda x: x[1])
         
         # Link consecutive trips if their stops match
-        for i in range(len(trips_with_times)):
-            current_trip, _, current_start_stop, _ = trips_with_times[i]
+        for i in range(1, len(shift_trips)):
+            current_trip, current_num, current_start_stop, _ = shift_trips[i]
+            prev_trip, prev_num, _, prev_end_stop = shift_trips[i - 1]
             
-            # Check if there's a previous trip in this block
-            if i > 0:
-                prev_trip, _, _, prev_end_stop = trips_with_times[i - 1]
-                
-                # If previous trip's terminus matches current trip's start
-                if prev_end_stop == current_start_stop and prev_trip.shape_id:
-                    trip_previous_shape[current_trip.trip_id] = prev_trip.shape_id
+            # Check if trips are consecutive (trip numbers differ by 1)
+            # and if previous trip's terminus matches current trip's start
+            if (current_num == prev_num + 1 and 
+                prev_end_stop == current_start_stop and 
+                prev_trip.shape_id):
+                trip_previous_shape[current_trip.trip_id] = prev_trip.shape_id
     
     return trip_previous_shape
 
