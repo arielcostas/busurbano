@@ -37,6 +37,13 @@ export interface ConsolidatedCirculation {
   };
 }
 
+export const getCirculationId = (c: ConsolidatedCirculation): string => {
+  if (c.schedule?.tripId) {
+    return `trip:${c.schedule.tripId}`;
+  }
+  return `rt:${c.line}:${c.route}:${c.realTime?.minutes ?? "?"}`;
+};
+
 interface ErrorInfo {
   type: "network" | "server" | "unknown";
   status?: number;
@@ -80,8 +87,8 @@ export default function Estimates() {
   const [favourited, setFavourited] = useState(false);
   const [isManualRefreshing, setIsManualRefreshing] = useState(false);
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
-  const [selectedCirculationIdx, setSelectedCirculationIdx] = useState<
-    number | undefined
+  const [selectedCirculationId, setSelectedCirculationId] = useState<
+    string | undefined
   >(undefined);
   const { region } = useApp();
   const regionConfig = getRegionConfig(region);
@@ -255,7 +262,7 @@ export default function Estimates() {
               dataDate={dataDate}
               regionConfig={regionConfig}
               onCirculationClick={(estimate, idx) => {
-                setSelectedCirculationIdx(idx);
+                setSelectedCirculationId(getCirculationId(estimate));
                 setIsMapModalOpen(true);
               }}
             />
@@ -268,6 +275,7 @@ export default function Estimates() {
             stop={stopData}
             region={region}
             circulations={(data ?? []).map((c) => ({
+              id: getCirculationId(c),
               line: c.line,
               route: c.route,
               currentPosition: c.currentPosition,
@@ -279,7 +287,7 @@ export default function Estimates() {
             }))}
             isOpen={isMapModalOpen}
             onClose={() => setIsMapModalOpen(false)}
-            selectedCirculationIndex={selectedCirculationIdx}
+            selectedCirculationId={selectedCirculationId}
           />
         )}
       </div>

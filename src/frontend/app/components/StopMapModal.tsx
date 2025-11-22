@@ -22,6 +22,7 @@ export interface Position {
 }
 
 export interface ConsolidatedCirculationForMap {
+  id: string;
   line: string;
   route: string;
   currentPosition?: Position;
@@ -37,7 +38,7 @@ interface StopMapModalProps {
   region: RegionId;
   isOpen: boolean;
   onClose: () => void;
-  selectedCirculationIndex?: number;
+  selectedCirculationId?: string;
 }
 
 export const StopMapModal: React.FC<StopMapModalProps> = ({
@@ -46,7 +47,7 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
   region,
   isOpen,
   onClose,
-  selectedCirculationIndex,
+  selectedCirculationId,
 }) => {
   const { theme } = useApp();
   const [styleSpec, setStyleSpec] = useState<any | null>(null);
@@ -62,17 +63,19 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
     [circulations]
   );
 
-  // Use selectedCirculationIndex if provided, otherwise use first bus with position
+  // Use selectedCirculationId if provided, otherwise use first bus with position
   const selectedBus = useMemo(() => {
-    if (selectedCirculationIndex !== undefined) {
-      const circulation = circulations[selectedCirculationIndex];
+    if (selectedCirculationId !== undefined) {
+      const circulation = circulations.find(
+        (c) => c.id === selectedCirculationId
+      );
       if (circulation?.currentPosition) {
         return circulation;
       }
     }
     // Fallback to first bus with position
     return busesWithPosition.length > 0 ? busesWithPosition[0] : null;
-  }, [selectedCirculationIndex, circulations, busesWithPosition]);
+  }, [selectedCirculationId, circulations, busesWithPosition]);
 
   const center = useMemo(() => {
     if (selectedBus?.currentPosition) {
