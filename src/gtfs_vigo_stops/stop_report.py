@@ -244,12 +244,10 @@ def build_trip_previous_shape_map(
             first_stop.stop_id,
             last_stop.stop_id
         ))
-
     # For each shift, sort trips by trip number and link consecutive trips
     for shift_key, shift_trips in trips_by_shift.items():
         # Sort by trip number
         shift_trips.sort(key=lambda x: x[1])
-
         # Link consecutive trips if their stops match
         for i in range(1, len(shift_trips)):
             current_trip, current_num, current_start_stop, _ = shift_trips[i]
