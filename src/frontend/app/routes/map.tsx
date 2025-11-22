@@ -50,7 +50,10 @@ export default function StopMap() {
   // Handle click events on clusters and individual stops
   const onMapClick = (e: MapLayerMouseEvent) => {
     const features = e.features;
-    if (!features || features.length === 0) return;
+    if (!features || features.length === 0) {
+      console.debug("No features found on map click. Position:", e.lngLat, "Point:", e.point);
+      return;
+    }
     const feature = features[0];
     const props: any = feature.properties;
 
@@ -140,7 +143,10 @@ export default function StopMap() {
     const props: any = feature.properties;
     // fetch full stop to get lines array
     StopDataProvider.getStopById(region, props.stopId).then((stop) => {
-      if (!stop) return;
+      if (!stop) {
+        console.warn("Stop not found:", props.stopId);
+        return;
+      }
       setSelectedStop(stop);
       setIsSheetOpen(true);
     });
