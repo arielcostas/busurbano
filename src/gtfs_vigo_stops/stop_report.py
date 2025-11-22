@@ -166,7 +166,6 @@ def parse_trip_id_components(trip_id: str) -> Optional[Tuple[str, str, int]]:
         if len(parts) >= 2:
             shift_part = parts[-2]
             trip_num_str = parts[-1]
-
             if len(shift_part) == 6 and shift_part.isdigit() and trip_num_str.isdigit():
                 line = shift_part[:3]
                 shift_id = shift_part[3:6]
@@ -186,7 +185,6 @@ def parse_trip_id_components(trip_id: str) -> Optional[Tuple[str, str, int]]:
                 shift_id = shift_part[3:6]  # Next 3 digits
                 trip_number = int(trip_num_str)
                 return (line, shift_id, trip_number)
-
         return None
     except (ValueError, IndexError):
         return None

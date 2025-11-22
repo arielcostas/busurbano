@@ -315,8 +315,8 @@ public class VigoController : ControllerBase
                 // If the bus is further away than the distance from the start of the trip to the stop,
                 // it implies the bus is on the previous trip (or earlier).
                 double distOnPrevTrip = estimate.Meters - closestCirculation.ShapeDistTraveled;
-                usePreviousShape = !isRunning && 
-                                        !string.IsNullOrEmpty(closestCirculation.PreviousTripShapeId) && 
+                usePreviousShape = !isRunning &&
+                                        !string.IsNullOrEmpty(closestCirculation.PreviousTripShapeId) &&
                                         distOnPrevTrip > 0;
 
                 if (usePreviousShape)
