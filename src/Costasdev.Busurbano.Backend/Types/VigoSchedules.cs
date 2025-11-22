@@ -18,16 +18,16 @@ public class ScheduledStop
     [JsonPropertyName("starting_code")] public required string StartingCode { get; set; }
     [JsonPropertyName("starting_name")] public required string StartingName { get; set; }
     [JsonPropertyName("starting_time")] public required string StartingTime { get; set; }
-    public DateTime? StartingDateTime()
+    public DateTime? StartingDateTime(DateTime? baseDate = null)
     {
-        return ParseGtfsTime(StartingTime);
+        return ParseGtfsTime(StartingTime, baseDate);
     }
 
     [JsonPropertyName("calling_ssm")] public required int CallingSsm { get; set; }
     [JsonPropertyName("calling_time")] public required string CallingTime { get; set; }
-    public DateTime? CallingDateTime()
+    public DateTime? CallingDateTime(DateTime? baseDate = null)
     {
-        return ParseGtfsTime(CallingTime);
+        return ParseGtfsTime(CallingTime, baseDate);
     }
 
     [JsonPropertyName("terminus_code")] public required string TerminusCode { get; set; }
@@ -37,7 +37,7 @@ public class ScheduledStop
     /// <summary>
     /// Parse GTFS time format (HH:MM:SS) which can have hours >= 24 for services past midnight
     /// </summary>
-    private static DateTime? ParseGtfsTime(string timeStr)
+    private static DateTime? ParseGtfsTime(string timeStr, DateTime? baseDate = null)
     {
         if (string.IsNullOrWhiteSpace(timeStr))
         {
@@ -63,7 +63,7 @@ public class ScheduledStop
 
         try
         {
-            var dt = DateTime.Today
+            var dt = (baseDate ?? DateTime.Today)
                 .AddDays(days)
                 .AddHours(normalizedHours)
                 .AddMinutes(minutes)

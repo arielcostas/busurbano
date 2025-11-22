@@ -186,8 +186,6 @@ public class VigoController : ControllerBase
         var realtimeTask = _api.GetStopEstimates(stopId);
         var todayDate = nowLocal.Date.ToString("yyyy-MM-dd");
 
-        Console.WriteLine($"Loading consolidated circulations for stop {stopId} on {todayDate} at local time {nowLocal}");
-
         // Load both today's and tomorrow's schedules to handle night services
         var timetableTask = LoadStopArrivalsProto(stopId.ToString(), todayDate);
 
@@ -217,7 +215,7 @@ public class VigoController : ControllerBase
         }
 
         var timetable = timetableTask.Result.Arrivals
-            .Where(c => c.StartingDateTime() != null && c.CallingDateTime() != null)
+            .Where(c => c.StartingDateTime(nowLocal.Date) != null && c.CallingDateTime(nowLocal.Date) != null)
             .ToList();
 
         var stopLocation = timetableTask.Result.Location;
@@ -250,7 +248,7 @@ public class VigoController : ControllerBase
 
                     return scheduleRoute == estimateRoute || scheduleTerminus == estimateRoute;
                 })
-                .OrderBy(c => c.CallingDateTime()!.Value)
+                .OrderBy(c => c.CallingDateTime(nowLocal.Date)!.Value)
                 .ToArray();
 
             ScheduledArrival? closestCirculation = null;
@@ -268,7 +266,7 @@ public class VigoController : ControllerBase
                 .Select(c => new
                 {
                     Circulation = c,
-                    TimeDiff = (c.CallingDateTime()!.Value - estimatedArrivalTime).TotalMinutes
+                    TimeDiff = (c.CallingDateTime(nowLocal.Date)!.Value - estimatedArrivalTime).TotalMinutes
                 })
                 .Where(x => x.TimeDiff <= maxEarlyArrivalMinutes)
                 .OrderBy(x => Math.Abs(x.TimeDiff))
@@ -305,7 +303,7 @@ public class VigoController : ControllerBase
                 continue;
             }
 
-            var isRunning = closestCirculation.StartingDateTime()!.Value <= now;
+            var isRunning = closestCirculation.StartingDateTime(nowLocal.Date)!.Value <= now;
             Position? currentPosition = null;
             int? stopShapeIndex = null;
             bool usePreviousShape = false;
@@ -356,7 +354,7 @@ public class VigoController : ControllerBase
                 Schedule = new ScheduleData
                 {
                     Running = isRunning,
-                    Minutes = (int)(closestCirculation.CallingDateTime()!.Value - now).TotalMinutes,
+                    Minutes = (int)(closestCirculation.CallingDateTime(nowLocal.Date)!.Value - now).TotalMinutes,
                     TripId = closestCirculation.TripId,
                     ServiceId = closestCirculation.ServiceId,
                     ShapeId = closestCirculation.ShapeId,
@@ -381,8 +379,8 @@ public class VigoController : ControllerBase
             var matchedTripIds = new HashSet<string>(usedTripIds);
 
             var scheduledWindow = timetable
-                .Where(c => c.CallingDateTime()!.Value >= now && c.CallingDateTime()!.Value <= scopeEnd)
-                .OrderBy(c => c.CallingDateTime()!.Value);
+                .Where(c => c.CallingDateTime(nowLocal.Date)!.Value >= now && c.CallingDateTime(nowLocal.Date)!.Value <= scopeEnd)
+                .OrderBy(c => c.CallingDateTime(nowLocal.Date)!.Value);
 
             foreach (var sched in scheduledWindow)
             {
@@ -391,7 +389,7 @@ public class VigoController : ControllerBase
                     continue; // already represented via a matched realtime
                 }
 
-                var minutes = (int)(sched.CallingDateTime()!.Value - now).TotalMinutes;
+                var minutes = (int)(sched.CallingDateTime(nowLocal.Date)!.Value - now).TotalMinutes;
                 if (minutes == 0)
                 {
                     continue;
@@ -403,7 +401,7 @@ public class VigoController : ControllerBase
                     Route = sched.Route,
                     Schedule = new ScheduleData
                     {
-                        Running = sched.StartingDateTime()!.Value <= now,
+                        Running = sched.StartingDateTime(nowLocal.Date)!.Value <= now,
                         Minutes = minutes,
                         TripId = sched.TripId,
                         ServiceId = sched.ServiceId,
@@ -485,20 +483,20 @@ public class VigoController : ControllerBase
 
 public static class StopScheduleExtensions
 {
-    public static DateTime? StartingDateTime(this ScheduledArrival stop)
+    public static DateTime? StartingDateTime(this ScheduledArrival stop, DateTime baseDate)
     {
-        return ParseGtfsTime(stop.StartingTime);
+        return ParseGtfsTime(stop.StartingTime, baseDate);
     }
 
-    public static DateTime? CallingDateTime(this ScheduledArrival stop)
+    public static DateTime? CallingDateTime(this ScheduledArrival stop, DateTime baseDate)
     {
-        return ParseGtfsTime(stop.CallingTime);
+        return ParseGtfsTime(stop.CallingTime, baseDate);
     }
 
     /// <summary>
     /// Parse GTFS time format (HH:MM:SS) which can have hours >= 24 for services past midnight
     /// </summary>
-    private static DateTime? ParseGtfsTime(string timeStr)
+    private static DateTime? ParseGtfsTime(string timeStr, DateTime baseDate)
     {
         if (string.IsNullOrWhiteSpace(timeStr))
         {
@@ -524,7 +522,7 @@ public static class StopScheduleExtensions
 
         try
         {
-            var dt = DateTime.Today
+            var dt = baseDate
                 .AddDays(days)
                 .AddHours(normalizedHours)
                 .AddMinutes(minutes)
