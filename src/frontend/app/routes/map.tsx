@@ -76,7 +76,7 @@ export default function StopMap() {
           stopId: s.stopId,
           name: s.name.original,
           lines: s.lines,
-          cancelled: s.cancelled,
+          cancelled: s.cancelled ?? false,
         },
       }));
       setStops(features);
