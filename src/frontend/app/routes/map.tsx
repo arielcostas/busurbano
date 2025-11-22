@@ -108,6 +108,11 @@ export default function StopMap() {
       const map = mapRef.current.getMap();
       if (!map || map.hasImage(e.id)) return;
 
+      // Log warning for our own icons if they are missing
+      if (e.id.startsWith("stop-")) {
+        console.warn(`Missing icon image: ${e.id}`);
+      }
+
       // Add a transparent 1x1 placeholder to prevent repeated warnings
       map.addImage(e.id, {
         width: 1,
@@ -168,7 +173,7 @@ export default function StopMap() {
     <Map
       mapStyle={mapStyle}
       style={{ width: "100%", height: "100%" }}
-      interactiveLayerIds={["stops"]}
+      interactiveLayerIds={["stops", "stops-label"]}
       onClick={onMapClick}
       minZoom={11}
       scrollZoom

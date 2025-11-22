@@ -6028,14 +6028,14 @@
       "PSA 4",
       "VTS"
     ],
-    "cancelled": true,
-    "alert": "error",
-    "title": "Cerrada por navidad",
-    "message": "Con motivo de las atracciones navideñas, esta parada queda anulada.\nLíneas C3, 10, N1, 5B, 16 y 17 en García Barbón, 43 (restaurante Porto Santo).\nLíneas 4A y 4C (dir. Coia), 7, 12B, 16 y 17 se pueden tomar en Colón, 26 (oficina Banco Sabadell).\n",
     "amenities": [
       "shelter",
       "display"
-    ]
+    ],
+    "cancelled": true,
+    "alert": "error",
+    "title": "Cerrada por navidad",
+    "message": "Con motivo de las atracciones navideñas, esta parada queda anulada.\nLíneas C3, 10, N1, 5B, 16 y 17 en García Barbón, 43 (restaurante Porto Santo).\nLíneas 4A y 4C (dir. Coia), 7, 12B, 16 y 17 se pueden tomar en Colón, 26 (oficina Banco Sabadell).\n"
   },
   {
     "stopId": 5530,
@@ -6048,14 +6048,14 @@
       "H2",
       "PSA 1"
     ],
-    "cancelled": true,
-    "alert": "error",
-    "title": "Cerrada por navidad",
-    "message": "Con motivo de las atracciones navideñas, esta parada queda anulada.\nLíneas C3 y 10 se pueden tomar en Rosalía de Castro 4 (detrás de ABANCA).\nResto de líneas en García Barbón 28 (pasando Alfonso XIII)\n",
     "amenities": [
       "shelter",
       "display"
-    ]
+    ],
+    "cancelled": true,
+    "alert": "error",
+    "title": "Cerrada por navidad",
+    "message": "Con motivo de las atracciones navideñas, esta parada queda anulada.\nLíneas C3 y 10 se pueden tomar en Rosalía de Castro 4 (detrás de ABANCA).\nResto de líneas en García Barbón 28 (pasando Alfonso XIII)\n"
   },
   {
     "stopId": 5540,
