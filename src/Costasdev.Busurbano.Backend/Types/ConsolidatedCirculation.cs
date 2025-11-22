@@ -9,6 +9,8 @@ public class ConsolidatedCirculation
     public RealTimeData? RealTime { get; set; }
     public Position? CurrentPosition { get; set; }
     public int? StopShapeIndex { get; set; }
+    public bool IsPreviousTrip { get; set; }
+    public string? PreviousTripShapeId { get; set; }
     public string[] NextStreets { get; set; } = [];
 }
 

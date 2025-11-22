@@ -306,6 +306,7 @@ public class VigoController : ControllerBase
             var isRunning = closestCirculation.StartingDateTime()!.Value <= now;
             Position? currentPosition = null;
             int? stopShapeIndex = null;
+            bool usePreviousShape = false;
 
             // Calculate bus position for realtime trips
             if (!string.IsNullOrEmpty(closestCirculation.ShapeId))
@@ -314,7 +315,7 @@ public class VigoController : ControllerBase
                 // If the bus is further away than the distance from the start of the trip to the stop,
                 // it implies the bus is on the previous trip (or earlier).
                 double distOnPrevTrip = estimate.Meters - closestCirculation.ShapeDistTraveled;
-                bool usePreviousShape = !isRunning && 
+                usePreviousShape = !isRunning && 
                                         !string.IsNullOrEmpty(closestCirculation.PreviousTripShapeId) && 
                                         distOnPrevTrip > 0;
 
@@ -364,7 +365,9 @@ public class VigoController : ControllerBase
                     Distance = estimate.Meters
                 },
                 CurrentPosition = currentPosition,
-                StopShapeIndex = stopShapeIndex
+                StopShapeIndex = stopShapeIndex,
+                IsPreviousTrip = usePreviousShape,
+                PreviousTripShapeId = usePreviousShape ? closestCirculation.PreviousTripShapeId : null
             });
 
             usedTripIds.Add(closestCirculation.TripId);
