@@ -1,10 +1,10 @@
 import maplibregl from "maplibre-gl";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Map, {
-  Layer,
-  Marker,
-  Source,
-  type MapRef
+    Layer,
+    Marker,
+    Source,
+    type MapRef
 } from "react-map-gl/maplibre";
 import { Sheet } from "react-modal-sheet";
 import { useApp } from "~/AppContext";
@@ -55,6 +55,7 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
   const [styleSpec, setStyleSpec] = useState<any | null>(null);
   const mapRef = useRef<MapRef | null>(null);
   const hasFitBounds = useRef(false);
+  const userInteracted = useRef(false);
   const [shapeData, setShapeData] = useState<any | null>(null);
   const [previousShapeData, setPreviousShapeData] = useState<any | null>(null);
 
@@ -95,6 +96,8 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
 
   const handleCenter = useCallback(() => {
     if (!mapRef.current) return;
+    if (userInteracted.current) return;
+
     const points: { lat: number; lon: number }[] = [];
 
     const addShapePoints = (data: any) => {
@@ -230,6 +233,7 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
   useEffect(() => {
     if (!isOpen) {
       hasFitBounds.current = false;
+      userInteracted.current = false;
       setShapeData(null);
       setPreviousShapeData(null);
     }
@@ -361,6 +365,23 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
                   attributionControl={{compact: false, customAttribution: "Concello de Vigo & Viguesa de Transportes SL"}}
                   ref={mapRef}
                   interactive={true}
+                  onMove={(e) => {
+                    if (e.originalEvent) {
+                      userInteracted.current = true;
+                    }
+                  }}
+                  onDragStart={() => {
+                    userInteracted.current = true;
+                  }}
+                  onZoomStart={() => {
+                    userInteracted.current = true;
+                  }}
+                  onRotateStart={() => {
+                    userInteracted.current = true;
+                  }}
+                  onPitchStart={() => {
+                    userInteracted.current = true;
+                  }}
                 >
                   {/* Previous Shape Layer */}
                   {previousShapeData && selectedBus && (
@@ -531,7 +552,10 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
                   type="button"
                   aria-label="Center"
                   className="center-btn"
-                  onClick={handleCenter}
+                  onClick={() => {
+                    userInteracted.current = false;
+                    handleCenter();
+                  }}
                   title="Center view"
                 >
                   <svg

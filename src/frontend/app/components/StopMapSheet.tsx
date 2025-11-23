@@ -39,14 +39,33 @@ export const StopMap: React.FC<StopMapProps> = ({
   const { theme } = useApp();
   const [styleSpec, setStyleSpec] = useState<any | null>(null);
   const mapRef = useRef<MapRef | null>(null);
-  const hasFitBounds = useRef(false);
   const [userPosition, setUserPosition] = useState<{
     latitude: number;
     longitude: number;
     accuracy?: number;
   } | null>(null);
   const geoWatchId = useRef<number | null>(null);
-  const [zoom, setZoom] = useState<number>(16);
+  const [viewState, setViewState] = useState(() => {
+    let latitude = 42.2406;
+    let longitude = -8.7207;
+    if (stop.latitude && stop.longitude) {
+      latitude = stop.latitude;
+      longitude = stop.longitude;
+    } else {
+      const pos = circulations.find((c) => c.currentPosition)?.currentPosition;
+      if (pos) {
+        latitude = pos.latitude;
+        longitude = pos.longitude;
+      }
+    }
+    return {
+      latitude,
+      longitude,
+      zoom: 16,
+    };
+  });
+  const { zoom } = viewState;
+  const hasFitted = useRef(false);
   const [moveTick, setMoveTick] = useState<number>(0);
   const [showAttribution, setShowAttribution] = useState(false);
   const [shapes, setShapes] = useState<Record<string, any>>({});
@@ -200,28 +219,16 @@ export const StopMap: React.FC<StopMapProps> = ({
     };
   }, []);
 
-  const center = useMemo(() => {
-    if (stop.latitude && stop.longitude) {
-      return { latitude: stop.latitude, longitude: stop.longitude };
-    }
-    // fallback to first available bus position
-    const pos = circulations.find((c) => c.currentPosition)?.currentPosition;
-    return pos
-      ? { latitude: pos.latitude, longitude: pos.longitude }
-      : { latitude: 42.2406, longitude: -8.7207 }; // Vigo approx fallback
-  }, [stop.latitude, stop.longitude, circulations]);
-
   const busPositions = useMemo(
     () => circulations.filter((c) => !!c.currentPosition),
     [circulations]
   );
 
-  // Fit bounds to stop + buses, with ~1km padding each side, with a modest animation
-  // Only fit bounds on the first load, not on subsequent updates
-  useEffect(() => {
-    if (!styleSpec || !mapRef.current || hasFitBounds.current) return;
+  const handleMapLoad = (e: any) => {
+    if (hasFitted.current) return;
+    hasFitted.current = true;
 
-    const map = mapRef.current.getMap();
+    const map = e.target;
 
     // Handle missing sprite images to suppress console warnings
     const handleStyleImageMissing = (e: any) => {
@@ -237,10 +244,7 @@ export const StopMap: React.FC<StopMapProps> = ({
     map.on("styleimagemissing", handleStyleImageMissing);
 
     const points = computeFocusPoints();
-    if (points.length === 0) {
-      map.off("styleimagemissing", handleStyleImageMissing);
-      return;
-    }
+    if (points.length === 0) return;
 
     let minLat = points[0].lat,
       maxLat = points[0].lat,
@@ -266,28 +270,16 @@ export const StopMap: React.FC<StopMapProps> = ({
     try {
       if (points.length === 1) {
         const only = points[0];
-        mapRef.current
-          .getMap()
-          .jumpTo({ center: [only.lon, only.lat], zoom: 16 });
+        map.jumpTo({ center: [only.lon, only.lat], zoom: 16 });
       } else {
-        mapRef.current.fitBounds(bounds, {
+        map.fitBounds(bounds, {
           padding: padding as any,
           duration: 700,
           maxZoom: 17,
         } as any);
       }
-      hasFitBounds.current = true;
     } catch {}
-
-    return () => {
-      if (mapRef.current) {
-        const map = mapRef.current.getMap();
-        if (map) {
-          map.off("styleimagemissing", handleStyleImageMissing);
-        }
-      }
-    };
-  }, [styleSpec, stop.latitude, stop.longitude, busPositions, userPosition]);
+  };
 
   const handleCenter = () => {
     if (!mapRef.current) return;
@@ -334,17 +326,14 @@ export const StopMap: React.FC<StopMapProps> = ({
       {styleSpec && (
         <Map
           mapLib={maplibregl as any}
-          initialViewState={{
-            latitude: center.latitude,
-            longitude: center.longitude,
-            zoom: 16,
-          }}
+          {...viewState}
           style={{ width: "100%", height: "100%" }}
           mapStyle={styleSpec}
           attributionControl={false}
           ref={mapRef}
+          onLoad={handleMapLoad}
           onMove={(e) => {
-            setZoom(e.viewState.zoom);
+            setViewState(e.viewState);
             setMoveTick((t) => (t + 1) % 1000000);
           }}
         >
