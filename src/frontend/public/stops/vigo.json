@@ -3498,10 +3498,7 @@
       "A",
       "11",
       "16"
-    ],
-    "alert": "warning",
-    "title": "L17 no realiza parada",
-    "message": "Con motivo de las atracciones navideñas, la línea 17 no realiza parada en esta ubicación.\nSe puede tomar en Urzaiz, 13 (cruce República Argentina).\n"
+    ]
   },
   {
     "stopId": 3240,
@@ -6031,11 +6028,7 @@
     "amenities": [
       "shelter",
       "display"
-    ],
-    "cancelled": true,
-    "alert": "error",
-    "title": "Cerrada por navidad",
-    "message": "Con motivo de las atracciones navideñas, esta parada queda anulada.\nLíneas C3, 10, N1, 5B, 16 y 17 en García Barbón, 43 (restaurante Porto Santo).\nLíneas 4A y 4C (dir. Coia), 7, 12B, 16 y 17 se pueden tomar en Colón, 26 (oficina Banco Sabadell).\n"
+    ]
   },
   {
     "stopId": 5530,
@@ -6051,11 +6044,7 @@
     "amenities": [
       "shelter",
       "display"
-    ],
-    "cancelled": true,
-    "alert": "error",
-    "title": "Cerrada por navidad",
-    "message": "Con motivo de las atracciones navideñas, esta parada queda anulada.\nLíneas C3 y 10 se pueden tomar en Rosalía de Castro 4 (detrás de ABANCA).\nResto de líneas en García Barbón 28 (pasando Alfonso XIII)\n"
+    ]
   },
   {
     "stopId": 5540,
@@ -6072,10 +6061,7 @@
       "24",
       "H2",
       "PSA 1"
-    ],
-    "alert": "warning",
-    "title": "Líneas C3 y 10 no realizan parada",
-    "message": "Con motivo de las atracciones navideñas, las líneas C3 y 10 realizan\nprovisionalmente la parada en Rúa Oporto 28 (calle perpendicular a la parada).\n"
+    ]
   },
   {
     "stopId": 5560,
@@ -7608,10 +7594,7 @@
       "N4",
       "H1",
       "VTS"
-    ],
-    "alert": "warning",
-    "title": "L24 no realiza parada",
-    "message": "Con motivo de las atracciones navideñas, la línea 24 no realiza parada en esta ubicación.\nSe puede tomar en Areal (aduana), antes del semáforo de Colón.\n"
+    ]
   },
   {
     "stopId": 6880,
