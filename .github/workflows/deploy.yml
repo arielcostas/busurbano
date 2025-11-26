@@ -149,7 +149,7 @@ jobs:
           tags: tag:ci
       - name: Wait for reachability
         run: |
-          until tailscale ping ${{ secrets.TARGET_HOST }}; do
+          until tailscale ping --until-direct=false ${{ secrets.TARGET_HOST }}; do
             echo "Waiting for Tailscale to connect..."
             sleep 2
           done
