@@ -1,4 +1,4 @@
-import { Map, MapPin, Settings } from "lucide-react";
+import { Map, MapPin, Route, Settings } from "lucide-react";
 import type { LngLatLike } from "maplibre-gl";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router";
@@ -57,9 +57,14 @@ export default function NavBar({ orientation = "horizontal" }: NavBarProps) {
               updateMapState(coords, 16);
             }
           },
-          () => {}
+          () => { }
         );
       },
+    },
+    {
+      name: t("navbar.lines", "Líneas"),
+      icon: Route,
+      path: "/lines",
     },
     {
       name: t("navbar.settings", "Ajustes"),
@@ -70,9 +75,8 @@ export default function NavBar({ orientation = "horizontal" }: NavBarProps) {
 
   return (
     <nav
-      className={`${styles.navBar} ${
-        orientation === "vertical" ? styles.vertical : ""
-      }`}
+      className={`${styles.navBar} ${orientation === "vertical" ? styles.vertical : ""
+        }`}
     >
       {navItems.map((item) => {
         const Icon = item.icon;

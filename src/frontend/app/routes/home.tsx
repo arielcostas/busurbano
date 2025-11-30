@@ -259,7 +259,7 @@ export default function StopList() {
       </div>
 
       {/* Search Results */}
-      {searchResults && searchResults.length > 0 && (
+      {searchResults && searchResults.length > 0 ? (
         <div className="w-full px-4 flex flex-col gap-2">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
             {t("stoplist.search_results", "Resultados de la búsqueda")}
@@ -270,58 +270,66 @@ export default function StopList() {
             ))}
           </ul>
         </div>
-      )}
-
-      {/* Favourites Gallery */}
-      {!loading && (
-        <StopGallery
-          stops={favouriteStops.sort((a, b) => a.stopId - b.stopId)}
-          title={t("stoplist.favourites")}
-          emptyMessage={t("stoplist.no_favourites")}
-        />
-      )}
-
-      {/* Recent Stops Gallery - only show if no favourites */}
-      {!loading && favouriteStops.length === 0 && (
-        <StopGallery
-          stops={recentStops.slice(0, 5)}
-          title={t("stoplist.recents")}
-        />
-      )}
-
-      {/*<ServiceAlerts />*/}
-
-      {/* All Stops / Nearby Stops */}
-      <div className="w-full px-4 flex flex-col gap-2">
-        <div className="flex items-center gap-2">
-          {userLocation && (
-            <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-          )}
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            {userLocation
-              ? t("stoplist.nearby_stops", "Nearby stops")
-              : t("stoplist.all_stops", "Paradas")}
-          </h2>
+      ) : searchResults !== null ? (
+        <div className="w-full px-4 flex flex-col gap-2">
+          <p className="text-center text-gray-600 dark:text-gray-400 py-8">
+            {t("stoplist.no_results", "No se encontraron resultados")}
+          </p>
         </div>
-
-        <ul className="list-none p-0 m-0 flex flex-col gap-2 md:grid md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(320px,1fr))]">
-          {loading && (
-            <>
-              {Array.from({ length: 6 }, (_, index) => (
-                <StopItemSkeleton key={`skeleton-${index}`} />
-              ))}
-            </>
+      ) : (
+        <>
+          {/* Favourites Gallery */}
+          {!loading && (
+            <StopGallery
+              stops={favouriteStops.sort((a, b) => a.stopId - b.stopId)}
+              title={t("stoplist.favourites")}
+              emptyMessage={t("stoplist.no_favourites")}
+            />
           )}
-          {!loading && data
-            ? (userLocation ? sortedAllStops.slice(0, 6) : sortedAllStops).map(
-              (stop) => <StopItem key={stop.stopId} stop={stop} />
-            )
-            : null}
-        </ul>
-      </div>
+
+          {/* Recent Stops Gallery - only show if no favourites */}
+          {!loading && favouriteStops.length === 0 && (
+            <StopGallery
+              stops={recentStops.slice(0, 5)}
+              title={t("stoplist.recents")}
+            />
+          )}
+
+          {/*<ServiceAlerts />*/}
+
+          {/* All Stops / Nearby Stops */}
+          <div className="w-full px-4 flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              {userLocation && (
+                <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              )}
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                {userLocation
+                  ? t("stoplist.nearby_stops", "Nearby stops")
+                  : t("stoplist.all_stops", "Paradas")}
+              </h2>
+            </div>
+
+            <ul className="list-none p-0 m-0 flex flex-col gap-2 md:grid md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(320px,1fr))]">
+              {loading && (
+                <>
+                  {Array.from({ length: 6 }, (_, index) => (
+                    <StopItemSkeleton key={`skeleton-${index}`} />
+                  ))}
+                </>
+              )}
+              {!loading && data
+                ? (userLocation ? sortedAllStops.slice(0, 6) : sortedAllStops).map(
+                  (stop) => <StopItem key={stop.stopId} stop={stop} />
+                )
+                : null}
+            </ul>
+          </div>
+        </>
+      )}
     </div>
   );
 }

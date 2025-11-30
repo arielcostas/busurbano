@@ -73,9 +73,8 @@ const StopGallery: React.FC<StopGalleryProps> = ({
         {stops.map((_, index) => (
           <span
             key={index}
-            className={`w-1.5 h-1.5 rounded-full transition-colors duration-200 ${
-              index === activeIndex ? "bg-blue-600" : "bg-gray-300 dark:bg-gray-700"
-            }`}
+            className={`w-1.5 h-1.5 rounded-full transition-colors duration-200 ${index === activeIndex ? "bg-blue-600" : "bg-gray-300 dark:bg-gray-700"
+              }`}
           ></span>
         ))}
       </div>

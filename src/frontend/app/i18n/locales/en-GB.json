@@ -88,6 +88,10 @@
   "navbar": {
     "stops": "Stops",
     "map": "Map",
+    "lines": "Lines",
     "settings": "Settings"
+  },
+  "lines": {
+    "description": "Below is a list of Vigo urban bus lines with their respective routes and links to official timetables."
   }
 }
