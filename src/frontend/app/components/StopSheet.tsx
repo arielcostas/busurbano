@@ -130,7 +130,7 @@ export const StopSheet: React.FC<StopSheetProps> = ({
             >
               {stop.lines.map((line) => (
                 <div key={line} className="stop-sheet-line-icon">
-                  <LineIcon line={line} region={region} rounded />
+                  <LineIcon line={line} region={region} mode="rounded" />
                 </div>
               ))}
             </div>

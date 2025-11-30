@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 :root {
   --colour-scheme: light;
   --background-color: #ffffff;
@@ -121,8 +123,6 @@ body {
   overflow: auto;
   overflow-x: hidden;
 }
-
-
 
 .theme-toggle {
   background: none;

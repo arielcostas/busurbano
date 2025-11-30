@@ -4,24 +4,28 @@ import "./LineIcon.css";
 
 interface LineIconProps {
   line: string;
+
+  /**
+   * @deprecated Unused since region is only Vigo
+   */
   region?: RegionId;
-  rounded?: boolean;
+
+  mode?: "rounded"|"pill"|"default";
 }
 
 const LineIcon: React.FC<LineIconProps> = ({
   line,
-  region = "vigo",
-  rounded = false,
+  mode = "default",
 }) => {
   const formattedLine = useMemo(() => {
     return /^[a-zA-Z]/.test(line) ? line : `L${line}`;
   }, [line]);
-  const cssVarName = `--line-${region}-${formattedLine.toLowerCase()}`;
-  const cssTextVarName = `--line-${region}-${formattedLine.toLowerCase()}-text`;
+  const cssVarName = `--line-${formattedLine.toLowerCase()}`;
+  const cssTextVarName = `--line-${formattedLine.toLowerCase()}-text`;
 
   return (
     <span
-      className={rounded ? "line-icon-rounded" : "line-icon"}
+      className={`line-icon-${mode}`}
       style={
         {
           "--line-colour": `var(${cssVarName})`,

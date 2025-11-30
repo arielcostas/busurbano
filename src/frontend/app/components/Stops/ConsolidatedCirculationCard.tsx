@@ -4,7 +4,7 @@ import { type RegionConfig } from "~/config/RegionConfig";
 import LineIcon from "~components/LineIcon";
 import { type ConsolidatedCirculation } from "~routes/stops-$id";
 
-import "./ConsolidatedCirculationList.css";
+import "./ConsolidatedCirculationCard.css";
 
 interface ConsolidatedCirculationCardProps {
   estimate: ConsolidatedCirculation;
@@ -75,18 +75,6 @@ export const ConsolidatedCirculationCard: React.FC<
 > = ({ estimate, regionConfig, onMapClick, readonly }) => {
   const { t } = useTranslation();
 
-  const absoluteArrivalTime = (minutes: number) => {
-    const now = new Date();
-    const arrival = new Date(now.getTime() + minutes * 60000);
-    return Intl.DateTimeFormat(
-      typeof navigator !== "undefined" ? navigator.language : "en",
-      {
-        hour: "2-digit",
-        minute: "2-digit",
-      }
-    ).format(arrival);
-  };
-
   const formatDistance = (meters: number) => {
     if (meters > 1024) {
       return `${(meters / 1000).toFixed(1)} km`;
@@ -123,9 +111,12 @@ export const ConsolidatedCirculationCard: React.FC<
       return null;
     }
 
-    const delta = Math.round(estimate.realTime.minutes - estimate.schedule.minutes);
+    const delta = Math.round(
+      estimate.realTime.minutes - estimate.schedule.minutes
+    );
     const absDelta = Math.abs(delta);
 
+    // On time
     if (delta === 0) {
       return {
         label: t("estimates.delay_on_time", "En hora (0 min)"),
@@ -133,8 +124,10 @@ export const ConsolidatedCirculationCard: React.FC<
       } as const;
     }
 
+    // Delayed
     if (delta > 0) {
-      const tone = delta <= 2 ? "delay-ok" : delta <= 10 ? "delay-warn" : "delay-critical";
+      const tone =
+        delta <= 2 ? "delay-ok" : delta <= 10 ? "delay-warn" : "delay-critical";
       return {
         label: t("estimates.delay_positive", "Retraso de {{minutes}} min", {
           minutes: delta,
@@ -143,6 +136,7 @@ export const ConsolidatedCirculationCard: React.FC<
       } as const;
     }
 
+    // Early
     const tone = absDelta <= 2 ? "delay-ok" : "delay-early";
     return {
       label: t("estimates.delay_negative", "Adelanto de {{minutes}} min", {
@@ -200,7 +194,7 @@ export const ConsolidatedCirculationCard: React.FC<
     >
       <div className="card-row main">
         <div className="line-info">
-          <LineIcon line={estimate.line} region={regionConfig.id} rounded />
+          <LineIcon line={estimate.line} region={regionConfig.id} mode="pill" />
         </div>
         <div className="route-info">
           <strong>{estimate.route}</strong>

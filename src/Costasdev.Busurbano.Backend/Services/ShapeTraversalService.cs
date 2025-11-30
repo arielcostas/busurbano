@@ -112,6 +112,17 @@ public class ShapeTraversalService
         // Find the closest point on the shape to the stop
         int closestPointIndex = FindClosestPointIndex(shape.Points, stopLocation);
 
+        // Calculate the total distance from the start of the shape to the stop
+        double totalDistanceToStop = CalculateTotalDistance(shape.Points.ToArray(), closestPointIndex);
+
+        // If the reported distance exceeds the total distance to the stop, the bus is likely
+        // on a previous trip whose shape we don't have. Don't provide position information.
+        if (distanceMeters > totalDistanceToStop)
+        {
+            _logger.LogDebug("Distance {Distance}m exceeds total shape distance to stop {Total}m - bus likely on previous trip", distanceMeters, totalDistanceToStop);
+            return (null, closestPointIndex);
+        }
+
         // Traverse backwards from the closest point to find the position at the given distance
         var (busPoint, forwardIndex) = TraverseBackwards(shape.Points.ToArray(), closestPointIndex, distanceMeters);
 
@@ -215,6 +226,25 @@ public class ShapeTraversalService
         var dx = p1.X - p2.X;
         var dy = p1.Y - p2.Y;
         return Math.Sqrt(dx * dx + dy * dy);
+    }
+
+    /// <summary>
+    /// Calculates the total distance along the shape from the start to a given index
+    /// </summary>
+    private double CalculateTotalDistance(Epsg25829[] shapePoints, int endIndex)
+    {
+        if (endIndex <= 0 || shapePoints.Length == 0)
+        {
+            return 0;
+        }
+
+        double totalDistance = 0;
+        for (int i = 1; i <= endIndex && i < shapePoints.Length; i++)
+        {
+            totalDistance += CalculateDistance(shapePoints[i - 1], shapePoints[i]);
+        }
+
+        return totalDistance;
     }
 
     /// <summary>

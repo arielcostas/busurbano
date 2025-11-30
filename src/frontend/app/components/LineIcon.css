@@ -1,72 +1,76 @@
 /* Vigo line colors */
 :root {
-  --line-vigo-c1: rgb(237, 71, 19);
-  --line-vigo-c1-text: #ffffff;
-  --line-vigo-c3d: rgb(255, 204, 0);
-  --line-vigo-c3i: rgb(255, 204, 0);
-  --line-vigo-l4a: rgb(0, 153, 0);
-  --line-vigo-l4a-text: #ffffff;
-  --line-vigo-l4c: rgb(0, 153, 0);
-  --line-vigo-l4c-text: #ffffff;
-  --line-vigo-l5a: rgb(0, 176, 240);
-  --line-vigo-l5b: rgb(0, 176, 240);
-  --line-vigo-l6: rgb(204, 51, 153);
-  --line-vigo-l7: rgb(150, 220, 153);
-  --line-vigo-l9b: rgb(244, 202, 140);
-  --line-vigo-l10: rgb(153, 51, 0);
-  --line-vigo-l10-text: #ffffff;
-  --line-vigo-l11: rgb(226, 0, 38);
-  --line-vigo-l11-text: #ffffff;
-  --line-vigo-l12a: rgb(106, 150, 190);
-  --line-vigo-l12b: rgb(106, 150, 190);
-  --line-vigo-l13: rgb(0, 176, 240);
-  --line-vigo-l14: rgb(129, 142, 126);
-  --line-vigo-l14-text: #ffffff;
-  --line-vigo-l15a: rgb(216, 168, 206);
-  --line-vigo-l15b: rgb(216, 168, 206);
-  --line-vigo-l15c: rgb(216, 168, 168);
-  --line-vigo-l16: rgb(129, 142, 126);
-  --line-vigo-l16-text: #ffffff;
-  --line-vigo-l17: rgb(214, 245, 31);
-  --line-vigo-l18a: rgb(212, 80, 168);
-  --line-vigo-l18a-text: #ffffff;
-  --line-vigo-l18b: rgb(212, 80, 168);
-  --line-vigo-l18b-text: #ffffff;
-  --line-vigo-l18h: rgb(212, 80, 168);
-  --line-vigo-l18h-text: #ffffff;
-  --line-vigo-l23: rgb(0, 70, 210);
-  --line-vigo-l24: rgb(191, 191, 191);
-  --line-vigo-l25: rgb(172, 100, 4);
-  --line-vigo-l27: rgb(112, 74, 42);
-  --line-vigo-l27-text: #ffffff;
-  --line-vigo-l28: rgb(176, 189, 254);
-  --line-vigo-l29: rgb(248, 184, 90);
-  --line-vigo-l31: rgb(255, 255, 0);
-  --line-vigo-a: rgb(119, 41, 143);
-  --line-vigo-a-text: #ffffff;
-  --line-vigo-h: rgb(0, 96, 168);
-  --line-vigo-h-text: #ffffff;
-  --line-vigo-h1: rgb(0, 96, 168);
-  --line-vigo-h1-text: #ffffff;
-  --line-vigo-h2: rgb(0, 96, 168);
-  --line-vigo-h2-text: #ffffff;
-  --line-vigo-h3: rgb(0, 96, 168);
-  --line-vigo-h3-text: #ffffff;
-  --line-vigo-lzd: rgb(61, 78, 167);
-  --line-vigo-n1: rgb(191, 191, 191);
-  --line-vigo-n4: rgb(102, 51, 102);
-  --line-vigo-n4-text: #ffffff;
-  --line-vigo-psa1: rgb(0, 153, 0);
-  --line-vigo-psa4: rgb(0, 153, 0);
-  --line-vigo-ptl: rgb(150, 220, 153);
-  --line-vigo-turistico: rgb(102, 51, 102);
-  --line-vigo-u1: rgb(172, 100, 4);
-  --line-vigo-u1-text: #ffffff;
-  --line-vigo-u2: rgb(172, 100, 4);
-  --line-vigo-u2-text: #ffffff;
+  --line-c1: hsl(14, 86%, 50%);
+  --line-c1-text: hsl(0, 0%, 100%);
+  --line-c3d: hsl(48, 100%, 50%);
+  --line-c3i: hsl(48, 100%, 50%);
+  --line-l4a: hsl(120, 100%, 30%);
+  --line-l4a-text: hsl(0, 0%, 100%);
+  --line-l4c: hsl(120, 100%, 30%);
+  --line-l4c-text: hsl(0, 0%, 100%);
+  --line-l5a: hsl(204, 100%, 54%);
+  --line-l5a-text: hsl(0, 0%, 100%);
+  --line-l5b: hsl(204, 100%, 54%);
+  --line-l5b-text: hsl(0, 0%, 100%);
+  --line-l6: hsl(330, 60%, 50%);
+  --line-l7: hsl(120, 60%, 70%);
+  --line-l9b: hsl(36, 83%, 75%);
+  --line-l10: hsl(30, 80%, 20%);
+  --line-l10-text: hsl(0, 0%, 100%);
+  --line-l11: hsl(0, 100%, 44%);
+  --line-l11-text: hsl(0, 0%, 100%);
+  --line-l12a: hsl(210, 40%, 56%);
+  --line-l12b: hsl(209, 39%, 58%);
+  --line-l13: hsl(196, 100%, 47%);
+  --line-l14: hsl(120, 10%, 44%);
+  --line-l14-text: hsl(0, 0%, 100%);
+  --line-l15a: hsl(313, 38%, 75%);
+  --line-l15b: hsl(313, 38%, 75%);
+  --line-l15c: #d8a8a8;
+  --line-l16: hsl(120, 10%, 44%);
+  --line-l16-text: hsl(0, 0%, 100%);
+  --line-l17: hsl(69, 91%, 54%);
+  --line-l18a: hsl(320, 61%, 57%);
+  --line-l18a-text: hsl(0, 0%, 100%);
+  --line-l18b: hsl(320, 61%, 57%);
+  --line-l18b-text: hsl(0, 0%, 100%);
+  --line-l18h: hsl(320, 61%, 57%);
+  --line-l18h-text: hsl(0, 0%, 100%);
+  --line-l23: hsl(220, 100%, 41%);
+  --line-l24: hsl(0, 0%, 75%);
+  --line-l25: hsl(34, 95%, 35%);
+  --line-l27: hsl(30, 60%, 30%);
+  --line-l27-text: hsl(0, 0%, 100%);
+  --line-l28: hsl(230, 98%, 84%);
+  --line-l29: hsl(36, 92%, 66%);
+  --line-l31: hsl(60, 100%, 50%);
+  --line-a: hsl(300, 70%, 35%);
+  --line-a-text: hsl(0, 0%, 100%);
+  --line-a1: hsl(300, 70%, 35%);
+  --line-a1-text: hsl(0, 0%, 100%);
+  --line-h: hsl(210, 100%, 33%);
+  --line-h-text: hsl(0, 0%, 100%);
+  --line-h1: hsl(210, 100%, 33%);
+  --line-h1-text: hsl(0, 0%, 100%);
+  --line-h2: hsl(210, 100%, 33%);
+  --line-h2-text: hsl(0, 0%, 100%);
+  --line-h3: hsl(210, 100%, 33%);
+  --line-h3-text: hsl(0, 0%, 100%);
+  --line-lzd: hsl(220, 60%, 50%);
+  --line-n1: hsl(0, 51%, 53%);
+  --line-n4: hsl(300, 33%, 30%);
+  --line-n4-text: hsl(0, 0%, 100%);
+  --line-psa1: hsl(120, 100%, 30%);
+  --line-psa4: hsl(120, 100%, 30%);
+  --line-ptl: hsl(120, 60%, 70%);
+  --line-tur: hsl(300, 33%, 30%);
+  --line-u1: hsl(30, 80%, 20%);
+  --line-u1-text: hsl(0, 0%, 100%);
+  --line-u2: hsl(30, 80%, 20%);
+  --line-u2-text: hsl(0, 0%, 100%);
 }
 
-.line-icon {
+.line-icon-default {
   display: inline-block;
   padding: 0.25rem 0.5rem;
   margin-right: 0.5rem;
@@ -79,6 +83,18 @@
 
   border-bottom: 3px solid;
   border-color: var(--line-colour);
+}
+
+.line-icon-pill {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  margin-right: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 0.25rem;
+
+  background-color: var(--line-colour);
+  color: var(--line-text-colour);
 }
 
 .line-icon-rounded {
