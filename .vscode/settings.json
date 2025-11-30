@@ -57,5 +57,8 @@
     }
   ],
   "typescript.tsdk": "src/frontend/node_modules/typescript/lib",
-  "typescript.enablePromptUseWorkspaceTsdk": true
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "css.customData": [
+    ".vscode/tailwind.json"
+  ]
 }

@@ -1,4 +1,4 @@
-@reference "../../root.css";
+@import "tailwindcss";
 
 .consolidated-circulation-card {
   all: unset;
@@ -129,7 +129,7 @@
   border-radius: 999px;
   background: rgba(0, 0, 0, 0.03);
 
-  @apply flex items-center justify-center gap-1 flex-shrink-0 bg-gray-200/30 dark:bg-gray-600/30;
+  @apply flex items-center justify-center gap-1 shrink-0 bg-gray-200/30 dark:bg-gray-600/30;
 }
 
 .meta-chip.delay-ok {

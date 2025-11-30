@@ -61,7 +61,6 @@ jobs:
       - name: Run download script
         run: |
           uv run src/stop_downloader/vigo/download-stops.py
-          uv run src/stop_downloader/santiago/download-stops.py
 
       - name: Commit and push changes if any
         id: commit

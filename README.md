@@ -15,7 +15,6 @@ Busurbano is a web application designed to help users find bus stops and arrival
 - **Backend**:
   - ASP.NET Core 9 Web API
   - [Costasdev.VigoTransitApi](https://github.com/arielcostas/VigoTransitApi)
-  - WIP: Santiago de Compostela API - Not a package yet
 - **Mapping**:
   - [MapLibre GL JS](https://maplibre.org)
   - OpenStreetMap

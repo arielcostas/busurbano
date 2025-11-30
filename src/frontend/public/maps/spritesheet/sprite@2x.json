@@ -7,25 +7,9 @@
     "height": 64,
     "pixelRatio": 2
   },
-  "stop-santiago": {
-    "id": "stop-santiago",
-    "x": 64,
-    "y": 0,
-    "width": 64,
-    "height": 64,
-    "pixelRatio": 2
-  },
   "stop-vigo-cancelled": {
     "id": "stop-vigo-cancelled",
     "x": 128,
-    "y": 0,
-    "width": 64,
-    "height": 64,
-    "pixelRatio": 2
-  },
-  "stop-santiago-cancelled": {
-    "id": "stop-santiago-cancelled",
-    "x": 192,
     "y": 0,
     "width": 64,
     "height": 64,

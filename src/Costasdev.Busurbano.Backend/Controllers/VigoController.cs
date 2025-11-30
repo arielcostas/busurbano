@@ -1,6 +1,5 @@
 using System.Globalization;
 using System.Text;
-using System.Text.Json;
 using Costasdev.Busurbano.Backend.Configuration;
 using Costasdev.Busurbano.Backend.Services;
 using Costasdev.Busurbano.Backend.Types;
@@ -14,7 +13,7 @@ namespace Costasdev.Busurbano.Backend.Controllers;
 
 [ApiController]
 [Route("api/vigo")]
-public class VigoController : ControllerBase
+public partial class VigoController : ControllerBase
 {
     private readonly ILogger<VigoController> _logger;
     private readonly VigoTransitApiClient _api;
@@ -27,23 +26,6 @@ public class VigoController : ControllerBase
         _api = new VigoTransitApiClient(http);
         _configuration = options.Value;
         _shapeService = shapeService;
-    }
-
-    [HttpGet("GetStopEstimates")]
-    public async Task<IActionResult> Run(
-        [FromQuery] int id
-    )
-    {
-        try
-        {
-            var response = await _api.GetStopEstimates(id);
-            // Return only the estimates array, not the stop metadata
-            return new OkObjectResult(response.Estimates);
-        }
-        catch (InvalidOperationException)
-        {
-            return BadRequest("Stop not found");
-        }
     }
 
     [HttpGet("GetShape")]
@@ -122,56 +104,6 @@ public class VigoController : ControllerBase
         };
 
         return Ok(geoJson);
-    }
-
-    [HttpGet("GetStopTimetable")]
-    public async Task<IActionResult> GetStopTimetable(
-        [FromQuery] int stopId,
-        [FromQuery] string? date = null
-    )
-    {
-        // Use Europe/Madrid timezone to determine the correct date
-        var tz = TimeZoneInfo.FindSystemTimeZoneById("Europe/Madrid");
-        var nowLocal = TimeZoneInfo.ConvertTime(DateTime.UtcNow, tz);
-
-        // If no date provided or date is "today", use Madrid timezone's current date
-        string effectiveDate;
-        if (string.IsNullOrEmpty(date) || date == "today")
-        {
-            effectiveDate = nowLocal.Date.ToString("yyyy-MM-dd");
-        }
-        else
-        {
-            // Validate provided date format
-            if (!DateTime.TryParseExact(date, "yyyy-MM-dd", null, DateTimeStyles.None, out _))
-            {
-                return BadRequest("Invalid date format. Please use yyyy-MM-dd format.");
-            }
-            effectiveDate = date;
-        }
-
-        try
-        {
-            var file = Path.Combine(_configuration.ScheduleBasePath, effectiveDate, stopId + ".json");
-            if (!SysFile.Exists(file))
-            {
-                throw new FileNotFoundException();
-            }
-
-            var contents = await SysFile.ReadAllTextAsync(file);
-
-            return new OkObjectResult(JsonSerializer.Deserialize<List<ScheduledStop>>(contents)!);
-        }
-        catch (FileNotFoundException ex)
-        {
-            _logger.LogError(ex, "Stop data not found for stop {StopId} on date {Date}", stopId, effectiveDate);
-            return StatusCode(404, $"Stop data not found for stop {stopId} on date {effectiveDate}");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error loading stop data");
-            return StatusCode(500, "Error loading timetable");
-        }
     }
 
     [HttpGet("GetConsolidatedCirculations")]
@@ -415,6 +347,7 @@ public class VigoController : ControllerBase
         // Sort by ETA (RealTime minutes if present; otherwise Schedule minutes)
         var sorted = consolidatedCirculations
             .OrderBy(c => c.RealTime?.Minutes ?? c.Schedule!.Minutes)
+            .Select(LineFormatterService.Format)
             .ToList();
 
         return Ok(sorted);
@@ -452,7 +385,6 @@ public class VigoController : ControllerBase
         var normalized = route.Trim().ToLowerInvariant();
         // Remove diacritics/accents first, then filter to alphanumeric
         normalized = RemoveDiacritics(normalized);
-        normalized = RenameCustom(normalized);
         return new string(normalized.Where(char.IsLetterOrDigit).ToArray());
     }
 
@@ -471,13 +403,6 @@ public class VigoController : ControllerBase
         }
 
         return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
-    }
-
-    private static string RenameCustom(string text)
-    {
-        // Custom replacements for known problematic route names
-        return text
-            .Replace("praza", "p");
     }
 }
 

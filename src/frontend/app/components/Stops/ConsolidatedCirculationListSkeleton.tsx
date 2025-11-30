@@ -9,41 +9,39 @@ export const ConsolidatedCirculationListSkeleton: React.FC = () => {
       baseColor="var(--skeleton-base)"
       highlightColor="var(--skeleton-highlight)"
     >
-      <div className="consolidated-circulation-container">
+      <>
         <div className="consolidated-circulation-caption">
           <Skeleton width="60%" style={{ maxWidth: "300px" }} />
         </div>
 
-        <div className="consolidated-circulation-list">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="consolidated-circulation-card">
-              <div className="card-header">
-                <div className="line-info">
-                  <Skeleton width={40} height={28} borderRadius={4} />
-                </div>
-
-                <div className="route-info">
-                  <Skeleton width="80%" height={18} />
-                </div>
-
-                <div className="time-info">
-                  <Skeleton width={70} height={24} />
-                  <Skeleton width={50} height={14} />
-                </div>
+        {[1, 2, 3, 4, 5].map((i) => (
+          <div
+            key={i}
+            className="consolidated-circulation-card"
+            style={{ marginBottom: "0.75rem" }}
+          >
+            <div className="card-row main">
+              <div className="line-info">
+                <Skeleton width={40} height={28} borderRadius={4} />
               </div>
 
-              <div className="card-footer">
-                <Skeleton width="90%" height={14} />
-                <Skeleton
-                  width="70%"
-                  height={14}
-                  style={{ marginTop: "4px" }}
-                />
+              <div className="route-info">
+                <Skeleton width="80%" height={18} />
+              </div>
+
+              <div className="eta-badge">
+                <Skeleton width={50} height={40} borderRadius={12} />
               </div>
             </div>
-          ))}
-        </div>
-      </div>
+
+            <div className="card-row meta">
+              <Skeleton width={90} height={20} borderRadius={999} />
+              <Skeleton width={70} height={20} borderRadius={999} />
+              <Skeleton width={60} height={20} borderRadius={999} />
+            </div>
+          </div>
+        ))}
+      </>
     </SkeletonTheme>
   );
 };

@@ -64,10 +64,13 @@
   --line-psa4: hsl(120, 100%, 30%);
   --line-ptl: hsl(120, 60%, 70%);
   --line-tur: hsl(300, 33%, 30%);
+  --line-tur-text: hsl(0, 0%, 100%);
   --line-u1: hsl(30, 80%, 20%);
   --line-u1-text: hsl(0, 0%, 100%);
   --line-u2: hsl(30, 80%, 20%);
   --line-u2-text: hsl(0, 0%, 100%);
+  --line-vts: hsl(300, 33%, 30%);
+  --line-vts-text: hsl(0, 0%, 100%);
 }
 
 .line-icon-default {
