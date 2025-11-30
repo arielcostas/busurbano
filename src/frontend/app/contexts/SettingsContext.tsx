@@ -1,16 +1,11 @@
 import {
-    createContext,
-    useContext,
-    useEffect,
-    useState,
-    type ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
 } from "react";
 import { APP_CONFIG } from "../config/AppConfig";
-import {
-    DEFAULT_REGION,
-    isValidRegion,
-    type RegionId
-} from "../config/RegionConfig";
 
 export type Theme = "light" | "dark" | "system";
 export type TableStyle = "regular" | "grouped" | "experimental_consolidated";
@@ -21,15 +16,8 @@ interface SettingsContextProps {
   setTheme: React.Dispatch<React.SetStateAction<Theme>>;
   toggleTheme: () => void;
 
-  tableStyle: TableStyle;
-  setTableStyle: React.Dispatch<React.SetStateAction<TableStyle>>;
-  toggleTableStyle: () => void;
-
   mapPositionMode: MapPositionMode;
   setMapPositionMode: (mode: MapPositionMode) => void;
-
-  region: RegionId;
-  setRegion: (region: RegionId) => void;
   resolvedTheme: "light" | "dark";
 }
 
@@ -151,38 +139,14 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   }, [mapPositionMode]);
   //#endregion
 
-  //#region Region
-  const [region, setRegionState] = useState<RegionId>(() => {
-    const savedRegion = localStorage.getItem("region");
-    if (savedRegion && isValidRegion(savedRegion)) {
-      return savedRegion;
-    }
-    return DEFAULT_REGION;
-  });
-
-  const setRegion = (newRegion: RegionId) => {
-    setRegionState(newRegion);
-    localStorage.setItem("region", newRegion);
-  };
-
-  useEffect(() => {
-    localStorage.setItem("region", region);
-  }, [region]);
-  //#endregion
-
   return (
     <SettingsContext.Provider
       value={{
         theme,
         setTheme,
         toggleTheme,
-        tableStyle,
-        setTableStyle,
-        toggleTableStyle,
         mapPositionMode,
         setMapPositionMode,
-        region,
-        setRegion,
         resolvedTheme,
       }}
     >

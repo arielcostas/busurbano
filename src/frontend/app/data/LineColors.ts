@@ -1,4 +1,3 @@
-import type { RegionId } from "../config/RegionConfig";
 
 interface LineColorInfo {
   background: string;
@@ -58,15 +57,11 @@ const defaultLineColor: LineColorInfo = {
   text: "#ffffff",
 };
 
-export function getLineColor(region: RegionId, line: string): LineColorInfo {
+export function getLineColour(line: string): LineColorInfo {
   let formattedLine = /^[a-zA-Z]/.test(line) ? line : `L${line}`;
   formattedLine = formattedLine.toLowerCase().trim();
 
-  if (region === "vigo") {
-    return (
-      vigoLineColors[formattedLine.toLowerCase().trim()] ?? defaultLineColor
-    );
-  }
-
-  return defaultLineColor;
+  return (
+    vigoLineColors[formattedLine.toLowerCase().trim()] ?? defaultLineColor
+  );
 }

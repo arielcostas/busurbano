@@ -124,9 +124,9 @@ export default function StopList() {
       const a =
         Math.sin(dLat / 2) * Math.sin(dLat / 2) +
         Math.cos(toRadians(lat1)) *
-          Math.cos(toRadians(lat2)) *
-          Math.sin(dLon / 2) *
-          Math.sin(dLon / 2);
+        Math.cos(toRadians(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
       return R * c;
     };
@@ -160,8 +160,8 @@ export default function StopList() {
 
   // Load favourite and recent IDs immediately from localStorage
   useEffect(() => {
-    setFavouriteIds(StopDataProvider.getFavouriteIds(region));
-    setRecentIds(StopDataProvider.getRecent(region));
+    setFavouriteIds(StopDataProvider.getFavouriteIds());
+    setRecentIds(StopDataProvider.getRecent());
   }, [region]);
 
   // Load stops from network
@@ -169,10 +169,10 @@ export default function StopList() {
     try {
       setLoading(true);
 
-      const stops = await StopDataProvider.loadStopsFromNetwork(region);
+      const stops = await StopDataProvider.loadStopsFromNetwork();
 
       // Add favourite flags to stops
-      const favouriteStopsIds = StopDataProvider.getFavouriteIds(region);
+      const favouriteStopsIds = StopDataProvider.getFavouriteIds();
       const stopsWithFavourites = stops.map((stop) => ({
         ...stop,
         favourite: favouriteStopsIds.includes(stop.stopId),
@@ -186,7 +186,7 @@ export default function StopList() {
       );
       setFavouriteStops(favStops);
 
-      const recIds = StopDataProvider.getRecent(region);
+      const recIds = StopDataProvider.getRecent();
       const recStops = recIds
         .map((id) => stopsWithFavourites.find((stop) => stop.stopId === id))
         .filter(Boolean) as Stop[];
@@ -304,8 +304,8 @@ export default function StopList() {
           )}
           {!loading && data
             ? (userLocation ? sortedAllStops.slice(0, 6) : sortedAllStops).map(
-                (stop) => <StopItem key={stop.stopId} stop={stop} />
-              )
+              (stop) => <StopItem key={stop.stopId} stop={stop} />
+            )
             : null}
         </ul>
       </div>

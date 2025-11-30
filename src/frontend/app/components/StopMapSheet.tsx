@@ -2,8 +2,8 @@ import maplibregl from "maplibre-gl";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import Map, { Layer, Marker, Source, type MapRef } from "react-map-gl/maplibre";
 import { useApp } from "~/AppContext";
-import { getRegionConfig, type RegionId } from "~/config/RegionConfig";
-import { getLineColor } from "~/data/LineColors";
+import { REGION_DATA } from "~/config/RegionConfig";
+import { getLineColour } from "~/data/LineColors";
 import type { Stop } from "~/data/StopDataProvider";
 import { loadStyle } from "~/maps/styleloader";
 import "./StopMapSheet.css";
@@ -28,13 +28,11 @@ export interface ConsolidatedCirculationForMap {
 interface StopMapProps {
   stop: Stop;
   circulations: ConsolidatedCirculationForMap[];
-  region: RegionId;
 }
 
 export const StopMap: React.FC<StopMapProps> = ({
   stop,
-  circulations,
-  region,
+  circulations
 }) => {
   const { theme } = useApp();
   const [styleSpec, setStyleSpec] = useState<any | null>(null);
@@ -70,18 +68,16 @@ export const StopMap: React.FC<StopMapProps> = ({
   const [showAttribution, setShowAttribution] = useState(false);
   const [shapes, setShapes] = useState<Record<string, any>>({});
 
-  const regionConfig = getRegionConfig(region);
-
   useEffect(() => {
     circulations.forEach((c) => {
       if (
         c.schedule?.shapeId &&
         c.currentPosition?.shapeIndex !== undefined &&
-        regionConfig.shapeEndpoint
+        REGION_DATA.shapeEndpoint
       ) {
         const key = `${c.schedule.shapeId}_${c.currentPosition.shapeIndex}`;
         if (!shapes[key]) {
-          let url = `${regionConfig.shapeEndpoint}?shapeId=${c.schedule.shapeId}&busShapeIndex=${c.currentPosition.shapeIndex}`;
+          let url = `${REGION_DATA.shapeEndpoint}?shapeId=${c.schedule.shapeId}&busShapeIndex=${c.currentPosition.shapeIndex}`;
           if (c.stopShapeIndex !== undefined) {
             url += `&stopShapeIndex=${c.stopShapeIndex}`;
           } else {
@@ -102,7 +98,7 @@ export const StopMap: React.FC<StopMapProps> = ({
         }
       }
     });
-  }, [circulations, regionConfig.shapeEndpoint, shapes]);
+  }, [circulations, shapes]);
 
   type Pt = { lat: number; lon: number };
   const haversineKm = (a: Pt, b: Pt) => {
@@ -195,7 +191,7 @@ export const StopMap: React.FC<StopMapProps> = ({
             accuracy: pos.coords.accuracy,
           });
         },
-        () => {},
+        () => { },
         { enableHighAccuracy: true, maximumAge: 15000, timeout: 5000 }
       );
       geoWatchId.current = navigator.geolocation.watchPosition(
@@ -206,15 +202,15 @@ export const StopMap: React.FC<StopMapProps> = ({
             accuracy: pos.coords.accuracy,
           });
         },
-        () => {},
+        () => { },
         { enableHighAccuracy: true, maximumAge: 30000, timeout: 10000 }
       );
-    } catch {}
+    } catch { }
     return () => {
       if (geoWatchId.current != null && "geolocation" in navigator) {
         try {
           navigator.geolocation.clearWatch(geoWatchId.current);
-        } catch {}
+        } catch { }
       }
     };
   }, []);
@@ -278,7 +274,7 @@ export const StopMap: React.FC<StopMapProps> = ({
           maxZoom: 17,
         } as any);
       }
-    } catch {}
+    } catch { }
   };
 
   const handleCenter = () => {
@@ -318,7 +314,7 @@ export const StopMap: React.FC<StopMapProps> = ({
           maxZoom: 17,
         } as any);
       }
-    } catch {}
+    } catch { }
   };
 
   return (
@@ -347,7 +343,7 @@ export const StopMap: React.FC<StopMapProps> = ({
             const key = `${c.schedule.shapeId}_${c.currentPosition.shapeIndex}`;
             const shapeData = shapes[key];
             if (!shapeData) return null;
-            const lineColor = getLineColor(region, c.line);
+            const lineColor = getLineColour(c.line);
 
             return (
               <Source
@@ -439,9 +435,9 @@ export const StopMap: React.FC<StopMapProps> = ({
               const pts = busPositions.map((c) =>
                 c.currentPosition
                   ? map.project([
-                      c.currentPosition.longitude,
-                      c.currentPosition.latitude,
-                    ])
+                    c.currentPosition.longitude,
+                    c.currentPosition.latitude,
+                  ])
                   : null
               );
               for (let i = 0; i < pts.length; i++) {
@@ -462,7 +458,7 @@ export const StopMap: React.FC<StopMapProps> = ({
 
             return busPositions.map((c, idx) => {
               const p = c.currentPosition!;
-              const lineColor = getLineColor(region, c.line);
+              const lineColor = getLineColour(c.line);
               const showLabel = zoom >= 13;
               const labelGap = gaps[idx] ?? baseGap;
               return (

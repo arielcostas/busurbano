@@ -1,13 +1,12 @@
 import { type LngLatLike } from "maplibre-gl";
 import {
-    createContext,
-    useContext,
-    useEffect,
-    useState,
-    type ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
 } from "react";
-import { getRegionConfig } from "../config/RegionConfig";
-import { useSettings } from "./SettingsContext";
+import { REGION_DATA } from "~/config/RegionConfig";
 
 interface MapState {
   center: LngLatLike;
@@ -28,9 +27,6 @@ interface MapContextProps {
 const MapContext = createContext<MapContextProps | undefined>(undefined);
 
 export const MapProvider = ({ children }: { children: ReactNode }) => {
-  const { region } = useSettings();
-  const [prevRegion, setPrevRegion] = useState(region);
-
   const [mapState, setMapState] = useState<MapState>(() => {
     const savedMapState = localStorage.getItem("mapState");
     if (savedMapState) {
@@ -39,10 +35,9 @@ export const MapProvider = ({ children }: { children: ReactNode }) => {
         // Validate that the saved center is valid if needed, or just trust it.
         // We might want to ensure we have a fallback if the region changed while the app was closed?
         // But for now, let's stick to the existing logic.
-        const regionConfig = getRegionConfig(region);
         return {
-          center: parsed.center || regionConfig.defaultCenter,
-          zoom: parsed.zoom || regionConfig.defaultZoom,
+          center: parsed.center || REGION_DATA.defaultCenter,
+          zoom: parsed.zoom || REGION_DATA.defaultZoom,
           userLocation: parsed.userLocation || null,
           hasLocationPermission: parsed.hasLocationPermission || false,
         };
@@ -50,10 +45,9 @@ export const MapProvider = ({ children }: { children: ReactNode }) => {
         console.error("Error parsing saved map state", e);
       }
     }
-    const regionConfig = getRegionConfig(region);
     return {
-      center: regionConfig.defaultCenter,
-      zoom: regionConfig.defaultZoom,
+      center: REGION_DATA.defaultCenter,
+      zoom: REGION_DATA.defaultZoom,
       userLocation: null,
       hasLocationPermission: false,
     };
@@ -98,15 +92,6 @@ export const MapProvider = ({ children }: { children: ReactNode }) => {
       return newState;
     });
   };
-
-  // Sync map state when region changes
-  useEffect(() => {
-    if (region !== prevRegion) {
-      const regionConfig = getRegionConfig(region);
-      updateMapState(regionConfig.defaultCenter, regionConfig.defaultZoom);
-      setPrevRegion(region);
-    }
-  }, [region, prevRegion]);
 
   // Try to get user location on load if permission was granted
   useEffect(() => {

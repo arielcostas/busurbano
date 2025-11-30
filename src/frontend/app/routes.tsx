@@ -5,8 +5,6 @@ export default [
   route("/map", "routes/map.tsx"),
   route("/stops", "routes/stops.tsx"),
   route("/stops/:id", "routes/stops-$id.tsx"),
-  route("/estimates/:id", "routes/estimates-$id.tsx"),
-  route("/timetable/:id", "routes/timetable-$id.tsx"),
   route("/settings", "routes/settings.tsx"),
   route("/about", "routes/about.tsx"),
   route("/favourites", "routes/favourites.tsx"),

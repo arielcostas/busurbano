@@ -71,6 +71,18 @@
   --line-u2-text: hsl(0, 0%, 100%);
   --line-vts: hsl(300, 33%, 30%);
   --line-vts-text: hsl(0, 0%, 100%);
+
+  /* Special christmas line - Touristic bus */
+  --line-nad: hsl(0, 100%, 40%);
+  --line-nad-text: hsl(0, 0%, 100%);
+
+  --line-mar: hsl(208, 68%, 66%);
+  --line-mar-text: hsl(0, 0%, 100%);
+  --line-rio: hsl(208, 68%, 66%);
+  --line-rio-text: hsl(0, 0%, 100%);
+  --line-gol: hsl(208, 68%, 66%);
+  --line-gol-text: hsl(0, 0%, 100%);
+
 }
 
 .line-icon-default {

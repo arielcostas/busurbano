@@ -15,7 +15,7 @@ import Map, {
   type StyleSpecification
 } from "react-map-gl/maplibre";
 import { StopSheet } from "~/components/StopSheet";
-import { getRegionConfig } from "~/config/RegionConfig";
+import { REGION_DATA } from "~/config/RegionConfig";
 import { usePageTitle } from "~/contexts/PageTitleContext";
 import { useApp } from "../AppContext";
 
@@ -40,7 +40,7 @@ export default function StopMap() {
   >([]);
   const [selectedStop, setSelectedStop] = useState<Stop | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const { mapState, updateMapState, theme, region } = useApp();
+  const { mapState, updateMapState, theme } = useApp();
   const mapRef = useRef<MapRef>(null);
   const [mapStyleKey, setMapStyleKey] = useState<string>("light");
 
@@ -62,7 +62,7 @@ export default function StopMap() {
   };
 
   useEffect(() => {
-    StopDataProvider.getStops(region).then((data) => {
+    StopDataProvider.getStops().then((data) => {
       const features: GeoJsonFeature<
         Point,
         { stopId: number; name: string; lines: string[]; cancelled?: boolean }
@@ -81,7 +81,7 @@ export default function StopMap() {
       }));
       setStops(features);
     });
-  }, [region]);
+  }, []);
 
   useEffect(() => {
     //const styleName = "carto";
@@ -155,7 +155,7 @@ export default function StopMap() {
     const stopId = parseInt(props.stopId, 10);
 
     // fetch full stop to get lines array
-    StopDataProvider.getStopById(region, stopId)
+    StopDataProvider.getStopById(stopId)
       .then((stop) => {
         if (!stop) {
           console.warn("Stop not found:", stopId);
@@ -186,14 +186,10 @@ export default function StopMap() {
         zoom: mapState.zoom,
       }}
       attributionControl={{ compact: false }}
-      maxBounds={
-        getRegionConfig(region).bounds
-          ? [getRegionConfig(region).bounds!.sw, getRegionConfig(region).bounds!.ne]
-          : undefined
-      }
+      maxBounds={[REGION_DATA.bounds.sw, REGION_DATA.bounds.ne]}
     >
       <NavigationControl position="top-right" />
-      <GeolocateControl position="top-right" trackUserLocation={true} positionOptions={{enableHighAccuracy: false}} />
+      <GeolocateControl position="top-right" trackUserLocation={true} positionOptions={{ enableHighAccuracy: false }} />
 
       <Source
         id="stops-source"
@@ -210,8 +206,8 @@ export default function StopMap() {
           "icon-image": [
             "case",
             ["coalesce", ["get", "cancelled"], false],
-            `stop-${region}-cancelled`,
-            `stop-${region}`,
+            `stop-vigo-cancelled`,
+            `stop-vigo`,
           ],
           "icon-size": [
             "interpolate",
@@ -243,19 +239,21 @@ export default function StopMap() {
           "text-size": ["interpolate", ["linear"], ["zoom"], 11, 8, 22, 16],
         }}
         paint={{
-          "text-color": `${getRegionConfig(region).textColour || "#000"}`,
+          "text-color": `${REGION_DATA.textColour}`,
           "text-halo-color": "#FFF",
           "text-halo-width": 1,
         }}
       />
 
-      {selectedStop && (
-        <StopSheet
-          isOpen={isSheetOpen}
-          onClose={() => setIsSheetOpen(false)}
-          stop={selectedStop}
-        />
-      )}
-    </Map>
+      {
+        selectedStop && (
+          <StopSheet
+            isOpen={isSheetOpen}
+            onClose={() => setIsSheetOpen(false)}
+            stop={selectedStop}
+          />
+        )
+      }
+    </Map >
   );
 }

@@ -1,6 +1,5 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { type RegionConfig } from "~/config/RegionConfig";
 import LineIcon from "~components/LineIcon";
 import { type ConsolidatedCirculation } from "~routes/stops-$id";
 
@@ -8,7 +7,6 @@ import "./ConsolidatedCirculationCard.css";
 
 interface ConsolidatedCirculationCardProps {
   estimate: ConsolidatedCirculation;
-  regionConfig: RegionConfig;
   onMapClick?: () => void;
   readonly?: boolean;
 }
@@ -72,7 +70,7 @@ const parseServiceId = (serviceId: string): string => {
 
 export const ConsolidatedCirculationCard: React.FC<
   ConsolidatedCirculationCardProps
-> = ({ estimate, regionConfig, onMapClick, readonly }) => {
+> = ({ estimate, onMapClick, readonly }) => {
   const { t } = useTranslation();
 
   const formatDistance = (meters: number) => {
@@ -171,30 +169,28 @@ export const ConsolidatedCirculationCard: React.FC<
   const interactiveProps = readonly
     ? {}
     : {
-        onClick: onMapClick,
-        type: "button" as const,
-        disabled: !hasGpsPosition,
-      };
+      onClick: onMapClick,
+      type: "button" as const,
+      disabled: !hasGpsPosition,
+    };
 
   return (
     <Tag
-      className={`consolidated-circulation-card ${
-        readonly
-          ? !hasGpsPosition
-            ? "no-gps"
-            : ""
-          : hasGpsPosition
+      className={`consolidated-circulation-card ${readonly
+        ? !hasGpsPosition
+          ? "no-gps"
+          : ""
+        : hasGpsPosition
           ? "has-gps"
           : "no-gps"
-      }`}
+        }`}
       {...interactiveProps}
-      aria-label={`${hasGpsPosition ? "View" : "No GPS data for"} ${
-        estimate.line
-      } to ${estimate.route}${hasGpsPosition ? " on map" : ""}`}
+      aria-label={`${hasGpsPosition ? "View" : "No GPS data for"} ${estimate.line
+        } to ${estimate.route}${hasGpsPosition ? " on map" : ""}`}
     >
       <div className="card-row main">
         <div className="line-info">
-          <LineIcon line={estimate.line} region={regionConfig.id} mode="pill" />
+          <LineIcon line={estimate.line} mode="pill" />
         </div>
         <div className="route-info">
           <strong>{estimate.route}</strong>
@@ -202,9 +198,8 @@ export const ConsolidatedCirculationCard: React.FC<
         {hasGpsPosition && (
           <div className="gps-indicator" title="Live GPS tracking">
             <span
-              className={`gps-pulse ${
-                estimate.isPreviousTrip ? "previous-trip" : ""
-              }`}
+              className={`gps-pulse ${estimate.isPreviousTrip ? "previous-trip" : ""
+                }`}
             />
           </div>
         )}

@@ -1,6 +1,6 @@
-import React, { useRef, useState, useEffect, useCallback } from "react";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { RefreshCw } from "lucide-react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./PullToRefresh.css";
 
 interface PullToRefreshProps {
@@ -25,15 +25,6 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({
   const opacity = useTransform(y, [0, threshold], [0, 1]);
   const scale = useTransform(y, [0, threshold], [0.5, 1]);
   const rotate = useTransform(y, [0, threshold], [0, 180]);
-
-  const isAtPageTop = useCallback(() => {
-    const scrollTop =
-      window.pageYOffset ||
-      document.documentElement.scrollTop ||
-      document.body.scrollTop ||
-      0;
-    return scrollTop <= 10; // Increased tolerance to 10px
-  }, []);
 
   const handleTouchStart = useCallback(
     (e: TouchEvent) => {
@@ -160,7 +151,6 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({
 
   return (
     <div className="pull-to-refresh-container" ref={containerRef}>
-      {/* Simple indicator */}
       {isPulling && (
         <motion.div className="pull-to-refresh-indicator" style={{ opacity }}>
           <motion.div
@@ -174,7 +164,6 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({
         </motion.div>
       )}
 
-      {/* Normal content - no transform interference */}
       <div className="pull-to-refresh-content">{children}</div>
     </div>
   );

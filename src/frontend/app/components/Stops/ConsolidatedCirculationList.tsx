@@ -1,5 +1,4 @@
 import { useTranslation } from "react-i18next";
-import { type RegionConfig } from "~/config/RegionConfig";
 import { type ConsolidatedCirculation } from "~routes/stops-$id";
 import { ConsolidatedCirculationCard } from "./ConsolidatedCirculationCard";
 
@@ -8,14 +7,12 @@ import "./ConsolidatedCirculationList.css";
 interface RegularTableProps {
   data: ConsolidatedCirculation[];
   dataDate: Date | null;
-  regionConfig: RegionConfig;
   onCirculationClick?: (estimate: ConsolidatedCirculation, index: number) => void;
 }
 
 export const ConsolidatedCirculationList: React.FC<RegularTableProps> = ({
   data,
   dataDate,
-  regionConfig,
   onCirculationClick,
 }) => {
   const { t } = useTranslation();
@@ -44,7 +41,6 @@ export const ConsolidatedCirculationList: React.FC<RegularTableProps> = ({
             <ConsolidatedCirculationCard
               key={idx}
               estimate={estimate}
-              regionConfig={regionConfig}
               onMapClick={() => onCirculationClick?.(estimate, idx)}
             />
           ))}

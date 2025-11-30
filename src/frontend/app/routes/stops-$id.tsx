@@ -4,14 +4,14 @@ import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 import { ErrorDisplay } from "~/components/ErrorDisplay";
 import LineIcon from "~/components/LineIcon";
+import { PullToRefresh } from "~/components/PullToRefresh";
 import { StopAlert } from "~/components/StopAlert";
 import { StopMapModal } from "~/components/StopMapModal";
 import { ConsolidatedCirculationList } from "~/components/Stops/ConsolidatedCirculationList";
 import { ConsolidatedCirculationListSkeleton } from "~/components/Stops/ConsolidatedCirculationListSkeleton";
-import { type RegionId, getRegionConfig } from "~/config/RegionConfig";
+import { REGION_DATA } from "~/config/RegionConfig";
 import { usePageTitle } from "~/contexts/PageTitleContext";
 import { useAutoRefresh } from "~/hooks/useAutoRefresh";
-import { useApp } from "../AppContext";
 import StopDataProvider, { type Stop } from "../data/StopDataProvider";
 import "./stops-$id.css";
 
@@ -53,12 +53,10 @@ interface ErrorInfo {
 }
 
 const loadConsolidatedData = async (
-  region: RegionId,
   stopId: string
 ): Promise<ConsolidatedCirculation[]> => {
-  const regionConfig = getRegionConfig(region);
   const resp = await fetch(
-    `${regionConfig.consolidatedCirculationsEndpoint}?stopId=${stopId}`,
+    `${REGION_DATA.consolidatedCirculationsEndpoint}?stopId=${stopId}`,
     {
       headers: {
         Accept: "application/json",
@@ -92,8 +90,6 @@ export default function Estimates() {
   const [selectedCirculationId, setSelectedCirculationId] = useState<
     string | undefined
   >(undefined);
-  const { region } = useApp();
-  const regionConfig = getRegionConfig(region);
 
   // Helper function to get the display name for the stop
   const getStopDisplayName = useCallback(() => {
@@ -131,14 +127,14 @@ export default function Estimates() {
       setDataLoading(true);
       setDataError(null);
 
-      const body = await loadConsolidatedData(region, params.id!);
+      const body = await loadConsolidatedData(params.id!);
       setData(body);
       setDataDate(new Date());
 
       // Load stop data from StopDataProvider
-      const stop = await StopDataProvider.getStopById(region, stopIdNum);
+      const stop = await StopDataProvider.getStopById(stopIdNum);
       setStopData(stop);
-      setCustomName(StopDataProvider.getCustomName(region, stopIdNum));
+      setCustomName(StopDataProvider.getCustomName(stopIdNum));
     } catch (error) {
       console.error("Error loading consolidated data:", error);
       setDataError(parseError(error));
@@ -147,24 +143,21 @@ export default function Estimates() {
     } finally {
       setDataLoading(false);
     }
-  }, [params.id, stopIdNum, region]);
+  }, [params.id, stopIdNum]);
 
   const refreshData = useCallback(async () => {
     await Promise.all([loadData()]);
   }, [loadData]);
 
-  // Manual refresh function for pull-to-refresh and button
   const handleManualRefresh = useCallback(async () => {
     try {
       setIsManualRefreshing(true);
-      // Only reload real-time estimates data, not timetable
       await refreshData();
     } finally {
       setIsManualRefreshing(false);
     }
   }, [refreshData]);
 
-  // Auto-refresh estimates data every 30 seconds (only if not in error state)
   useAutoRefresh({
     onRefresh: refreshData,
     interval: 12000,
@@ -175,18 +168,18 @@ export default function Estimates() {
     // Initial load
     loadData();
 
-    StopDataProvider.pushRecent(region, parseInt(params.id ?? ""));
+    StopDataProvider.pushRecent(parseInt(params.id ?? ""));
     setFavourited(
-      StopDataProvider.isFavourite(region, parseInt(params.id ?? ""))
+      StopDataProvider.isFavourite(parseInt(params.id ?? ""))
     );
-  }, [params.id, region, loadData]);
+  }, [params.id, loadData]);
 
   const toggleFavourite = () => {
     if (favourited) {
-      StopDataProvider.removeFavourite(region, stopIdNum);
+      StopDataProvider.removeFavourite(stopIdNum);
       setFavourited(false);
     } else {
-      StopDataProvider.addFavourite(region, stopIdNum);
+      StopDataProvider.addFavourite(stopIdNum);
       setFavourited(true);
     }
   };
@@ -197,16 +190,16 @@ export default function Estimates() {
     if (input === null) return; // cancelled
     const trimmed = input.trim();
     if (trimmed === "") {
-      StopDataProvider.removeCustomName(region, stopIdNum);
+      StopDataProvider.removeCustomName(stopIdNum);
       setCustomName(undefined);
     } else {
-      StopDataProvider.setCustomName(region, stopIdNum, trimmed);
+      StopDataProvider.setCustomName(stopIdNum, trimmed);
       setCustomName(trimmed);
     }
   };
 
   return (
-    <>
+    <PullToRefresh onRefresh={handleManualRefresh}>
       <div className="page-container stops-page">
         <div className="stops-header">
           <div>
@@ -238,7 +231,7 @@ export default function Estimates() {
           <div className={`estimates-lines-container scrollable`}>
             {stopData.lines.map((line) => (
               <div key={line} className="estimates-line-icon">
-                <LineIcon line={line} region={region} mode="rounded" />
+                <LineIcon line={line} mode="rounded" />
               </div>
             ))}
           </div>
@@ -262,7 +255,6 @@ export default function Estimates() {
             <ConsolidatedCirculationList
               data={data}
               dataDate={dataDate}
-              regionConfig={regionConfig}
               onCirculationClick={(estimate, idx) => {
                 setSelectedCirculationId(getCirculationId(estimate));
                 setIsMapModalOpen(true);
@@ -271,11 +263,9 @@ export default function Estimates() {
           ) : null}
         </div>
 
-        {/* Map Modal - only render if we have stop data */}
         {stopData && (
           <StopMapModal
             stop={stopData}
-            region={region}
             circulations={(data ?? []).map((c) => ({
               id: getCirculationId(c),
               line: c.line,
@@ -285,8 +275,8 @@ export default function Estimates() {
               previousTripShapeId: c.previousTripShapeId,
               schedule: c.schedule
                 ? {
-                    shapeId: c.schedule.shapeId,
-                  }
+                  shapeId: c.schedule.shapeId,
+                }
                 : undefined,
             }))}
             isOpen={isMapModalOpen}
@@ -295,6 +285,6 @@ export default function Estimates() {
           />
         )}
       </div>
-    </>
+    </PullToRefresh>
   );
 }

@@ -1,25 +1,23 @@
 import React, { useMemo } from "react";
-import { type RegionId } from "../config/RegionConfig";
 import "./LineIcon.css";
 
 interface LineIconProps {
   line: string;
-
-  /**
-   * @deprecated Unused since region is only Vigo
-   */
-  region?: RegionId;
-
-  mode?: "rounded"|"pill"|"default";
+  mode?: "rounded" | "pill" | "default";
 }
 
 const LineIcon: React.FC<LineIconProps> = ({
   line,
   mode = "default",
 }) => {
+  const actualLine = useMemo(() => {
+    return line.trim().replace('510', 'NAD');
+  }, [line])
+
   const formattedLine = useMemo(() => {
-    return /^[a-zA-Z]/.test(line) ? line : `L${line}`;
-  }, [line]);
+    return /^[a-zA-Z]/.test(actualLine) ? actualLine : `L${actualLine}`;
+  }, [actualLine]);
+
   const cssVarName = `--line-${formattedLine.toLowerCase()}`;
   const cssTextVarName = `--line-${formattedLine.toLowerCase()}-text`;
 
@@ -33,7 +31,7 @@ const LineIcon: React.FC<LineIconProps> = ({
         } as React.CSSProperties
       }
     >
-      {line}
+      {actualLine}
     </span>
   );
 };

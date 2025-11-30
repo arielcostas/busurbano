@@ -1,15 +1,15 @@
 import maplibregl from "maplibre-gl";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Map, {
-    Layer,
-    Marker,
-    Source,
-    type MapRef
+  Layer,
+  Marker,
+  Source,
+  type MapRef
 } from "react-map-gl/maplibre";
 import { Sheet } from "react-modal-sheet";
 import { useApp } from "~/AppContext";
-import { getRegionConfig, type RegionId } from "~/config/RegionConfig";
-import { getLineColor } from "~/data/LineColors";
+import { REGION_DATA } from "~/config/RegionConfig";
+import { getLineColour } from "~/data/LineColors";
 import type { Stop } from "~/data/StopDataProvider";
 import { loadStyle } from "~/maps/styleloader";
 import "./StopMapModal.css";
@@ -37,7 +37,6 @@ export interface ConsolidatedCirculationForMap {
 interface StopMapModalProps {
   stop: Stop;
   circulations: ConsolidatedCirculationForMap[];
-  region: RegionId;
   isOpen: boolean;
   onClose: () => void;
   selectedCirculationId?: string;
@@ -46,7 +45,6 @@ interface StopMapModalProps {
 export const StopMapModal: React.FC<StopMapModalProps> = ({
   stop,
   circulations,
-  region,
   isOpen,
   onClose,
   selectedCirculationId,
@@ -58,8 +56,6 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
   const userInteracted = useRef(false);
   const [shapeData, setShapeData] = useState<any | null>(null);
   const [previousShapeData, setPreviousShapeData] = useState<any | null>(null);
-
-  const regionConfig = getRegionConfig(region);
 
   // Filter circulations that have GPS coordinates
   const busesWithPosition = useMemo(
@@ -165,7 +161,7 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
           maxZoom: 17,
         } as any);
       }
-    } catch {}
+    } catch { }
   }, [stop, selectedBus, shapeData, previousShapeData]);
 
   // Load style without traffic layers for the stop map
@@ -246,7 +242,7 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
       !selectedBus ||
       !selectedBus.schedule?.shapeId ||
       selectedBus.currentPosition?.shapeIndex === undefined ||
-      !regionConfig.shapeEndpoint
+      !REGION_DATA.shapeEndpoint
     ) {
       setShapeData(null);
       setPreviousShapeData(null);
@@ -266,7 +262,7 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
       sLat?: number,
       sLon?: number
     ) => {
-      let url = `${regionConfig.shapeEndpoint}?shapeId=${sId}`;
+      let url = `${REGION_DATA.shapeEndpoint}?shapeId=${sId}`;
       if (bIndex !== undefined) url += `&busShapeIndex=${bIndex}`;
       if (sIndex !== undefined) url += `&stopShapeIndex=${sIndex}`;
       else if (sLat && sLon) url += `&stopLat=${sLat}&stopLon=${sLon}`;
@@ -334,7 +330,7 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
     };
 
     loadShapes().catch((err) => console.error("Failed to load shape", err));
-  }, [isOpen, selectedBus, regionConfig.shapeEndpoint]);
+  }, [isOpen, selectedBus]);
 
   if (busesWithPosition.length === 0) {
     return null; // Don't render if no buses with GPS coordinates
@@ -362,7 +358,7 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
                   }}
                   style={{ width: "100%", height: "50vh" }}
                   mapStyle={styleSpec}
-                  attributionControl={{compact: false, customAttribution: "Concello de Vigo & Viguesa de Transportes SL"}}
+                  attributionControl={{ compact: false, customAttribution: "Concello de Vigo & Viguesa de Transportes SL" }}
                   ref={mapRef}
                   interactive={true}
                   onMove={(e) => {
@@ -422,7 +418,7 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
                         id="prev-route-shape-inner"
                         type="line"
                         paint={{
-                          "line-color": getLineColor(region, selectedBus.line)
+                          "line-color": getLineColour(selectedBus.line)
                             .background,
                           "line-width": 4,
                           "line-dasharray": [2, 2],
@@ -455,7 +451,7 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
                         id="route-shape-inner"
                         type="line"
                         paint={{
-                          "line-color": getLineColor(region, selectedBus.line)
+                          "line-color": getLineColour(selectedBus.line)
                             .background,
                           "line-width": 3,
                           "line-opacity": 0.7,
@@ -534,7 +530,7 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
                         >
                           <path
                             d="M12 2 L22 22 L12 17 L2 22 Z"
-                            fill={getLineColor(region, selectedBus.line).background}
+                            fill={getLineColour(selectedBus.line).background}
                             stroke="#000"
                             strokeWidth="2"
                             strokeLinejoin="round"

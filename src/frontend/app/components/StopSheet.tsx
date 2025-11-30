@@ -3,9 +3,8 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Sheet } from "react-modal-sheet";
 import { Link } from "react-router";
+import { REGION_DATA } from "~/config/RegionConfig";
 import type { Stop } from "~/data/StopDataProvider";
-import { useApp } from "../AppContext";
-import { type RegionId, getRegionConfig } from "../config/RegionConfig";
 import { type ConsolidatedCirculation } from "../routes/stops-$id";
 import { ErrorDisplay } from "./ErrorDisplay";
 import LineIcon from "./LineIcon";
@@ -27,12 +26,10 @@ interface ErrorInfo {
 }
 
 const loadConsolidatedData = async (
-  region: RegionId,
   stopId: number
 ): Promise<ConsolidatedCirculation[]> => {
-  const regionConfig = getRegionConfig(region);
   const resp = await fetch(
-    `${regionConfig.consolidatedCirculationsEndpoint}?stopId=${stopId}`,
+    `${REGION_DATA.consolidatedCirculationsEndpoint}?stopId=${stopId}`,
     {
       headers: {
         Accept: "application/json",
@@ -53,8 +50,6 @@ export const StopSheet: React.FC<StopSheetProps> = ({
   stop,
 }) => {
   const { t } = useTranslation();
-  const { region } = useApp();
-  const regionConfig = getRegionConfig(region);
   const [data, setData] = useState<ConsolidatedCirculation[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<ErrorInfo | null>(null);
@@ -87,7 +82,7 @@ export const StopSheet: React.FC<StopSheetProps> = ({
       setError(null);
       setData(null);
 
-      const stopData = await loadConsolidatedData(region, stop.stopId);
+      const stopData = await loadConsolidatedData(stop.stopId);
       setData(stopData);
       setLastUpdated(new Date());
     } catch (err) {
@@ -102,15 +97,15 @@ export const StopSheet: React.FC<StopSheetProps> = ({
     if (isOpen && stop.stopId) {
       loadData();
     }
-  }, [isOpen, stop.stopId, region]);
+  }, [isOpen, stop.stopId]);
 
   // Show only the next 4 arrivals
   const sortedData = data
     ? [...data].sort(
-        (a, b) =>
-          (a.realTime?.minutes ?? a.schedule?.minutes ?? 999) -
-          (b.realTime?.minutes ?? b.schedule?.minutes ?? 999)
-      )
+      (a, b) =>
+        (a.realTime?.minutes ?? a.schedule?.minutes ?? 999) -
+        (b.realTime?.minutes ?? b.schedule?.minutes ?? 999)
+    )
     : [];
   const limitedEstimates = sortedData.slice(0, 4);
 
@@ -130,7 +125,7 @@ export const StopSheet: React.FC<StopSheetProps> = ({
             >
               {stop.lines.map((line) => (
                 <div key={line} className="stop-sheet-line-icon">
-                  <LineIcon line={line} region={region} mode="rounded" />
+                  <LineIcon line={line} mode="rounded" />
                 </div>
               ))}
             </div>
@@ -166,7 +161,6 @@ export const StopSheet: React.FC<StopSheetProps> = ({
                         <ConsolidatedCirculationCard
                           key={idx}
                           estimate={estimate}
-                          regionConfig={regionConfig}
                           readonly
                         />
                       ))}
@@ -179,39 +173,39 @@ export const StopSheet: React.FC<StopSheetProps> = ({
         </Sheet.Content>
 
         <div className="stop-sheet-footer">
-            {lastUpdated && (
-              <div className="stop-sheet-timestamp">
-                {t("estimates.last_updated", "Actualizado a las")}{" "}
-                {lastUpdated.toLocaleTimeString(undefined, {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  second: "2-digit",
-                })}
-              </div>
-            )}
-
-            <div className="stop-sheet-actions">
-              <button
-                className="stop-sheet-reload"
-                onClick={loadData}
-                disabled={loading}
-                title={t("estimates.reload", "Recargar estimaciones")}
-              >
-                <RefreshCw
-                  className={`reload-icon ${loading ? "spinning" : ""}`}
-                />
-                {t("estimates.reload", "Recargar")}
-              </button>
-
-              <Link
-                to={`/stops/${stop.stopId}`}
-                className="stop-sheet-view-all"
-                onClick={onClose}
-              >
-                {t("map.view_all_estimates", "Ver todas las estimaciones")}
-              </Link>
+          {lastUpdated && (
+            <div className="stop-sheet-timestamp">
+              {t("estimates.last_updated", "Actualizado a las")}{" "}
+              {lastUpdated.toLocaleTimeString(undefined, {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+              })}
             </div>
+          )}
+
+          <div className="stop-sheet-actions">
+            <button
+              className="stop-sheet-reload"
+              onClick={loadData}
+              disabled={loading}
+              title={t("estimates.reload", "Recargar estimaciones")}
+            >
+              <RefreshCw
+                className={`reload-icon ${loading ? "spinning" : ""}`}
+              />
+              {t("estimates.reload", "Recargar")}
+            </button>
+
+            <Link
+              to={`/stops/${stop.stopId}`}
+              className="stop-sheet-view-all"
+              onClick={onClose}
+            >
+              {t("map.view_all_estimates", "Ver todas las estimaciones")}
+            </Link>
           </div>
+        </div>
       </Sheet.Container>
       <Sheet.Backdrop onTap={onClose} />
     </Sheet>
