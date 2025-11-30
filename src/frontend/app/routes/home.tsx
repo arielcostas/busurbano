@@ -2,22 +2,18 @@ import Fuse from "fuse.js";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { usePageTitle } from "~/contexts/PageTitleContext";
-import { useApp } from "../AppContext";
 import StopGallery from "../components/StopGallery";
 import StopItem from "../components/StopItem";
 import StopItemSkeleton from "../components/StopItemSkeleton";
 import StopDataProvider, { type Stop } from "../data/StopDataProvider";
-import "./home.css";
+import "../tailwind-full.css";
 
 export default function StopList() {
   const { t } = useTranslation();
   usePageTitle(t("navbar.stops", "Paradas"));
-  const { region } = useApp();
   const [data, setData] = useState<Stop[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchResults, setSearchResults] = useState<Stop[] | null>(null);
-  const [favouriteIds, setFavouriteIds] = useState<number[]>([]);
-  const [recentIds, setRecentIds] = useState<number[]>([]);
   const [favouriteStops, setFavouriteStops] = useState<Stop[]>([]);
   const [recentStops, setRecentStops] = useState<Stop[]>([]);
   const [userLocation, setUserLocation] = useState<{
@@ -158,12 +154,6 @@ export default function StopList() {
       .map(({ stop }) => stop);
   }, [data, userLocation]);
 
-  // Load favourite and recent IDs immediately from localStorage
-  useEffect(() => {
-    setFavouriteIds(StopDataProvider.getFavouriteIds());
-    setRecentIds(StopDataProvider.getRecent());
-  }, [region]);
-
   // Load stops from network
   const loadStops = useCallback(async () => {
     try {
@@ -196,7 +186,7 @@ export default function StopList() {
     } finally {
       setLoading(false);
     }
-  }, [region]);
+  }, []);
 
   useEffect(() => {
     loadStops();
@@ -246,23 +236,35 @@ export default function StopList() {
   };
 
   return (
-    <div className="stoplist-page">
-      <div className="stoplist-section search-container">
-        <h3 className="page-subtitle">{t("stoplist.search_label", "Buscar paradas")}</h3>
+    <div className="flex flex-col gap-4 py-4 pb-8">
+      {/* Search Section */}
+      <div className="w-full px-4">
+        <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
+          {t("stoplist.search_label", "Buscar paradas")}
+        </h3>
         <input
           type="search"
           placeholder={randomPlaceholder}
           onChange={handleStopSearch}
-          className="search-bar"
+          className="
+            w-full px-4 py-3 text-base
+            border border-gray-300 dark:border-gray-700 rounded-xl
+            bg-white dark:bg-gray-800
+            text-gray-900 dark:text-gray-100
+            placeholder:text-gray-500 dark:placeholder:text-gray-400 placeholder:opacity-80
+            focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+            transition-all duration-200
+          "
         />
       </div>
 
+      {/* Search Results */}
       {searchResults && searchResults.length > 0 && (
-        <div className="stoplist-section list-container">
-          <h2 className="page-subtitle">
+        <div className="w-full px-4 flex flex-col gap-2">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
             {t("stoplist.search_results", "Resultados de la búsqueda")}
           </h2>
-          <ul className="list">
+          <ul className="list-none p-0 m-0 flex flex-col gap-2 md:grid md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(320px,1fr))]">
             {searchResults.map((stop: Stop) => (
               <StopItem key={stop.stopId} stop={stop} />
             ))}
@@ -270,6 +272,7 @@ export default function StopList() {
         </div>
       )}
 
+      {/* Favourites Gallery */}
       {!loading && (
         <StopGallery
           stops={favouriteStops.sort((a, b) => a.stopId - b.stopId)}
@@ -278,7 +281,8 @@ export default function StopList() {
         />
       )}
 
-      {!loading && (
+      {/* Recent Stops Gallery - only show if no favourites */}
+      {!loading && favouriteStops.length === 0 && (
         <StopGallery
           stops={recentStops.slice(0, 5)}
           title={t("stoplist.recents")}
@@ -287,14 +291,23 @@ export default function StopList() {
 
       {/*<ServiceAlerts />*/}
 
-      <div className="stoplist-section list-container">
-        <h2 className="page-subtitle">
-          {userLocation
-            ? t("stoplist.nearby_stops", "Nearby stops")
-            : t("stoplist.all_stops", "Paradas")}
-        </h2>
+      {/* All Stops / Nearby Stops */}
+      <div className="w-full px-4 flex flex-col gap-2">
+        <div className="flex items-center gap-2">
+          {userLocation && (
+            <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          )}
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            {userLocation
+              ? t("stoplist.nearby_stops", "Nearby stops")
+              : t("stoplist.all_stops", "Paradas")}
+          </h2>
+        </div>
 
-        <ul className="list">
+        <ul className="list-none p-0 m-0 flex flex-col gap-2 md:grid md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(320px,1fr))]">
           {loading && (
             <>
               {Array.from({ length: 6 }, (_, index) => (

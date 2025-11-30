@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { type Stop } from "../data/StopDataProvider";
-import "./StopGallery.css";
 import StopGalleryItem from "./StopGalleryItem";
 
 interface StopGalleryProps {
@@ -36,10 +35,12 @@ const StopGallery: React.FC<StopGalleryProps> = ({
 
   if (stops.length === 0 && emptyMessage) {
     return (
-      <div className="gallery-container stoplist-section">
-        <h3 className="page-subtitle">{title}</h3>
-        <div className="gallery-empty-state">
-          <p className="message">{emptyMessage}</p>
+      <div className="w-full px-4 flex flex-col gap-2">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{title}</h3>
+        <div className="text-center">
+          <p className="text-sm px-4 py-3 bg-gray-100 dark:bg-gray-800 rounded-lg">
+            {emptyMessage}
+          </p>
         </div>
       </div>
     );
@@ -50,24 +51,31 @@ const StopGallery: React.FC<StopGalleryProps> = ({
   }
 
   return (
-    <div className="gallery-container stoplist-section">
-      <div className="gallery-header">
-        <h3 className="page-subtitle">{title}</h3>
-        <span className="gallery-counter">{stops.length}</span>
-      </div>
+    <div className="w-full px-4 flex flex-col gap-2">
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{title}</h3>
 
-      <div ref={scrollRef} className="gallery-scroll-container">
-        <div className="gallery-track">
+      <div
+        ref={scrollRef}
+        className="overflow-x-auto overflow-y-hidden snap-x snap-mandatory scrollbar-hide pb-2"
+        style={{
+          WebkitOverflowScrolling: 'touch',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none'
+        }}
+      >
+        <div className="flex gap-3">
           {stops.map((stop) => (
             <StopGalleryItem key={stop.stopId} stop={stop} />
           ))}
         </div>
       </div>
-      <div className="gallery-dots">
+      <div className="flex justify-center gap-1.5 mt-1">
         {stops.map((_, index) => (
           <span
             key={index}
-            className={`dot ${index === activeIndex ? "active" : ""}`}
+            className={`w-1.5 h-1.5 rounded-full transition-colors duration-200 ${
+              index === activeIndex ? "bg-blue-600" : "bg-gray-300 dark:bg-gray-700"
+            }`}
           ></span>
         ))}
       </div>

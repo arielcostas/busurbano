@@ -1,8 +1,8 @@
 import { Computer, Moon, Sun } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { usePageTitle } from "~/contexts/PageTitleContext";
-import { type Theme, useApp } from "../AppContext";
-import "./settings.css";
+import { useApp, type Theme } from "../AppContext";
+import '../tailwind-full.css';
 
 export default function Settings() {
   const { t, i18n } = useTranslation();
@@ -14,72 +14,91 @@ export default function Settings() {
     setMapPositionMode
   } = useApp();
 
+  const THEMES = [
+    { value: "light" as Theme, label: t("about.theme_light", "Claro"), icon: Sun },
+    { value: "dark" as Theme, label: t("about.theme_dark", "Oscuro"), icon: Moon },
+    { value: "system" as Theme, label: t("about.theme_system", "Sistema"), icon: Computer },
+  ];
+
   return (
-    <div className="page-container">
-      <section className="settings-section">
-        <h2>{t("about.settings")}</h2>
-
-        <div className="settings-content-inline">
-          <label htmlFor="theme" className="form-label-inline">
-            {t("about.theme")}
-          </label>
-
-          <div className="flex">
-            <button onClick={() => setTheme("light")}>
-              <Sun />
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Theme Selection */}
+      <section className="mb-8">
+        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
+          {t("about.theme", "Tema")}
+        </h2>
+        <div className="grid grid-cols-3 gap-3 sm:gap-4">
+          {THEMES.map(({ value, label, icon: Icon }) => (
+            <button
+              key={value}
+              onClick={() => setTheme(value)}
+              className={`
+                p-4 sm:p-6 flex flex-col items-center justify-center gap-2
+                rounded-lg border-2 transition-all duration-200
+                hover:bg-gray-50 dark:hover:bg-gray-800
+                focus:outline-none focus:ring focus:ring-blue-500 dark:focus:ring-offset-gray-900
+                ${value === theme
+                  ? "border-blue-600 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 font-semibold"
+                  : "border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300"
+                }
+              `}
+            >
+              <Icon className="w-6 h-6" />
+              <span className="text-sm sm:text-base">{label}</span>
             </button>
-            <button onClick={() => setTheme("dark")}>
-              <Moon />
-            </button>
-            <button onClick={() => setTheme("system")}>
-              <Computer />
-            </button>
-          </div>
-
-          <select
-            id="theme"
-            className="form-select-inline"
-            value={theme}
-            onChange={(e) => setTheme(e.target.value as Theme)}
-          >
-            <option value="light">{t("about.theme_light")}</option>
-            <option value="dark">{t("about.theme_dark")}</option>
-            <option value="system">{t("about.theme_system")}</option>
-          </select>
+          ))}
         </div>
+      </section>
 
-        <div className="settings-content-inline">
-          <label htmlFor="mapPositionMode" className="form-label-inline">
-            {t("about.map_position_mode")}
-          </label>
-          <select
-            id="mapPositionMode"
-            className="form-select-inline"
-            value={mapPositionMode}
-            onChange={(e) =>
-              setMapPositionMode(e.target.value as "gps" | "last")
-            }
-          >
-            <option value="gps">{t("about.map_position_gps")}</option>
-            <option value="last">{t("about.map_position_last")}</option>
-          </select>
-        </div>
-        <div className="settings-content-inline">
-          <label htmlFor="language" className="form-label-inline">
-            {t("about.language", "Idioma")}:
-          </label>
-          <select
-            id="language"
-            className="form-select-inline"
-            value={i18n.language}
-            onChange={(e) => i18n.changeLanguage(e.target.value)}
-          >
-            <option value="es-ES">Español</option>
-            <option value="gl-ES">Galego</option>
-            <option value="en-GB">English</option>
-          </select>
-        </div>
+      {/* Map Position Mode */}
+      <section className="mb-8">
+        <label
+          htmlFor="mapPositionMode"
+          className="block text-lg font-medium text-gray-900 dark:text-gray-100 mb-3"
+        >
+          {t("about.map_position_mode")}
+        </label>
+        <select
+          id="mapPositionMode"
+          className="
+            w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700
+            bg-white dark:bg-gray-800
+            text-gray-900 dark:text-gray-100
+            focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+            transition-colors duration-200
+          "
+          value={mapPositionMode}
+          onChange={(e) => setMapPositionMode(e.target.value as "gps" | "last")}
+        >
+          <option value="gps">{t("about.map_position_gps")}</option>
+          <option value="last">{t("about.map_position_last")}</option>
+        </select>
+      </section>
 
+      {/* Language Selection */}
+      <section>
+        <label
+          htmlFor="language"
+          className="block text-lg font-medium text-gray-900 dark:text-gray-100 mb-3"
+        >
+          {t("about.language", "Idioma")}
+        </label>
+        <select
+          id="language"
+          className="
+            w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700
+            bg-white dark:bg-gray-800
+            text-gray-900 dark:text-gray-100
+            focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+            transition-colors duration-200
+          "
+          value={i18n.language}
+          onChange={(e) => i18n.changeLanguage(e.target.value)}
+        >
+          <option value="es-ES">Español</option>
+          <option value="gl-ES">Galego</option>
+          <option value="en-GB">English</option>
+        </select>
       </section>
     </div>
   );
