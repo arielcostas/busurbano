@@ -14,7 +14,7 @@ import Map, {
   type MapRef,
   type StyleSpecification
 } from "react-map-gl/maplibre";
-import { StopSheet } from "~/components/StopSheet";
+import { StopSheet } from "~/components/StopSummarySheet";
 import { REGION_DATA } from "~/config/RegionConfig";
 import { usePageTitle } from "~/contexts/PageTitleContext";
 import { useApp } from "../AppContext";

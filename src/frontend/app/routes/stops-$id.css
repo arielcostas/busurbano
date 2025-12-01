@@ -53,20 +53,6 @@
   gap: 1rem;
 }
 
-.stops-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  flex-shrink: 0;
-}
-
-.stops-header > div:first-child {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
 .star-icon,
 .edit-icon {
   cursor: pointer;

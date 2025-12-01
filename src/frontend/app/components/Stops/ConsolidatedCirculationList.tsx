@@ -2,18 +2,19 @@ import { useTranslation } from "react-i18next";
 import { type ConsolidatedCirculation } from "~routes/stops-$id";
 import { ConsolidatedCirculationCard } from "./ConsolidatedCirculationCard";
 
+import { useCallback } from "react";
 import "./ConsolidatedCirculationList.css";
 
-interface RegularTableProps {
+interface ConsolidatedCirculationListProps {
   data: ConsolidatedCirculation[];
-  dataDate: Date | null;
   onCirculationClick?: (estimate: ConsolidatedCirculation, index: number) => void;
+  reduced?: boolean;
 }
 
-export const ConsolidatedCirculationList: React.FC<RegularTableProps> = ({
+export const ConsolidatedCirculationList: React.FC<ConsolidatedCirculationListProps> = ({
   data,
-  dataDate,
   onCirculationClick,
+  reduced,
 }) => {
   const { t } = useTranslation();
 
@@ -23,28 +24,31 @@ export const ConsolidatedCirculationList: React.FC<RegularTableProps> = ({
       (b.realTime?.minutes ?? b.schedule?.minutes ?? 999)
   );
 
+  const generateKey = useCallback((estimate: ConsolidatedCirculation) => {
+    if (estimate.realTime && estimate.schedule) {
+      return `rt-${estimate.schedule.tripId}`;
+    }
+
+    return `sch-${estimate.schedule ? estimate.schedule.tripId : estimate.line + "-" + estimate.route}`;
+  }, []);
+
   return (
     <>
-      <div className="consolidated-circulation-caption">
-        {t("estimates.caption", "Estimaciones de llegadas a las {{time}}", {
-          time: dataDate?.toLocaleTimeString(),
-        })}
-      </div>
-
       {sortedData.length === 0 ? (
         <div className="consolidated-circulation-no-data">
           {t("estimates.none", "No hay estimaciones disponibles")}
         </div>
       ) : (
-        <>
+        <div className="flex flex-col gap-3">
           {sortedData.map((estimate, idx) => (
             <ConsolidatedCirculationCard
-              key={idx}
+              reduced={reduced}
+              key={generateKey(estimate)}
               estimate={estimate}
               onMapClick={() => onCirculationClick?.(estimate, idx)}
             />
           ))}
-        </>
+        </div>
       )}
     </>
   );

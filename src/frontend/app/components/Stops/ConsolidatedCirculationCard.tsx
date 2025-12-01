@@ -10,6 +10,7 @@ interface ConsolidatedCirculationCardProps {
   estimate: ConsolidatedCirculation;
   onMapClick?: () => void;
   readonly?: boolean;
+  reduced?: boolean;
 }
 
 // Utility function to parse service ID and get the turn number
@@ -71,7 +72,7 @@ const parseServiceId = (serviceId: string): string => {
 
 export const ConsolidatedCirculationCard: React.FC<
   ConsolidatedCirculationCardProps
-> = ({ estimate, onMapClick, readonly }) => {
+> = ({ estimate, onMapClick, readonly, reduced }) => {
   const { t } = useTranslation();
 
   const formatDistance = (meters: number) => {
@@ -118,7 +119,7 @@ export const ConsolidatedCirculationCard: React.FC<
     // On time
     if (delta === 0) {
       return {
-        label: t("estimates.delay_on_time", "En hora (0 min)"),
+        label: reduced ? "OK" : t("estimates.delay_on_time", "En hora (0 min)"),
         tone: "delay-ok",
       } as const;
     }
@@ -128,7 +129,7 @@ export const ConsolidatedCirculationCard: React.FC<
       const tone =
         delta <= 2 ? "delay-ok" : delta <= 10 ? "delay-warn" : "delay-critical";
       return {
-        label: t("estimates.delay_positive", "Retraso de {{minutes}} min", {
+        label: reduced ? `R${delta}` : t("estimates.delay_positive", "Retraso de {{minutes}} min", {
           minutes: delta,
         }),
         tone,
@@ -138,12 +139,12 @@ export const ConsolidatedCirculationCard: React.FC<
     // Early
     const tone = absDelta <= 2 ? "delay-ok" : "delay-early";
     return {
-      label: t("estimates.delay_negative", "Adelanto de {{minutes}} min", {
+      label: reduced ? `A${absDelta}` : t("estimates.delay_negative", "Adelanto de {{minutes}} min", {
         minutes: absDelta,
       }),
       tone,
     } as const;
-  }, [estimate.schedule, estimate.realTime, t]);
+  }, [estimate.schedule, estimate.realTime, t, reduced]);
 
   const metaChips = useMemo(() => {
     const chips: Array<{ label: string; tone?: string }> = [];
@@ -175,6 +176,84 @@ export const ConsolidatedCirculationCard: React.FC<
       disabled: !hasGpsPosition,
     };
 
+  if (reduced) {
+    return (
+      <Tag
+        className={`
+          flex-none flex items-center gap-2.5 min-h-12
+          bg-(--message-background-color) border border-(--border-color)
+          rounded-xl px-3 py-2.5 transition-all
+          ${readonly
+            ? !hasGpsPosition
+              ? "opacity-70 cursor-not-allowed"
+              : ""
+            : hasGpsPosition
+              ? "cursor-pointer hover:shadow-[0_4px_14px_rgba(0,0,0,0.08)] hover:border-(--button-background-color) hover:bg-[color-mix(in_oklab,var(--button-background-color)_5%,var(--message-background-color))] active:scale-[0.98]"
+              : "opacity-70 cursor-not-allowed"
+          }
+        `.trim()}
+        {...interactiveProps}
+      >
+        <div className="shrink-0">
+          <LineIcon line={estimate.line} mode="pill" />
+        </div>
+        <div className="flex-1 min-w-0 flex flex-col gap-1">
+          <strong className="text-base text-(--text-color) overflow-hidden text-ellipsis line-clamp-2 leading-tight">
+            {estimate.route}
+          </strong>
+          {metaChips.length > 0 && (
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {metaChips.map((chip, idx) => {
+                let chipColourClasses = "";
+                switch (chip.tone) {
+                  case "delay-ok":
+                    chipColourClasses = "bg-green-600/20 dark:bg-green-600/30 text-green-700 dark:text-green-300";
+                    break;
+                  case "delay-warn":
+                    chipColourClasses = "bg-amber-600/20 dark:bg-yellow-600/30 text-amber-700 dark:text-yellow-300";
+                    break;
+                  case "delay-critical":
+                    chipColourClasses = "bg-red-400/20 dark:bg-red-600/30 text-red-600 dark:text-red-300";
+                    break;
+                  case "delay-early":
+                    chipColourClasses = "bg-blue-400/20 dark:bg-blue-600/30 text-blue-700 dark:text-blue-300";
+                    break;
+                  default:
+                    chipColourClasses = "bg-black/[0.06] dark:bg-white/[0.12] text-[var(--text-color)]";
+                }
+
+                return (
+                  <span
+                    key={`${chip.label}-${idx}`}
+                    className={`text-xs px-2 py-0.5 rounded-full flex items-center justify-center gap-1 shrink-0 ${chipColourClasses}`}
+                  >
+                    {chip.label}
+                  </span>
+                );
+              })}
+            </div>
+          )}
+        </div>
+        <div
+          className={`
+            inline-flex items-center justify-center px-2 py-1.5 rounded-xl shrink-0
+            ${timeClass === "time-running"
+              ? "bg-green-600/20 dark:bg-green-600/25 text-[#1a9e56] dark:text-[#22c55e]"
+              : timeClass === "time-delayed"
+                ? "bg-orange-600/20 dark:bg-orange-600/25 text-[#d06100] dark:text-[#fb923c]"
+                : "bg-blue-900/20 dark:bg-blue-600/25 text-[#0b3d91] dark:text-[#93c5fd]"
+            }
+          `.trim()}
+        >
+          <div className="flex flex-col items-center leading-none">
+            <span className="text-lg font-bold leading-none">{etaValue}</span>
+            <span className="text-[0.65rem] uppercase tracking-wider mt-0.5 opacity-90">{etaUnit}</span>
+          </div>
+        </div>
+      </Tag>
+    );
+  }
+
   return (
     <Tag
       className={`consolidated-circulation-card ${readonly
@@ -186,50 +265,51 @@ export const ConsolidatedCirculationCard: React.FC<
           : "no-gps"
         }`}
       {...interactiveProps}
-      aria-label={`${hasGpsPosition ? "View" : "No GPS data for"} ${estimate.line
-        } to ${estimate.route}${hasGpsPosition ? " on map" : ""}`}
     >
-      <div className="card-row main">
-        <div className="line-info">
-          <LineIcon line={estimate.line} mode="pill" />
+      <>
+        <div className="card-row main">
+          <div className="line-info">
+            <LineIcon line={estimate.line} mode="pill" />
+          </div>
+          <div className="route-info">
+            <strong>{estimate.route}</strong>
+            {estimate.nextStreets && estimate.nextStreets.length > 0 && (
+              <Marquee speed={85}>
+                <div className="mr-32 font-mono">
+                  {estimate.nextStreets.join(" — ")}
+                </div>
+              </Marquee>
+            )}
+          </div>
+          {hasGpsPosition && (
+            <div className="gps-indicator" title="Live GPS tracking">
+              <span
+                className={`gps-pulse ${estimate.isPreviousTrip ? "previous-trip" : ""
+                  }`}
+              />
+            </div>
+          )}
+          <div className={`eta-badge ${timeClass}`}>
+            <div className="eta-text">
+              <span className="eta-value">{etaValue}</span>
+              <span className="eta-unit">{etaUnit}</span>
+            </div>
+          </div>
         </div>
-        <div className="route-info">
-          <strong>{estimate.route}</strong>
-        </div>
-        {hasGpsPosition && (
-          <div className="gps-indicator" title="Live GPS tracking">
-            <span
-              className={`gps-pulse ${estimate.isPreviousTrip ? "previous-trip" : ""
-                }`}
-            />
+
+        {metaChips.length > 0 && (
+          <div className="card-row meta">
+            {metaChips.map((chip, idx) => (
+              <span
+                key={`${chip.label}-${idx}`}
+                className={`meta-chip ${chip.tone ?? ""}`.trim()}
+              >
+                {chip.label}
+              </span>
+            ))}
           </div>
         )}
-        <div className={`eta-badge ${timeClass}`}>
-          <div className="eta-text">
-            <span className="eta-value">{etaValue}</span>
-            <span className="eta-unit">{etaUnit}</span>
-          </div>
-        </div>
-      </div>
-      {metaChips.length > 0 && (
-        <div className="card-row meta">
-          {metaChips.map((chip, idx) => (
-            <span
-              key={`${chip.label}-${idx}`}
-              className={`meta-chip ${chip.tone ?? ""}`.trim()}
-            >
-              {chip.label}
-            </span>
-          ))}
-
-          {estimate.nextStreets && estimate.nextStreets.length > 0 && (
-            <Marquee speed={85}>
-              <div className="mr-64"></div>
-              {estimate.nextStreets.join(" — ")}
-            </Marquee>
-          )}
-        </div>
-      )}
+      </>
     </Tag>
   );
 };

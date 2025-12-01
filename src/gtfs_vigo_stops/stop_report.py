@@ -482,7 +482,7 @@ def get_stop_arrivals(feed_dir: str, date: str) -> Dict[str, List[Dict[str, Any]
                             "shape_dist_traveled": getattr(
                                 stop_time, "shape_dist_traveled", 0
                             ),
-                            "next_streets": next_streets,
+                            "next_streets": [s for s in next_streets if s != ""],
                             "starting_code": starting_code,
                             "starting_name": starting_name,
                             "starting_time": final_starting_time,

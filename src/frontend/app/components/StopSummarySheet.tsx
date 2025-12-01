@@ -3,15 +3,15 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Sheet } from "react-modal-sheet";
 import { Link } from "react-router";
+import { ConsolidatedCirculationList } from "~/components/Stops/ConsolidatedCirculationList";
 import { REGION_DATA } from "~/config/RegionConfig";
 import type { Stop } from "~/data/StopDataProvider";
 import { type ConsolidatedCirculation } from "../routes/stops-$id";
 import { ErrorDisplay } from "./ErrorDisplay";
 import LineIcon from "./LineIcon";
 import { StopAlert } from "./StopAlert";
-import { ConsolidatedCirculationCard } from "./Stops/ConsolidatedCirculationCard";
-import "./StopSheet.css";
-import { StopSheetSkeleton } from "./StopSheetSkeleton";
+import "./StopSummarySheet.css";
+import { StopSummarySheetSkeleton } from "./StopSummarySheetSkeleton";
 
 interface StopSheetProps {
   isOpen: boolean;
@@ -133,7 +133,7 @@ export const StopSheet: React.FC<StopSheetProps> = ({
             <StopAlert stop={stop} compact />
 
             {loading ? (
-              <StopSheetSkeleton />
+              <StopSummarySheetSkeleton />
             ) : error ? (
               <ErrorDisplay
                 error={error}
@@ -156,15 +156,10 @@ export const StopSheet: React.FC<StopSheetProps> = ({
                       {t("estimates.none", "No hay estimaciones disponibles")}
                     </div>
                   ) : (
-                    <div className="stop-sheet-estimates-list">
-                      {limitedEstimates.map((estimate, idx) => (
-                        <ConsolidatedCirculationCard
-                          key={idx}
-                          estimate={estimate}
-                          readonly
-                        />
-                      ))}
-                    </div>
+                    <ConsolidatedCirculationList
+                      data={data.slice(0, 4)}
+                      reduced
+                    />
                   )}
                 </div>
               </>

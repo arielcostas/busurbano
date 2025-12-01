@@ -1,4 +1,4 @@
-import { Edit2, RefreshCw, Star } from "lucide-react";
+import { Eye, EyeClosed, RefreshCw, Star } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
@@ -88,6 +88,7 @@ export default function Estimates() {
   const [favourited, setFavourited] = useState(false);
   const [isManualRefreshing, setIsManualRefreshing] = useState(false);
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
+  const [isReducedView, setIsReducedView] = useState(false);
   const [selectedCirculationId, setSelectedCirculationId] = useState<
     string | undefined
   >(undefined);
@@ -185,49 +186,9 @@ export default function Estimates() {
     }
   };
 
-  const handleRename = () => {
-    const current = getStopDisplayName();
-    const input = window.prompt("Custom name for this stop:", current);
-    if (input === null) return; // cancelled
-    const trimmed = input.trim();
-    if (trimmed === "") {
-      StopDataProvider.removeCustomName(stopIdNum);
-      setCustomName(undefined);
-    } else {
-      StopDataProvider.setCustomName(stopIdNum, trimmed);
-      setCustomName(trimmed);
-    }
-  };
-
   return (
     <PullToRefresh onRefresh={handleManualRefresh}>
       <div className="page-container stops-page">
-        <div className="stops-header">
-          <div>
-            <Star
-              className={`star-icon ${favourited ? "active" : ""}`}
-              onClick={toggleFavourite}
-              width={20}
-            />
-            <Edit2
-              className="edit-icon"
-              onClick={handleRename}
-              width={20}
-            />
-          </div>
-
-          <button
-            className="manual-refresh-button"
-            onClick={handleManualRefresh}
-            disabled={isManualRefreshing || dataLoading}
-            title={t("estimates.reload", "Recargar estimaciones")}
-          >
-            <RefreshCw
-              className={`refresh-icon ${isManualRefreshing ? "spinning" : ""}`}
-            />
-          </button>
-        </div>
-
         {stopData && stopData.lines && stopData.lines.length > 0 && (
           <div className={`estimates-lines-container scrollable`}>
             {stopData.lines.map((line) => (
@@ -253,14 +214,43 @@ export default function Estimates() {
               )}
             />
           ) : data ? (
-            <ConsolidatedCirculationList
-              data={data}
-              dataDate={dataDate}
-              onCirculationClick={(estimate, idx) => {
-                setSelectedCirculationId(getCirculationId(estimate));
-                setIsMapModalOpen(true);
-              }}
-            />
+            <>
+              <div className="flex items-center justify-between py-2">
+                <div className="flex items-center gap-4">
+                  <Star
+                    className={`text-slate-500 ${favourited ? "active" : ""}`}
+                    onClick={toggleFavourite}
+                  />
+
+                  <RefreshCw
+                    className={`text-slate-500 ${isManualRefreshing ? "spinning" : ""}`}
+                    onClick={handleManualRefresh}
+                  />
+                </div>
+
+                <div className="consolidated-circulation-caption">
+                  {t("estimates.caption", "Estimaciones de llegadas a las {{time}}", {
+                    time: dataDate?.toLocaleTimeString(),
+                  })}
+                </div>
+
+                <div>
+                  {isReducedView ? (
+                    <EyeClosed className="text-slate-500" onClick={() => setIsReducedView(false)} />
+                  ) : (
+                    <Eye className="text-slate-500" onClick={() => setIsReducedView(true)} />
+                  )}
+                </div>
+              </div>
+              <ConsolidatedCirculationList
+                data={data}
+                reduced={isReducedView}
+                onCirculationClick={(estimate, idx) => {
+                  setSelectedCirculationId(getCirculationId(estimate));
+                  setIsMapModalOpen(true);
+                }}
+              />
+            </>
           ) : null}
         </div>
 

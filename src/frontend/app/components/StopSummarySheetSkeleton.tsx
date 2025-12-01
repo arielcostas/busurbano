@@ -1,13 +1,13 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { useTranslation } from "react-i18next";
 
 interface StopSheetSkeletonProps {
   rows?: number;
 }
 
-export const StopSheetSkeleton: React.FC<StopSheetSkeletonProps> = ({
+export const StopSummarySheetSkeleton: React.FC<StopSheetSkeletonProps> = ({
   rows = 4,
 }) => {
   const { t } = useTranslation();
