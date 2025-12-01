@@ -194,7 +194,7 @@ export const ConsolidatedCirculationCard: React.FC<
         `.trim()}
         {...interactiveProps}
       >
-        <div className="shrink-0">
+        <div className="shrink-0 w-[7ch]">
           <LineIcon line={estimate.line} mode="pill" />
         </div>
         <div className="flex-1 min-w-0 flex flex-col gap-1">
@@ -273,13 +273,16 @@ export const ConsolidatedCirculationCard: React.FC<
           </div>
           <div className="route-info">
             <strong>{estimate.route}</strong>
-            {estimate.nextStreets && estimate.nextStreets.length > 0 && (
-              <Marquee speed={85}>
-                <div className="mr-32 font-mono">
-                  {estimate.nextStreets.join(" — ")}
-                </div>
-              </Marquee>
-            )}
+            {estimate.nextStreets && estimate.nextStreets.length > 0 && (() => {
+              const text = estimate.nextStreets.join(" — ");
+              return (
+                <Marquee speed={85} play={text.length > 30}>
+                  <div className="mr-32 font-mono">
+                    {text}
+                  </div>
+                </Marquee>
+              );
+            })()}
           </div>
           {hasGpsPosition && (
             <div className="gps-indicator" title="Live GPS tracking">
