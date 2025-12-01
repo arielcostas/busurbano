@@ -162,7 +162,7 @@ export default function Estimates() {
 
   useAutoRefresh({
     onRefresh: refreshData,
-    interval: 12000,
+    interval: 18000,
     enabled: !dataError,
   });
 
