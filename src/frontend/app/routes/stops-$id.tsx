@@ -37,6 +37,7 @@ export interface ConsolidatedCirculation {
   };
   isPreviousTrip?: boolean;
   previousTripShapeId?: string;
+  nextStreets?: string[];
 }
 
 export const getCirculationId = (c: ConsolidatedCirculation): string => {

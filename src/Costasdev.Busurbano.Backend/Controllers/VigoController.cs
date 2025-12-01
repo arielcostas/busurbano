@@ -281,7 +281,7 @@ public partial class VigoController : ControllerBase
             consolidatedCirculations.Add(new ConsolidatedCirculation
             {
                 Line = estimate.Line,
-                Route = estimate.Route,
+                Route = estimate.Route == closestCirculation.TerminusName ? closestCirculation.Route : estimate.Route,
                 NextStreets = [.. closestCirculation.NextStreets],
                 Schedule = new ScheduleData
                 {

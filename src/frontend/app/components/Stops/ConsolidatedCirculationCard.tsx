@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import Marquee from 'react-fast-marquee';
 import { useTranslation } from "react-i18next";
 import LineIcon from "~components/LineIcon";
 import { type ConsolidatedCirculation } from "~routes/stops-$id";
@@ -220,6 +221,13 @@ export const ConsolidatedCirculationCard: React.FC<
               {chip.label}
             </span>
           ))}
+
+          {estimate.nextStreets && estimate.nextStreets.length > 0 && (
+            <Marquee speed={85}>
+              <div className="mr-64"></div>
+              {estimate.nextStreets.join(" — ")}
+            </Marquee>
+          )}
         </div>
       )}
     </Tag>
