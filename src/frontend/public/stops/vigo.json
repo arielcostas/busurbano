@@ -3493,7 +3493,6 @@
     "latitude": 42.236471452,
     "longitude": -8.720164905,
     "lines": [
-      "A",
       "16"
     ]
   },
@@ -7352,6 +7351,21 @@
     ]
   },
   {
+    "stopId": 6620,
+    "name": {
+      "original": "Rúa de Policarpo Sanz, 40"
+    },
+    "latitude": 42.23757846151978,
+    "longitude": -8.721031378896738,
+    "lines": [
+      "A"
+    ],
+    "amenities": [
+      "shelter",
+      "display"
+    ]
+  },
+  {
     "stopId": 6640,
     "name": {
       "original": "Rúa do Porriño (fronte Instituto)"
@@ -10308,6 +10322,17 @@
     ]
   },
   {
+    "stopId": 14121,
+    "name": {
+      "original": "Rúa da Reconquista, 2"
+    },
+    "latitude": 42.238625474,
+    "longitude": -8.723242095,
+    "lines": [
+      "A"
+    ]
+  },
+  {
     "stopId": 14122,
     "name": {
       "original": "Avda. do Alcalde Gregorio Espino, 9"
@@ -11826,7 +11851,6 @@
       "A",
       "7",
       "14",
-      "15A",
       "16",
       "18A",
       "18B",
@@ -14943,6 +14967,17 @@
     ]
   },
   {
+    "stopId": 20194,
+    "name": {
+      "original": "Rúa de Cánovas del Castillo, 28"
+    },
+    "latitude": 42.240364985,
+    "longitude": -8.724530974,
+    "lines": [
+      "A"
+    ]
+  },
+  {
     "stopId": 20195,
     "name": {
       "original": "Praza de Compostela (fronte 35)"
@@ -14988,6 +15023,20 @@
     "lines": [
       "5B",
       "12A"
+    ]
+  },
+  {
+    "stopId": 20198,
+    "name": {
+      "original": "Rúa de Policarpo Sanz, 26"
+    },
+    "latitude": 42.237533428,
+    "longitude": -8.722195046,
+    "lines": [
+      "A"
+    ],
+    "amenities": [
+      "shelter"
     ]
   },
   {
