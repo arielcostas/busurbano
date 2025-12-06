@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="Costasdev.VigoTransitApi" Version="0.1.0" />
-    <PackageReference Include="Google.Protobuf" Version="3.33.1" />
+    <PackageReference Include="Google.Protobuf" Version="3.33.2" />
     <PackageReference Include="ProjNet" Version="2.1.0" />
 
       <PackageReference Include="NetTopologySuite" Version="2.6.0" />
