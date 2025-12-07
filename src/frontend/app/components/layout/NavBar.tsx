@@ -1,4 +1,4 @@
-import { Map, MapPin, Route, Settings } from "lucide-react";
+import { Home, Map, Route } from "lucide-react";
 import type { LngLatLike } from "maplibre-gl";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router";
@@ -31,8 +31,8 @@ export default function NavBar({ orientation = "horizontal" }: NavBarProps) {
 
   const navItems = [
     {
-      name: t("navbar.stops", "Paradas"),
-      icon: MapPin,
+      name: t("navbar.home", "Paradas"),
+      icon: Home,
       path: "/",
       exact: true,
     },
@@ -57,7 +57,12 @@ export default function NavBar({ orientation = "horizontal" }: NavBarProps) {
               updateMapState(coords, 16);
             }
           },
-          () => { }
+          () => { },
+          {
+            enableHighAccuracy: false,
+            maximumAge: 5 * 60 * 1000,
+            timeout: 10 * 1000,
+          }
         );
       },
     },
@@ -65,12 +70,7 @@ export default function NavBar({ orientation = "horizontal" }: NavBarProps) {
       name: t("navbar.lines", "Líneas"),
       icon: Route,
       path: "/lines",
-    },
-    {
-      name: t("navbar.settings", "Ajustes"),
-      icon: Settings,
-      path: "/settings",
-    },
+    }
   ];
 
   return (

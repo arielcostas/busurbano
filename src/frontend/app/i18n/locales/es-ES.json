@@ -97,10 +97,9 @@
     "404": "La página solicitada no se pudo encontrar."
   },
   "navbar": {
-    "stops": "Paradas",
+    "home": "Inicio",
     "map": "Mapa",
-    "lines": "Líneas",
-    "settings": "Ajustes"
+    "lines": "Líneas"
   },
   "lines": {
     "description": "A continuación se muestra una lista de las líneas de autobús urbano de Vigo con sus respectivas rutas y enlaces a los horarios oficiales."
