@@ -126,7 +126,6 @@ export default function Estimates() {
 
   const loadData = useCallback(async () => {
     try {
-      setDataLoading(true);
       setDataError(null);
 
       const body = await loadConsolidatedData(params.id!);
@@ -142,8 +141,6 @@ export default function Estimates() {
       setDataError(parseError(error));
       setData(null);
       setDataDate(null);
-    } finally {
-      setDataLoading(false);
     }
   }, [params.id, stopIdNum]);
 
@@ -153,10 +150,12 @@ export default function Estimates() {
 
   const handleManualRefresh = useCallback(async () => {
     try {
+      setDataLoading(true);
       setIsManualRefreshing(true);
       await refreshData();
     } finally {
       setIsManualRefreshing(false);
+      setDataLoading(false);
     }
   }, [refreshData]);
 
@@ -168,12 +167,14 @@ export default function Estimates() {
 
   useEffect(() => {
     // Initial load
+    setDataLoading(true);
     loadData();
 
     StopDataProvider.pushRecent(parseInt(params.id ?? ""));
     setFavourited(
       StopDataProvider.isFavourite(parseInt(params.id ?? ""))
     );
+    setDataLoading(false);
   }, [params.id, loadData]);
 
   const toggleFavourite = () => {
