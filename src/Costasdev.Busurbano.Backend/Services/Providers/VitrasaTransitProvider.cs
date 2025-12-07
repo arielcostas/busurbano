@@ -48,7 +48,9 @@ public class VitrasaTransitProvider : ITransitProvider
         // Wait for real-time data and today's schedule (required)
         await Task.WhenAll(realtimeTask, timetableTask);
 
-        var realTimeEstimates = realtimeTask.Result.Estimates;
+        var realTimeEstimates = realtimeTask.Result.Estimates
+            .Where(e => !string.IsNullOrWhiteSpace(e.Route) && !e.Route.Trim().EndsWith('*'))
+            .ToList();
 
         // Handle case where schedule file doesn't exist - return realtime-only data
         if (timetableTask.Result == null)
@@ -117,7 +119,7 @@ public class VitrasaTransitProvider : ITransitProvider
                     Circulation = c,
                     TimeDiff = (c.CallingDateTime(nowLocal.Date)!.Value - estimatedArrivalTime).TotalMinutes
                 })
-                .Where(x => x.TimeDiff <= maxEarlyArrivalMinutes)
+                .Where(x => x.TimeDiff <= maxEarlyArrivalMinutes && x.TimeDiff >= -75)
                 .OrderBy(x => Math.Abs(x.TimeDiff))
                 .FirstOrDefault();
 
