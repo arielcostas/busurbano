@@ -63,7 +63,14 @@
     "trip": "viaxe",
     "last_updated": "Actualizado ás",
     "reload": "Recargar",
-    "unknown_service": "Servizo descoñecido. Pode tratarse dun reforzo ou de que o servizo leva un nome distinto ó planificado."
+    "unknown_service": "Servizo descoñecido. Pode tratarse dun reforzo ou de que o servizo leva un nome distinto ó planificado.",
+    "delay_on_time": "En hora (0 min)",
+    "delay_positive": "Atraso de {{minutes}} min",
+    "delay_negative": "Adelanto de {{minutes}} min",
+    "previous_trip": "GPS estimado",
+    "bus_gps_position": "GPS fiable",
+    "low_accuracy": "Baixa precisión",
+    "no_realtime": "Sen tempo real"
   },
   "timetable": {
     "fullCaption": "Horarios teóricos da parada",
@@ -103,5 +110,23 @@
   },
   "lines": {
     "description": "A continuación se mostra unha lista das liñas de autobús urbano de Vigo coas súas respectivas rutas e ligazóns ós horarios oficiais."
+  },
+  "stop_help": {
+    "title": "Guía de estimacións",
+    "realtime_ok": "Tempo real fiable",
+    "realtime_ok_desc": "O autobús está teoricamente circulando, e a estimación baséase en datos en tempo real fiables.",
+    "realtime_warning": "Estimación imprecisa",
+    "realtime_warning_desc": "Temos datos en tempo real dunha viaxe que aínda non saíu de cabeceira. A estimación pode ser demasiado optimista, ou pesimista próxima á saída.",
+    "scheduled": "Horario programado",
+    "scheduled_desc": "Non hai datos en tempo real. Móstrase a hora teórica de paso segundo os datos teóricos. Adoita ocorrer ao inicio dalgunhas liñas combinadas ou a primeira viaxe do día.",
+    "gps": "Posición GPS",
+    "gps_desc": "Indica que coñecemos a localización aproximada do autobús, a partir da distancia en metros que nos reporta a empresa e a ruta que cremos que está a seguir.",
+    "punctuality": "Puntualidade",
+    "punctuality_ontime": "O autobús circula segundo o horario previsto (cunha marxe de cortesía).",
+    "punctuality_early": "O autobús vai adiantado respecto ao horario (2 minutos ou máis).",
+    "punctuality_late": "O autobús circula con atraso (4 minutos ou máis).",
+    "gps_quality": "Calidade GPS",
+    "gps_reliable": "Os datos do GPS son da viaxe actual, e a posición é unha estimación fiable.",
+    "gps_imprecise": "Os datos do GPS parecen indicar que o autobús está a realizar a viaxe anterior (posiblemente doutra liña). A posición pode non ser fiable."
   }
 }

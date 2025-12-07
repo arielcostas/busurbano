@@ -1,4 +1,4 @@
-import { Eye, EyeClosed, RefreshCw, Star } from "lucide-react";
+import { CircleHelp, Eye, EyeClosed, Star } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
@@ -6,6 +6,7 @@ import { ErrorDisplay } from "~/components/ErrorDisplay";
 import LineIcon from "~/components/LineIcon";
 import { PullToRefresh } from "~/components/PullToRefresh";
 import { StopAlert } from "~/components/StopAlert";
+import { StopHelpModal } from "~/components/StopHelpModal";
 import { StopMapModal } from "~/components/StopMapModal";
 import { ConsolidatedCirculationList } from "~/components/Stops/ConsolidatedCirculationList";
 import { ConsolidatedCirculationListSkeleton } from "~/components/Stops/ConsolidatedCirculationListSkeleton";
@@ -113,6 +114,7 @@ export default function Estimates() {
   const [favourited, setFavourited] = useState(false);
   const [isManualRefreshing, setIsManualRefreshing] = useState(false);
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
+  const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
   const [isReducedView, setIsReducedView] = useState(false);
   const [selectedCirculationId, setSelectedCirculationId] = useState<
     string | undefined
@@ -242,16 +244,16 @@ export default function Estimates() {
           ) : data ? (
             <>
               <div className="flex items-center justify-between py-2">
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-8">
                   <Star
-                    className={`text-slate-500 ${favourited ? "active" : ""}`}
+                    className={`cursor-pointer transition-colors ${favourited
+                        ? "fill-[var(--star-color)] text-[var(--star-color)]"
+                        : "text-slate-500"
+                      }`}
                     onClick={toggleFavourite}
                   />
 
-                  <RefreshCw
-                    className={`text-slate-500 ${isManualRefreshing ? "spinning" : ""}`}
-                    onClick={handleManualRefresh}
-                  />
+                  <CircleHelp className="text-slate-500 cursor-pointer" onClick={() => setIsHelpModalOpen(true)} />
                 </div>
 
                 <div className="consolidated-circulation-caption">
@@ -301,6 +303,11 @@ export default function Estimates() {
             selectedCirculationId={selectedCirculationId}
           />
         )}
+
+        <StopHelpModal
+          isOpen={isHelpModalOpen}
+          onClose={() => setIsHelpModalOpen(false)}
+        />
       </div>
     </PullToRefresh>
   );

@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import LineIcon from "~components/LineIcon";
 import { type ConsolidatedCirculation } from "~routes/stops-$id";
 
+import { AlertTriangle, LocateIcon } from "lucide-react";
 import "./ConsolidatedCirculationCard.css";
 
 interface ConsolidatedCirculationCardProps {
@@ -119,8 +120,9 @@ export const ConsolidatedCirculationCard: React.FC<
     // On time
     if (delta === 0) {
       return {
-        label: reduced ? "OK" : t("estimates.delay_on_time", "En hora (0 min)"),
+        label: reduced ? "OK" : t("estimates.delay_on_time"),
         tone: "delay-ok",
+        kind: "delay",
       } as const;
     }
 
@@ -129,40 +131,71 @@ export const ConsolidatedCirculationCard: React.FC<
       const tone =
         delta <= 2 ? "delay-ok" : delta <= 10 ? "delay-warn" : "delay-critical";
       return {
-        label: reduced ? `R${delta}` : t("estimates.delay_positive", "Retraso de {{minutes}} min", {
+        label: reduced ? `R${delta}` : t("estimates.delay_positive", {
           minutes: delta,
         }),
         tone,
+        kind: "delay",
       } as const;
     }
 
     // Early
     const tone = absDelta <= 2 ? "delay-ok" : "delay-early";
     return {
-      label: reduced ? `A${absDelta}` : t("estimates.delay_negative", "Adelanto de {{minutes}} min", {
+      label: reduced ? `A${absDelta}` : t("estimates.delay_negative", {
         minutes: absDelta,
       }),
       tone,
+      kind: "delay",
     } as const;
   }, [estimate.schedule, estimate.realTime, t, reduced]);
 
   const metaChips = useMemo(() => {
-    const chips: Array<{ label: string; tone?: string }> = [];
+    const chips: Array<{ label: string; tone?: string, kind?: "regular" | "gps" | "delay" | "warning" }> = [];
+
     if (delayChip) {
       chips.push(delayChip);
     }
+
     if (estimate.schedule) {
       chips.push({
         label: `${parseServiceId(estimate.schedule.serviceId)} · ${getTripIdDisplay(
           estimate.schedule.tripId
         )}`,
+        kind: "regular",
       });
     }
+
     if (estimate.realTime && estimate.realTime.distance >= 0) {
-      chips.push({ label: formatDistance(estimate.realTime.distance) });
+      chips.push({ label: formatDistance(estimate.realTime.distance), kind: "regular" });
     }
+
+    if (estimate.currentPosition) {
+      if (estimate.isPreviousTrip) {
+        chips.push({ label: t("estimates.previous_trip"), kind: "gps" });
+      } else {
+        chips.push({ label: t("estimates.bus_gps_position"), kind: "gps" });
+      }
+    }
+
+    if (timeClass === "time-delayed") {
+      chips.push({
+        label: reduced ? "!" : t("estimates.low_accuracy"),
+        tone: "warning",
+        kind: "warning",
+      });
+    }
+
+    if (timeClass === "time-scheduled") {
+      chips.push({
+        label: reduced ? "⧗" : t("estimates.no_realtime"),
+        tone: "warning",
+        kind: "warning",
+      });
+    }
+
     return chips;
-  }, [delayChip, estimate.schedule, estimate.realTime]);
+  }, [delayChip, estimate.schedule, estimate.realTime, timeClass, t, reduced]);
 
   // Check if bus has GPS position (live tracking)
   const hasGpsPosition = !!estimate.currentPosition;
@@ -218,6 +251,9 @@ export const ConsolidatedCirculationCard: React.FC<
                   case "delay-early":
                     chipColourClasses = "bg-blue-400/20 dark:bg-blue-600/30 text-blue-700 dark:text-blue-300";
                     break;
+                  case "warning":
+                    chipColourClasses = "bg-orange-400/20 dark:bg-orange-600/30 text-orange-700 dark:text-orange-300";
+                    break;
                   default:
                     chipColourClasses = "bg-black/[0.06] dark:bg-white/[0.12] text-[var(--text-color)]";
                 }
@@ -227,6 +263,8 @@ export const ConsolidatedCirculationCard: React.FC<
                     key={`${chip.label}-${idx}`}
                     className={`text-xs px-2 py-0.5 rounded-full flex items-center justify-center gap-1 shrink-0 ${chipColourClasses}`}
                   >
+                    {chip.kind === "gps" && (<LocateIcon className="w-3 h-3 inline-block" />)}
+                    {chip.kind === "warning" && (<AlertTriangle className="w-3 h-3 inline-block" />)}
                     {chip.label}
                   </span>
                 );
@@ -284,14 +322,6 @@ export const ConsolidatedCirculationCard: React.FC<
               );
             })()}
           </div>
-          {hasGpsPosition && (
-            <div className="gps-indicator" title="Live GPS tracking">
-              <span
-                className={`gps-pulse ${estimate.isPreviousTrip ? "previous-trip" : ""
-                  }`}
-              />
-            </div>
-          )}
           <div className={`eta-badge ${timeClass}`}>
             <div className="eta-text">
               <span className="eta-value">{etaValue}</span>
@@ -307,6 +337,8 @@ export const ConsolidatedCirculationCard: React.FC<
                 key={`${chip.label}-${idx}`}
                 className={`meta-chip ${chip.tone ?? ""}`.trim()}
               >
+                {chip.kind === "gps" && (<LocateIcon className="w-3 h-3 inline-block" />)}
+                {chip.kind === "warning" && (<AlertTriangle className="w-3 h-3 inline-block" />)}
                 {chip.label}
               </span>
             ))}

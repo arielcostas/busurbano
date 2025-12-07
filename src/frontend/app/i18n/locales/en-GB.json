@@ -63,7 +63,14 @@
     "trip": "trip",
     "last_updated": "Updated at",
     "reload": "Reload",
-    "unknown_service": "Unknown service. It may be a reinforcement or the service has a different name than planned."
+    "unknown_service": "Unknown service. It may be a reinforcement or the service has a different name than planned.",
+    "delay_on_time": "On time (0 min)",
+    "delay_positive": "{{minutes}} min late",
+    "delay_negative": "{{minutes}} min early",
+    "previous_trip": "Estimated GPS",
+    "bus_gps_position": "Reliable GPS",
+    "low_accuracy": "Low accuracy",
+    "no_realtime": "No real-time"
   },
   "timetable": {
     "fullCaption": "Theoretical timetables for this stop",
@@ -103,5 +110,23 @@
   },
   "lines": {
     "description": "Below is a list of Vigo urban bus lines with their respective routes and links to official timetables."
+  },
+  "stop_help": {
+    "title": "Estimates guide",
+    "realtime_ok": "Reliable real-time",
+    "realtime_ok_desc": "The bus is theoretically running, and the estimate is based on reliable real-time data.",
+    "realtime_warning": "Imprecise estimate",
+    "realtime_warning_desc": "We have real-time data for a trip that hasn't left the terminus yet. The estimate might be too optimistic, or pessimistic close to departure.",
+    "scheduled": "Scheduled time",
+    "scheduled_desc": "No real-time data available. Showing theoretical arrival time based on schedule data. Usually happens at the start of some combined lines or the first trip of the day.",
+    "gps": "GPS position",
+    "gps_desc": "Indicates we know the approximate location of the bus, based on the distance in meters reported by the operator and the route we believe it's following.",
+    "punctuality": "Punctuality",
+    "punctuality_ontime": "The bus is running on schedule (within a courtesy margin).",
+    "punctuality_early": "The bus is running early (2 minutes or more).",
+    "punctuality_late": "The bus is running late (4 minutes or more).",
+    "gps_quality": "GPS Quality",
+    "gps_reliable": "GPS data is from the current trip, and the position is a reliable estimate.",
+    "gps_imprecise": "GPS data seems to indicate the bus is on the previous trip (possibly from another line). The position might not be reliable."
   }
 }
