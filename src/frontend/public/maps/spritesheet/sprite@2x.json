@@ -1,14 +1,22 @@
 {
-  "stop-vigo": {
-    "id": "stop-vigo",
+  "stop-vitrasa": {
+    "id": "stop-vitrasa",
     "x": 0,
     "y": 0,
     "width": 64,
     "height": 64,
     "pixelRatio": 2
   },
-  "stop-vigo-cancelled": {
-    "id": "stop-vigo-cancelled",
+  "stop-vitrasa-cancelled": {
+    "id": "stop-vitrasa-cancelled",
+    "x": 64,
+    "y": 0,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "stop-renfe": {
+    "id": "stop-renfe",
     "x": 128,
     "y": 0,
     "width": 64,

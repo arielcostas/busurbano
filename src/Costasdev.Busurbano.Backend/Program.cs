@@ -1,5 +1,6 @@
 using Costasdev.Busurbano.Backend.Configuration;
 using Costasdev.Busurbano.Backend.Services;
+using Costasdev.Busurbano.Backend.Services.Providers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,9 @@ builder.Services.AddControllers();
 builder.Services.AddHttpClient();
 builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<ShapeTraversalService>();
+
+builder.Services.AddScoped<VitrasaTransitProvider>();
+builder.Services.AddScoped<RenfeTransitProvider>();
 
 var app = builder.Build();
 

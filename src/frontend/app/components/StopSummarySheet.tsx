@@ -26,7 +26,7 @@ interface ErrorInfo {
 }
 
 const loadConsolidatedData = async (
-  stopId: number
+  stopId: string
 ): Promise<ConsolidatedCirculation[]> => {
   const resp = await fetch(
     `${REGION_DATA.consolidatedCirculationsEndpoint}?stopId=${stopId}`,

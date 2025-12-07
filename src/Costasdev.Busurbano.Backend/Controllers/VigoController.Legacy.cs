@@ -53,7 +53,7 @@ public partial class VigoController : ControllerBase
 
         try
         {
-            var file = Path.Combine(_configuration.ScheduleBasePath, effectiveDate, stopId + ".json");
+            var file = Path.Combine(_configuration.VitrasaScheduleBasePath, effectiveDate, stopId + ".json");
             if (!SysFile.Exists(file))
             {
                 throw new FileNotFoundException();

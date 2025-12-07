@@ -35,7 +35,7 @@ export default function StopMap() {
   const [stops, setStops] = useState<
     GeoJsonFeature<
       Point,
-      { stopId: number; name: string; lines: string[]; cancelled?: boolean }
+      { stopId: string; name: string; lines: string[]; cancelled?: boolean, prefix: string }
     >[]
   >([]);
   const [selectedStop, setSelectedStop] = useState<Stop | null>(null);
@@ -65,7 +65,7 @@ export default function StopMap() {
     StopDataProvider.getStops().then((data) => {
       const features: GeoJsonFeature<
         Point,
-        { stopId: number; name: string; lines: string[]; cancelled?: boolean }
+        { stopId: string; name: string; lines: string[]; cancelled?: boolean, prefix: string }
       >[] = data.map((s) => ({
         type: "Feature",
         geometry: {
@@ -77,6 +77,7 @@ export default function StopMap() {
           name: s.name.original,
           lines: s.lines,
           cancelled: s.cancelled ?? false,
+          prefix: s.stopId.startsWith("renfe:") ? "stop-renfe" : (s.cancelled ? "stop-vitrasa-cancelled" : "stop-vitrasa"),
         },
       }));
       setStops(features);
@@ -152,7 +153,7 @@ export default function StopMap() {
       return;
     }
 
-    const stopId = parseInt(props.stopId, 10);
+    const stopId = props.stopId;
 
     // fetch full stop to get lines array
     StopDataProvider.getStopById(stopId)
@@ -200,25 +201,23 @@ export default function StopMap() {
       <Layer
         id="stops"
         type="symbol"
-        minzoom={13}
+        minzoom={11}
         source="stops-source"
         layout={{
           "icon-image": [
-            "case",
-            ["coalesce", ["get", "cancelled"], false],
-            `stop-vigo-cancelled`,
-            `stop-vigo`,
+            "get",
+            "prefix"
           ],
           "icon-size": [
             "interpolate",
             ["linear"],
             ["zoom"],
             13,
-            0.4,
-            14,
             0.7,
+            16,
+            0.8,
             18,
-            1.0,
+            1.2,
           ],
           "icon-allow-overlap": true,
           "icon-ignore-placement": true,
@@ -239,7 +238,12 @@ export default function StopMap() {
           "text-size": ["interpolate", ["linear"], ["zoom"], 11, 8, 22, 16],
         }}
         paint={{
-          "text-color": `${REGION_DATA.textColour}`,
+          "text-color": [
+            "case",
+            ["==", ["get", "prefix"], "stop-renfe"],
+            "#870164",
+            "#e72b37"
+          ],
           "text-halo-color": "#FFF",
           "text-halo-width": 1,
         }}

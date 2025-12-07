@@ -72,10 +72,35 @@ const loadConsolidatedData = async (
   return await resp.json();
 };
 
+export interface ConsolidatedCirculation {
+  line: string;
+  route: string;
+  schedule?: {
+    running: boolean;
+    minutes: number;
+    serviceId: string;
+    tripId: string;
+    shapeId?: string;
+  };
+  realTime?: {
+    minutes: number;
+    distance: number;
+  };
+  currentPosition?: {
+    latitude: number;
+    longitude: number;
+    orientationDegrees: number;
+    shapeIndex?: number;
+  };
+  isPreviousTrip?: boolean;
+  previousTripShapeId?: string;
+  nextStreets?: string[];
+}
+
 export default function Estimates() {
   const { t } = useTranslation();
   const params = useParams();
-  const stopIdNum = parseInt(params.id ?? "");
+  const stopId = params.id ?? "";
   const [customName, setCustomName] = useState<string | undefined>(undefined);
   const [stopData, setStopData] = useState<Stop | undefined>(undefined);
 
@@ -98,8 +123,8 @@ export default function Estimates() {
     if (customName) return customName;
     if (stopData?.name.intersect) return stopData.name.intersect;
     if (stopData?.name.original) return stopData.name.original;
-    return `Parada ${stopIdNum}`;
-  }, [customName, stopData, stopIdNum]);
+    return `Parada ${stopId}`;
+  }, [customName, stopData, stopId]);
 
   usePageTitle(getStopDisplayName());
 
@@ -128,21 +153,21 @@ export default function Estimates() {
     try {
       setDataError(null);
 
-      const body = await loadConsolidatedData(params.id!);
+      const body = await loadConsolidatedData(stopId);
       setData(body);
       setDataDate(new Date());
 
       // Load stop data from StopDataProvider
-      const stop = await StopDataProvider.getStopById(stopIdNum);
+      const stop = await StopDataProvider.getStopById(stopId);
       setStopData(stop);
-      setCustomName(StopDataProvider.getCustomName(stopIdNum));
+      setCustomName(StopDataProvider.getCustomName(stopId));
     } catch (error) {
       console.error("Error loading consolidated data:", error);
       setDataError(parseError(error));
       setData(null);
       setDataDate(null);
     }
-  }, [params.id, stopIdNum]);
+  }, [stopId]);
 
   const refreshData = useCallback(async () => {
     await Promise.all([loadData()]);
@@ -170,19 +195,19 @@ export default function Estimates() {
     setDataLoading(true);
     loadData();
 
-    StopDataProvider.pushRecent(parseInt(params.id ?? ""));
+    StopDataProvider.pushRecent(stopId);
     setFavourited(
-      StopDataProvider.isFavourite(parseInt(params.id ?? ""))
+      StopDataProvider.isFavourite(stopId)
     );
     setDataLoading(false);
-  }, [params.id, loadData]);
+  }, [stopId, loadData]);
 
   const toggleFavourite = () => {
     if (favourited) {
-      StopDataProvider.removeFavourite(stopIdNum);
+      StopDataProvider.removeFavourite(stopId);
       setFavourited(false);
     } else {
-      StopDataProvider.addFavourite(stopIdNum);
+      StopDataProvider.addFavourite(stopId);
       setFavourited(true);
     }
   };

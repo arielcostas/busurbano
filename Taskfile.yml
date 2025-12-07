@@ -42,10 +42,10 @@ tasks:
   gen-stop-report:
     desc: Generate stop-based JSON reports for specified dates or date ranges.
     cmds:
-      - uv --directory ./src/gtfs_vigo_stops run ./stop_report.py --output-dir ./output --feed-url https://datos.vigo.org/data/transporte/gtfs_vigo.zip --force
+      - uv --directory ./src/gtfs_vigo_stops run ./stop_report.py --output-dir ./output/vitrasa --feed-url https://datos.vigo.org/data/transporte/gtfs_vigo.zip --force --provider vitrasa
+      - uv --directory ./src/gtfs_vigo_stops run ./stop_report.py --output-dir ./output/renfe --feed-url https://ssl.renfe.com/gtransit/Fichero_AV_LD/google_transit.zip --force --provider renfe
 
   gen-stop-json:
     desc: Generate stop-based JSON files for specified dates or date ranges.
     cmds:
       - uv --directory ./src/stop_downloader/vigo run ./download-stops.py
-      - uv --directory ./src/stop_downloader/santiago run ./download-stops.py

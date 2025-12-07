@@ -40,7 +40,7 @@ public class ShapeTraversalService
     /// </summary>
     public async Task<Shape?> LoadShapeAsync(string shapeId)
     {
-        var file = Path.Combine(_configuration.ScheduleBasePath, "shapes", shapeId + ".pb");
+        var file = Path.Combine(_configuration.VitrasaScheduleBasePath, "shapes", shapeId + ".pb");
         if (!SysFile.Exists(file))
         {
             _logger.LogWarning("Shape file not found: {ShapeId}", shapeId);

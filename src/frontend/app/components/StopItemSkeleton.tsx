@@ -4,7 +4,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 
 interface StopItemSkeletonProps {
   showId?: boolean;
-  stopId?: number;
+  stopId?: string;
 }
 
 const StopItemSkeleton: React.FC<StopItemSkeletonProps> = ({

@@ -11,7 +11,8 @@ export type StopName = {
 };
 
 export interface Stop {
-  stopId: number;
+  stopId: string;
+  type?: 'bus' | 'train';
   name: StopName;
   latitude?: number;
   longitude?: number;
@@ -27,29 +28,46 @@ export interface Stop {
 
 // In-memory cache and lookup map per region
 const cachedStopsByRegion: Record<string, Stop[] | null> = {};
-const stopsMapByRegion: Record<string, Record<number, Stop>> = {};
+const stopsMapByRegion: Record<string, Record<string, Stop>> = {};
 // Custom names loaded from localStorage per region
-const customNamesByRegion: Record<string, Record<number, string>> = {};
+const customNamesByRegion: Record<string, Record<string, string>> = {};
+
+// Helper to normalize ID
+function normalizeId(id: number | string): string {
+  const s = String(id);
+  if (s.includes(':')) return s;
+  return `vitrasa:${s}`;
+}
 
 // Initialize cachedStops and customNames once per region
 async function initStops() {
   if (!cachedStopsByRegion[REGION_DATA.id]) {
     const response = await fetch(REGION_DATA.stopsEndpoint);
-    const stops = (await response.json()) as Stop[];
+    const rawStops = (await response.json()) as any[];
+
     // build array and map
     stopsMapByRegion[REGION_DATA.id] = {};
-    cachedStopsByRegion[REGION_DATA.id] = stops.map((stop) => {
-      const entry = { ...stop, favourite: false } as Stop;
-      stopsMapByRegion[REGION_DATA.id][stop.stopId] = entry;
+    cachedStopsByRegion[REGION_DATA.id] = rawStops.map((raw) => {
+      const id = normalizeId(raw.stopId);
+      const entry = {
+        ...raw,
+        stopId: id,
+        type: raw.type || (id.startsWith('renfe:') ? 'train' : 'bus'),
+        favourite: false
+      } as Stop;
+      stopsMapByRegion[REGION_DATA.id][id] = entry;
       return entry;
     });
+
     // load custom names
     const rawCustom = localStorage.getItem(`customStopNames_${REGION_DATA.id}`);
     if (rawCustom) {
-      customNamesByRegion[REGION_DATA.id] = JSON.parse(rawCustom) as Record<
-        number,
-        string
-      >;
+      const parsed = JSON.parse(rawCustom);
+      const normalized: Record<string, string> = {};
+      for (const [key, value] of Object.entries(parsed)) {
+          normalized[normalizeId(key)] = value as string;
+      }
+      customNamesByRegion[REGION_DATA.id] = normalized;
     } else {
       customNamesByRegion[REGION_DATA.id] = {};
     }
@@ -60,7 +78,8 @@ async function getStops(): Promise<Stop[]> {
   await initStops();
   // update favourites
   const rawFav = localStorage.getItem("favouriteStops_vigo");
-  const favouriteStops = rawFav ? (JSON.parse(rawFav) as number[]) : [];
+  const favouriteStops = rawFav ? (JSON.parse(rawFav) as (number|string)[]).map(normalizeId) : [];
+
   cachedStopsByRegion["vigo"]!.forEach(
     (stop) => (stop.favourite = favouriteStops.includes(stop.stopId))
   );
@@ -69,14 +88,15 @@ async function getStops(): Promise<Stop[]> {
 
 // New: get single stop by id
 async function getStopById(
-  stopId: number
+  stopId: string | number
 ): Promise<Stop | undefined> {
   await initStops();
-  const stop = stopsMapByRegion[REGION_DATA.id]?.[stopId];
+  const id = normalizeId(stopId);
+  const stop = stopsMapByRegion[REGION_DATA.id]?.[id];
   if (stop) {
     const rawFav = localStorage.getItem(`favouriteStops_${REGION_DATA.id}`);
-    const favouriteStops = rawFav ? (JSON.parse(rawFav) as number[]) : [];
-    stop.favourite = favouriteStops.includes(stopId);
+    const favouriteStops = rawFav ? (JSON.parse(rawFav) as (number|string)[]).map(normalizeId) : [];
+    stop.favourite = favouriteStops.includes(id);
   }
   return stop;
 }
@@ -90,20 +110,22 @@ function getDisplayName(stop: Stop): string {
 }
 
 // New: set or remove custom names
-function setCustomName(stopId: number, label: string) {
+function setCustomName(stopId: string | number, label: string) {
+  const id = normalizeId(stopId);
   if (!customNamesByRegion[REGION_DATA.id]) {
     customNamesByRegion[REGION_DATA.id] = {};
   }
-  customNamesByRegion[REGION_DATA.id][stopId] = label;
+  customNamesByRegion[REGION_DATA.id][id] = label;
   localStorage.setItem(
     `customStopNames_${REGION_DATA.id}`,
     JSON.stringify(customNamesByRegion[REGION_DATA.id])
   );
 }
 
-function removeCustomName(stopId: number) {
-  if (customNamesByRegion[REGION_DATA.id]?.[stopId]) {
-    delete customNamesByRegion[REGION_DATA.id][stopId];
+function removeCustomName(stopId: string | number) {
+  const id = normalizeId(stopId);
+  if (customNamesByRegion[REGION_DATA.id]?.[id]) {
+    delete customNamesByRegion[REGION_DATA.id][id];
     localStorage.setItem(
       `customStopNames_${REGION_DATA.id}`,
       JSON.stringify(customNamesByRegion[REGION_DATA.id])
@@ -112,19 +134,21 @@ function removeCustomName(stopId: number) {
 }
 
 // New: get custom label for a stop
-function getCustomName(stopId: number): string | undefined {
-  return customNamesByRegion[REGION_DATA.id]?.[stopId];
+function getCustomName(stopId: string | number): string | undefined {
+  const id = normalizeId(stopId);
+  return customNamesByRegion[REGION_DATA.id]?.[id];
 }
 
-function addFavourite(stopId: number) {
+function addFavourite(stopId: string | number) {
+  const id = normalizeId(stopId);
   const rawFavouriteStops = localStorage.getItem(`favouriteStops_vigo`);
-  let favouriteStops: number[] = [];
+  let favouriteStops: string[] = [];
   if (rawFavouriteStops) {
-    favouriteStops = JSON.parse(rawFavouriteStops) as number[];
+    favouriteStops = (JSON.parse(rawFavouriteStops) as (number|string)[]).map(normalizeId);
   }
 
-  if (!favouriteStops.includes(stopId)) {
-    favouriteStops.push(stopId);
+  if (!favouriteStops.includes(id)) {
+    favouriteStops.push(id);
     localStorage.setItem(
       `favouriteStops_vigo`,
       JSON.stringify(favouriteStops)
@@ -132,42 +156,45 @@ function addFavourite(stopId: number) {
   }
 }
 
-function removeFavourite(stopId: number) {
+function removeFavourite(stopId: string | number) {
+  const id = normalizeId(stopId);
   const rawFavouriteStops = localStorage.getItem(`favouriteStops_vigo`);
-  let favouriteStops: number[] = [];
+  let favouriteStops: string[] = [];
   if (rawFavouriteStops) {
-    favouriteStops = JSON.parse(rawFavouriteStops) as number[];
+    favouriteStops = (JSON.parse(rawFavouriteStops) as (number|string)[]).map(normalizeId);
   }
 
-  const newFavouriteStops = favouriteStops.filter((id) => id !== stopId);
+  const newFavouriteStops = favouriteStops.filter((sid) => sid !== id);
   localStorage.setItem(
     `favouriteStops_vigo`,
     JSON.stringify(newFavouriteStops)
   );
 }
 
-function isFavourite(stopId: number): boolean {
+function isFavourite(stopId: string | number): boolean {
+  const id = normalizeId(stopId);
   const rawFavouriteStops = localStorage.getItem(`favouriteStops_vigo`);
   if (rawFavouriteStops) {
-    const favouriteStops = JSON.parse(rawFavouriteStops) as number[];
-    return favouriteStops.includes(stopId);
+    const favouriteStops = (JSON.parse(rawFavouriteStops) as (number|string)[]).map(normalizeId);
+    return favouriteStops.includes(id);
   }
   return false;
 }
 
 const RECENT_STOPS_LIMIT = 10;
 
-function pushRecent(stopId: number) {
+function pushRecent(stopId: string | number) {
+  const id = normalizeId(stopId);
   const rawRecentStops = localStorage.getItem(`recentStops_vigo`);
-  let recentStops: Set<number> = new Set();
+  let recentStops: Set<string> = new Set();
   if (rawRecentStops) {
-    recentStops = new Set(JSON.parse(rawRecentStops) as number[]);
+    recentStops = new Set((JSON.parse(rawRecentStops) as (number|string)[]).map(normalizeId));
   }
 
-  recentStops.add(stopId);
+  recentStops.add(id);
   if (recentStops.size > RECENT_STOPS_LIMIT) {
     const iterator = recentStops.values();
-    const val = iterator.next().value as number;
+    const val = iterator.next().value as string;
     recentStops.delete(val);
   }
 
@@ -177,18 +204,18 @@ function pushRecent(stopId: number) {
   );
 }
 
-function getRecent(): number[] {
+function getRecent(): string[] {
   const rawRecentStops = localStorage.getItem(`recentStops_vigo`);
   if (rawRecentStops) {
-    return JSON.parse(rawRecentStops) as number[];
+    return (JSON.parse(rawRecentStops) as (number|string)[]).map(normalizeId);
   }
   return [];
 }
 
-function getFavouriteIds(): number[] {
+function getFavouriteIds(): string[] {
   const rawFavouriteStops = localStorage.getItem(`favouriteStops_vigo`);
   if (rawFavouriteStops) {
-    return JSON.parse(rawFavouriteStops) as number[];
+    return (JSON.parse(rawFavouriteStops) as (number|string)[]).map(normalizeId);
   }
   return [];
 }
@@ -196,8 +223,16 @@ function getFavouriteIds(): number[] {
 // New function to load stops from network
 async function loadStopsFromNetwork(): Promise<Stop[]> {
   const response = await fetch(REGION_DATA.stopsEndpoint);
-  const stops = (await response.json()) as Stop[];
-  return stops.map((stop) => ({ ...stop, favourite: false }) as Stop);
+  const rawStops = (await response.json()) as any[];
+  return rawStops.map((raw) => {
+      const id = normalizeId(raw.stopId);
+      return {
+        ...raw,
+        stopId: id,
+        type: raw.type || (id.startsWith('renfe:') ? 'train' : 'bus'),
+        favourite: false
+      } as Stop;
+  });
 }
 
 export default {

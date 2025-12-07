@@ -4,6 +4,7 @@
 #    "PyYAML>=6.0.2",  # For YAML support
 # ]
 # ///
+import csv
 import json
 import os
 import sys
@@ -12,6 +13,9 @@ import yaml  # Add YAML support for overrides
 
 OVERRIDES_DIR = "overrides"
 OUTPUT_FILE = "../../frontend/public/stops/vigo.json"
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
 
 def load_stop_overrides(file_path):
     """Load stop overrides from a YAML file"""
@@ -22,11 +26,13 @@ def load_stop_overrides(file_path):
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             overrides = yaml.safe_load(f)
-            print(f"Loaded {len(overrides) if overrides else 0} stop overrides")
+            print(
+                f"Loaded {len(overrides) if overrides else 0} stop overrides")
             return overrides or {}
     except Exception as e:
         print(f"Error loading overrides: {e}", file=sys.stderr)
         return {}
+
 
 def apply_overrides(stops, overrides):
     """Apply overrides to the stop data and add new stops"""
@@ -118,10 +124,8 @@ def apply_overrides(stops, overrides):
 
     return stops
 
-def main():
-    print("Fetching stop list data...")
 
-    # Download stop list data
+def download_stops_vitrasa() -> list[dict]:
     url = "https://datos.vigo.org/vci_api_app/api2.jsp?tipo=TRANSPORTE_PARADAS"
     req = urllib.request.Request(url)
 
@@ -141,7 +145,7 @@ def main():
             name = name.replace("  ", ", ").replace('"', '').replace("'", "")
 
             processed_stop = {
-                "stopId": stop.get("id"),
+                "stopId": "vitrasa:" + str(stop.get("id")),
                 "name": {
                     "original": name
                 },
@@ -151,9 +155,69 @@ def main():
             }
             processed_stops.append(processed_stop)
 
+        return processed_stops
+    except Exception as e:
+        print(f"Error processing vigo stops data: {e}", file=sys.stderr)
+        return []
+
+
+def download_stops_renfe() -> list[dict]:
+    url = "https://data.renfe.com/dataset/1146f3f1-e06d-477c-8f74-84f8d0668cf9/resource/b22cd560-3a2b-45dd-a25d-2406941f6fcc/download/listado_completo_av_ld_md.csv"
+    req = urllib.request.Request(url)
+
+    # CÓDIGO;DESCRIPCION;LATITUD;LONGITUD;DIRECCIÓN;C.P.;POBLACION;PROVINCIA;PAIS
+
+    try:
+        with urllib.request.urlopen(req) as response:
+            content = response.read()
+            data = csv.DictReader(
+                content.decode('utf-8').splitlines(),
+                delimiter=';',
+                fieldnames=["CODE", "NAME", "LAT", "LNG",
+                            "ADDRESS", "ZIP", "CITY", "PROVINCE", "COUNTRY"]
+            )
+
+        stops = [row for row in data]
+
+        print(f"Downloaded {len(stops)} stops")
+
+        # Process the data
+        processed_stops = []
+        for stop in stops:
+            if stop.get("PROVINCE") != "Pontevedra":
+                continue
+
+            name = stop.get("NAME", "").strip()
+
+            processed_stop = {
+                "stopId": "renfe:" + str(stop.get("CODE", 0)),
+                "name": {
+                    "original": name
+                },
+                "latitude": float(stop.get("LAT", 0).replace(',', '.')),
+                "longitude": float(stop.get("LNG", 0).replace(',', '.')),
+                "lines": []
+            }
+            processed_stops.append(processed_stop)
+
+        print(f"Processed {len(processed_stops)} Renfe stops in Pontevedra")
+        return processed_stops
+    except Exception as e:
+        print(f"Error processing Pontevedra stops data: {e}", file=sys.stderr)
+        return []
+
+
+def main():
+    print("Fetching stop list data...")
+
+    vigo_stops = download_stops_vitrasa()
+    renfe_stops = download_stops_renfe()
+
+    all_stops = vigo_stops + (renfe_stops if renfe_stops else [])
+
+    try:
         # Load and apply overrides
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        overrides_dir = os.path.join(script_dir, OVERRIDES_DIR)
+        overrides_dir = os.path.join(SCRIPT_DIR, OVERRIDES_DIR)
         # For each YML/YAML file in the overrides directory, load and apply the overrides
         for filename in os.listdir(overrides_dir):
             if not filename.endswith(".yml") and not filename.endswith(".yaml"):
@@ -162,16 +226,18 @@ def main():
             print(f"Loading overrides from {filename}")
             overrides_file = os.path.join(overrides_dir, filename)
             overrides = load_stop_overrides(overrides_file)
-            processed_stops = apply_overrides(processed_stops, overrides)
+            all_stops = apply_overrides(all_stops, overrides)
 
         # Filter out hidden stops
-        visible_stops = [stop for stop in processed_stops if not stop.get("hide")]
-        print(f"Removed {len(processed_stops) - len(visible_stops)} hidden stops")
+        visible_stops = [
+            stop for stop in all_stops if not stop.get("hide")]
+        print(
+            f"Removed {len(all_stops) - len(visible_stops)} hidden stops")
 
         # Sort stops by ID ascending
         visible_stops.sort(key=lambda x: x["stopId"])
 
-        output_file = os.path.join(script_dir, OUTPUT_FILE)
+        output_file = os.path.join(SCRIPT_DIR, OUTPUT_FILE)
 
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(visible_stops, f, ensure_ascii=False, indent=2)
@@ -181,7 +247,11 @@ def main():
 
     except Exception as e:
         print(f"Error processing stops data: {e}", file=sys.stderr)
+        # Print full exception traceback
+        import traceback
+        traceback.print_exc()
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

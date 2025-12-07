@@ -36,14 +36,16 @@ def get_all_stops_by_code(feed_dir: str) -> Dict[str, Stop]:
     all_stops = get_all_stops(feed_dir)
 
     for stop in all_stops.values():
-        if stop.stop_code:
-            stop_25829_x, stop_25829_y = transformer.transform(
-                stop.stop_lon, stop.stop_lat
-            )
-            stop.stop_25829_x = stop_25829_x
-            stop.stop_25829_y = stop_25829_y
+        stop_25829_x, stop_25829_y = transformer.transform(
+            stop.stop_lon, stop.stop_lat
+        )
+        stop.stop_25829_x = stop_25829_x
+        stop.stop_25829_y = stop_25829_y
 
+        if stop.stop_code:
             stops_by_code[get_numeric_code(stop.stop_code)] = stop
+        else:
+            stops_by_code[stop.stop_id] = stop
 
     CACHED_BY_CODE[feed_dir] = stops_by_code
 
