@@ -36,6 +36,10 @@ def get_all_feed_dates(feed_dir: str) -> List[str]:
                     result.append(start.strftime("%Y-%m-%d"))
                     start += timedelta(days=1)
                 return result
+            else:
+                # Return from today to 7 days ahead if no valid dates found
+                today = datetime.now()
+                return [(today + timedelta(days=i)).strftime("%Y-%m-%d") for i in range(8)]
 
     # Fallback: use calendar_dates.txt
     if os.path.exists(calendar_dates_path):

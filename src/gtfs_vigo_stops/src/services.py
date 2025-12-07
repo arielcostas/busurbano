@@ -4,16 +4,17 @@ from src.logger import get_logger
 
 logger = get_logger("services")
 
+
 def get_active_services(feed_dir: str, date: str) -> list[str]:
     """
     Get active services for a given date based on the 'calendar.txt' and 'calendar_dates.txt' files.
-    
+
     Args:
         date (str): Date in 'YYYY-MM-DD' format.
-        
+
     Returns:
         list[str]: List of active service IDs for the given date.
-        
+
     Raises:
         ValueError: If the date format is incorrect.
     """
@@ -24,7 +25,7 @@ def get_active_services(feed_dir: str, date: str) -> list[str]:
     try:
         with open(os.path.join(feed_dir, 'calendar.txt'), 'r', encoding="utf-8") as calendar_file:
             lines = calendar_file.readlines()
-            if len(lines) >1:
+            if len(lines) > 1:
                 # First parse the header, get each column's index
                 header = lines[0].strip().split(',')
                 try:
@@ -36,6 +37,8 @@ def get_active_services(feed_dir: str, date: str) -> list[str]:
                     friday_index = header.index('friday')
                     saturday_index = header.index('saturday')
                     sunday_index = header.index('sunday')
+                    start_date_index = header.index('start_date')
+                    end_date_index = header.index('end_date')
                 except ValueError as e:
                     logger.error(f"Required column not found in header: {e}")
                     return active_services
@@ -59,8 +62,11 @@ def get_active_services(feed_dir: str, date: str) -> list[str]:
 
                     service_id = parts[service_id_index]
                     day_value = parts[weekday_columns[weekday]]
+                    start_date = parts[start_date_index]
+                    end_date = parts[end_date_index]
 
-                    if day_value == '1':
+                    # Check if day of week is active AND date is within the service range
+                    if day_value == '1' and start_date <= search_date <= end_date:
                         active_services.append(service_id)
     except FileNotFoundError:
         logger.warning("calendar.txt file not found.")
