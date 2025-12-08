@@ -137,9 +137,31 @@ export const ConsolidatedCirculationCard: React.FC<
 
   const etaMinutes =
     estimate.realTime?.minutes ?? estimate.schedule?.minutes ?? null;
-  const etaValue =
-    etaMinutes === null ? "--" : Math.max(0, Math.round(etaMinutes)).toString();
-  const etaUnit = t("estimates.minutes", "min");
+
+  let etaValue: string;
+  let etaUnit: string;
+
+  if (etaMinutes === null) {
+    etaValue = "--";
+    etaUnit = t("estimates.minutes", "min");
+  } else {
+    const isRenfe = driver === "renfe";
+    const isLongWait = etaMinutes > 60;
+
+    if (isRenfe || isLongWait) {
+      const now = new Date();
+      const arrivalTime = new Date(now.getTime() + etaMinutes * 60 * 1000);
+      etaValue = arrivalTime.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
+      etaUnit = "";
+    } else {
+      etaValue = Math.max(0, Math.round(etaMinutes)).toString();
+      etaUnit = t("estimates.minutes", "min");
+    }
+  }
 
   const timeClass = useMemo(() => {
     if (estimate.realTime && estimate.schedule?.running) {
@@ -291,7 +313,7 @@ export const ConsolidatedCirculationCard: React.FC<
         `.trim()}
         {...interactiveProps}
       >
-        <div className="shrink-0 w-[7ch]">
+        <div className="shrink-0 min-w-[7ch]">
           <LineIcon line={estimate.line} mode="pill" />
         </div>
         <div className="flex-1 min-w-0 flex flex-col gap-1">
@@ -301,7 +323,7 @@ export const ConsolidatedCirculationCard: React.FC<
                 {estimate.schedule.tripId}
               </span>
             )}
-            {estimate.route}
+            {driver === "renfe" ? estimate.route.toUpperCase() : estimate.route}
           </strong>
           {metaChips.length > 0 && (
             <div className="flex items-center gap-1.5 flex-wrap">
@@ -395,13 +417,15 @@ export const ConsolidatedCirculationCard: React.FC<
             <LineIcon line={estimate.line} mode="pill" />
           </div>
           <div className="route-info">
-            <strong className="uppercase">
+            <strong>
               {driver === "renfe" && estimate.schedule?.tripId && (
                 <span className="font-mono text-slate-500 mr-2 text-[0.9em]">
                   {estimate.schedule.tripId}
                 </span>
               )}
-              {estimate.route}
+              {driver === "renfe"
+                ? estimate.route.toUpperCase()
+                : estimate.route}
             </strong>
             {estimate.nextStreets && estimate.nextStreets.length > 0 && (
               <AutoMarquee text={estimate.nextStreets.join(" — ")} />

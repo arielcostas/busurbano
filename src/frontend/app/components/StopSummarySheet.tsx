@@ -158,6 +158,7 @@ export const StopSheet: React.FC<StopSheetProps> = ({
                   ) : (
                     <ConsolidatedCirculationList
                       data={data.slice(0, 4)}
+                      driver={stop.stopId.split(":")[0]}
                       reduced
                     />
                   )}
