@@ -140,7 +140,7 @@ jobs:
         uses: actions/download-artifact@v6
         with:
           name: stop_report
-          path: dist/stop_report
+          path: dist/gtfs_perstop_report
       - name: Connect to tailnet
         uses: tailscale/github-action@v4
         with:
@@ -184,4 +184,4 @@ jobs:
       - name: Deploy stop report script
         if: needs.detect-changes.outputs.stops-script == 'true'
         run: |
-          scp -r dist/stop_report/* ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }}:/opt/gtfs_perstop_report/
+          scp -r dist/gtfs_perstop_report/* ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }}:/opt/gtfs_vigo_stops/
