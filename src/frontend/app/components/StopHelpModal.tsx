@@ -21,9 +21,7 @@ export const StopHelpModal: React.FC<StopHelpModalProps> = ({
         <Sheet.Content>
           <div className="p-6 pb-10 flex flex-col gap-8 overflow-y-auto max-h-[80vh] text-slate-900 dark:text-slate-100">
             <div>
-              <h2 className="text-xl font-bold mb-4">
-                {t("stop_help.title")}
-              </h2>
+              <h2 className="text-xl font-bold mb-4">{t("stop_help.title")}</h2>
 
               <div className="space-y-5">
                 <div className="flex gap-4 items-start">

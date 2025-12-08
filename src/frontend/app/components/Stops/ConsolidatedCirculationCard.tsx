@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import Marquee from 'react-fast-marquee';
+import Marquee from "react-fast-marquee";
 import { useTranslation } from "react-i18next";
 import LineIcon from "~components/LineIcon";
 import { type ConsolidatedCirculation } from "~routes/stops-$id";
@@ -109,7 +109,10 @@ const AutoMarquee = ({ text }: { text: string }) => {
   }
 
   return (
-    <div ref={containerRef} className="w-full overflow-hidden text-sm font-mono truncate">
+    <div
+      ref={containerRef}
+      className="w-full overflow-hidden text-sm font-mono truncate"
+    >
       {text}
     </div>
   );
@@ -175,9 +178,11 @@ export const ConsolidatedCirculationCard: React.FC<
       const tone =
         delta <= 2 ? "delay-ok" : delta <= 10 ? "delay-warn" : "delay-critical";
       return {
-        label: reduced ? `R${delta}` : t("estimates.delay_positive", {
-          minutes: delta,
-        }),
+        label: reduced
+          ? `R${delta}`
+          : t("estimates.delay_positive", {
+              minutes: delta,
+            }),
         tone,
         kind: "delay",
       } as const;
@@ -186,22 +191,28 @@ export const ConsolidatedCirculationCard: React.FC<
     // Early
     const tone = absDelta <= 2 ? "delay-ok" : "delay-early";
     return {
-      label: reduced ? `A${absDelta}` : t("estimates.delay_negative", {
-        minutes: absDelta,
-      }),
+      label: reduced
+        ? `A${absDelta}`
+        : t("estimates.delay_negative", {
+            minutes: absDelta,
+          }),
       tone,
       kind: "delay",
     } as const;
   }, [estimate.schedule, estimate.realTime, t, reduced]);
 
   const metaChips = useMemo(() => {
-    const chips: Array<{ label: string; tone?: string, kind?: "regular" | "gps" | "delay" | "warning" }> = [];
+    const chips: Array<{
+      label: string;
+      tone?: string;
+      kind?: "regular" | "gps" | "delay" | "warning";
+    }> = [];
 
     if (delayChip) {
       chips.push(delayChip);
     }
 
-    if (estimate.schedule && driver !== 'renfe') {
+    if (estimate.schedule && driver !== "renfe") {
       chips.push({
         label: `${parseServiceId(estimate.schedule.serviceId)} · ${getTripIdDisplay(
           estimate.schedule.tripId
@@ -211,7 +222,10 @@ export const ConsolidatedCirculationCard: React.FC<
     }
 
     if (estimate.realTime && estimate.realTime.distance >= 0) {
-      chips.push({ label: formatDistance(estimate.realTime.distance), kind: "regular" });
+      chips.push({
+        label: formatDistance(estimate.realTime.distance),
+        kind: "regular",
+      });
     }
 
     if (estimate.currentPosition) {
@@ -243,7 +257,7 @@ export const ConsolidatedCirculationCard: React.FC<
 
   // Check if bus has GPS position (live tracking)
   const hasGpsPosition = !!estimate.currentPosition;
-  const isRenfe = driver === 'renfe';
+  const isRenfe = driver === "renfe";
   const isClickable = hasGpsPosition;
   const looksDisabled = !isClickable && !isRenfe;
 
@@ -251,10 +265,10 @@ export const ConsolidatedCirculationCard: React.FC<
   const interactiveProps = readonly
     ? {}
     : {
-      onClick: isClickable ? onMapClick : undefined,
-      type: "button" as const,
-      disabled: !isClickable,
-    };
+        onClick: isClickable ? onMapClick : undefined,
+        type: "button" as const,
+        disabled: !isClickable,
+      };
 
   if (reduced) {
     return (
@@ -263,15 +277,16 @@ export const ConsolidatedCirculationCard: React.FC<
           flex-none flex items-center gap-2.5 min-h-12
           bg-(--message-background-color) border border-(--border-color)
           rounded-xl px-3 py-2.5 transition-all
-          ${readonly
-            ? looksDisabled
-              ? "opacity-70 cursor-not-allowed"
-              : ""
-            : isClickable
-              ? "cursor-pointer hover:shadow-[0_4px_14px_rgba(0,0,0,0.08)] hover:border-(--button-background-color) hover:bg-[color-mix(in_oklab,var(--button-background-color)_5%,var(--message-background-color))] active:scale-[0.98]"
-              : looksDisabled
+          ${
+            readonly
+              ? looksDisabled
                 ? "opacity-70 cursor-not-allowed"
                 : ""
+              : isClickable
+                ? "cursor-pointer hover:shadow-[0_4px_14px_rgba(0,0,0,0.08)] hover:border-(--button-background-color) hover:bg-[color-mix(in_oklab,var(--button-background-color)_5%,var(--message-background-color))] active:scale-[0.98]"
+                : looksDisabled
+                  ? "opacity-70 cursor-not-allowed"
+                  : ""
           }
         `.trim()}
         {...interactiveProps}
@@ -281,8 +296,10 @@ export const ConsolidatedCirculationCard: React.FC<
         </div>
         <div className="flex-1 min-w-0 flex flex-col gap-1">
           <strong className="text-base text-(--text-color) overflow-hidden text-ellipsis line-clamp-2 leading-tight">
-            {driver === 'renfe' && estimate.schedule?.tripId && (
-              <span className="font-mono text-slate-500 mr-1.5 text-sm">{estimate.schedule.tripId}</span>
+            {driver === "renfe" && estimate.schedule?.tripId && (
+              <span className="font-mono text-slate-500 mr-1.5 text-sm">
+                {estimate.schedule.tripId}
+              </span>
             )}
             {estimate.route}
           </strong>
@@ -292,22 +309,28 @@ export const ConsolidatedCirculationCard: React.FC<
                 let chipColourClasses = "";
                 switch (chip.tone) {
                   case "delay-ok":
-                    chipColourClasses = "bg-green-600/20 dark:bg-green-600/30 text-green-700 dark:text-green-300";
+                    chipColourClasses =
+                      "bg-green-600/20 dark:bg-green-600/30 text-green-700 dark:text-green-300";
                     break;
                   case "delay-warn":
-                    chipColourClasses = "bg-amber-600/20 dark:bg-yellow-600/30 text-amber-700 dark:text-yellow-300";
+                    chipColourClasses =
+                      "bg-amber-600/20 dark:bg-yellow-600/30 text-amber-700 dark:text-yellow-300";
                     break;
                   case "delay-critical":
-                    chipColourClasses = "bg-red-400/20 dark:bg-red-600/30 text-red-600 dark:text-red-300";
+                    chipColourClasses =
+                      "bg-red-400/20 dark:bg-red-600/30 text-red-600 dark:text-red-300";
                     break;
                   case "delay-early":
-                    chipColourClasses = "bg-blue-400/20 dark:bg-blue-600/30 text-blue-700 dark:text-blue-300";
+                    chipColourClasses =
+                      "bg-blue-400/20 dark:bg-blue-600/30 text-blue-700 dark:text-blue-300";
                     break;
                   case "warning":
-                    chipColourClasses = "bg-orange-400/20 dark:bg-orange-600/30 text-orange-700 dark:text-orange-300";
+                    chipColourClasses =
+                      "bg-orange-400/20 dark:bg-orange-600/30 text-orange-700 dark:text-orange-300";
                     break;
                   default:
-                    chipColourClasses = "bg-black/[0.06] dark:bg-white/[0.12] text-[var(--text-color)]";
+                    chipColourClasses =
+                      "bg-black/[0.06] dark:bg-white/[0.12] text-[var(--text-color)]";
                 }
 
                 return (
@@ -315,8 +338,12 @@ export const ConsolidatedCirculationCard: React.FC<
                     key={`${chip.label}-${idx}`}
                     className={`text-xs px-2 py-0.5 rounded-full flex items-center justify-center gap-1 shrink-0 ${chipColourClasses}`}
                   >
-                    {chip.kind === "gps" && (<LocateIcon className="w-3 h-3 inline-block" />)}
-                    {chip.kind === "warning" && (<AlertTriangle className="w-3 h-3 inline-block" />)}
+                    {chip.kind === "gps" && (
+                      <LocateIcon className="w-3 h-3 inline-block" />
+                    )}
+                    {chip.kind === "warning" && (
+                      <AlertTriangle className="w-3 h-3 inline-block" />
+                    )}
                     {chip.label}
                   </span>
                 );
@@ -327,17 +354,20 @@ export const ConsolidatedCirculationCard: React.FC<
         <div
           className={`
             inline-flex items-center justify-center px-2 py-1.5 rounded-xl shrink-0
-            ${timeClass === "time-running"
-              ? "bg-green-600/20 dark:bg-green-600/25 text-[#1a9e56] dark:text-[#22c55e]"
-              : timeClass === "time-delayed"
-                ? "bg-orange-600/20 dark:bg-orange-600/25 text-[#d06100] dark:text-[#fb923c]"
-                : "bg-blue-900/20 dark:bg-blue-600/25 text-[#0b3d91] dark:text-[#93c5fd]"
+            ${
+              timeClass === "time-running"
+                ? "bg-green-600/20 dark:bg-green-600/25 text-[#1a9e56] dark:text-[#22c55e]"
+                : timeClass === "time-delayed"
+                  ? "bg-orange-600/20 dark:bg-orange-600/25 text-[#d06100] dark:text-[#fb923c]"
+                  : "bg-blue-900/20 dark:bg-blue-600/25 text-[#0b3d91] dark:text-[#93c5fd]"
             }
           `.trim()}
         >
           <div className="flex flex-col items-center leading-none">
             <span className="text-lg font-bold leading-none">{etaValue}</span>
-            <span className="text-[0.65rem] uppercase tracking-wider mt-0.5 opacity-90">{etaUnit}</span>
+            <span className="text-[0.65rem] uppercase tracking-wider mt-0.5 opacity-90">
+              {etaUnit}
+            </span>
           </div>
         </div>
       </Tag>
@@ -346,16 +376,17 @@ export const ConsolidatedCirculationCard: React.FC<
 
   return (
     <Tag
-      className={`consolidated-circulation-card ${readonly
-        ? looksDisabled
-          ? "no-gps"
-          : ""
-        : isClickable
-          ? "has-gps"
-          : looksDisabled
+      className={`consolidated-circulation-card ${
+        readonly
+          ? looksDisabled
             ? "no-gps"
             : ""
-        }`}
+          : isClickable
+            ? "has-gps"
+            : looksDisabled
+              ? "no-gps"
+              : ""
+      }`}
       {...interactiveProps}
     >
       <>
@@ -365,8 +396,10 @@ export const ConsolidatedCirculationCard: React.FC<
           </div>
           <div className="route-info">
             <strong className="uppercase">
-              {driver === 'renfe' && estimate.schedule?.tripId && (
-                <span className="font-mono text-slate-500 mr-2 text-[0.9em]">{estimate.schedule.tripId}</span>
+              {driver === "renfe" && estimate.schedule?.tripId && (
+                <span className="font-mono text-slate-500 mr-2 text-[0.9em]">
+                  {estimate.schedule.tripId}
+                </span>
               )}
               {estimate.route}
             </strong>
@@ -389,8 +422,12 @@ export const ConsolidatedCirculationCard: React.FC<
                 key={`${chip.label}-${idx}`}
                 className={`meta-chip ${chip.tone ?? ""}`.trim()}
               >
-                {chip.kind === "gps" && (<LocateIcon className="w-3 h-3 inline-block" />)}
-                {chip.kind === "warning" && (<AlertTriangle className="w-3 h-3 inline-block" />)}
+                {chip.kind === "gps" && (
+                  <LocateIcon className="w-3 h-3 inline-block" />
+                )}
+                {chip.kind === "warning" && (
+                  <AlertTriangle className="w-3 h-3 inline-block" />
+                )}
                 {chip.label}
               </span>
             ))}

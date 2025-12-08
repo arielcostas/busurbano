@@ -36,13 +36,24 @@ def process_shapes(feed_dir: str, out_dir: str) -> None:
                 try:
                     shape = Shape(
                         shape_id=row["shape_id"],
-                        shape_pt_lat=float(row["shape_pt_lat"]) if row.get("shape_pt_lat") else None,
-                        shape_pt_lon=float(row["shape_pt_lon"]) if row.get("shape_pt_lon") else None,
-                        shape_pt_position=int(row["shape_pt_position"]) if row.get("shape_pt_position") else None,
-                        shape_dist_traveled=float(row["shape_dist_traveled"]) if row.get("shape_dist_traveled") else None,
+                        shape_pt_lat=float(row["shape_pt_lat"])
+                        if row.get("shape_pt_lat")
+                        else None,
+                        shape_pt_lon=float(row["shape_pt_lon"])
+                        if row.get("shape_pt_lon")
+                        else None,
+                        shape_pt_position=int(row["shape_pt_position"])
+                        if row.get("shape_pt_position")
+                        else None,
+                        shape_dist_traveled=float(row["shape_dist_traveled"])
+                        if row.get("shape_dist_traveled")
+                        else None,
                     )
 
-                    if shape.shape_pt_lat is not None and shape.shape_pt_lon is not None:
+                    if (
+                        shape.shape_pt_lat is not None
+                        and shape.shape_pt_lon is not None
+                    ):
                         shape_pt_25829_x, shape_pt_25829_y = transformer.transform(
                             shape.shape_pt_lon, shape.shape_pt_lat
                         )
@@ -55,18 +66,22 @@ def process_shapes(feed_dir: str, out_dir: str) -> None:
                 except Exception as e:
                     logger.warning(
                         f"Error parsing stops.txt line {row_num}: {e} - line data: {row}"
-                   )
+                    )
     except FileNotFoundError:
         logger.error(f"File not found: {file_path}")
     except Exception as e:
         logger.error(f"Error reading stops.txt: {e}")
 
-
     # Write shapes to Protobuf files
     from src.proto.stop_schedule_pb2 import Epsg25829, Shape as PbShape
 
     for shape_id, shape_points in shapes.items():
-        points = sorted(shape_points, key=lambda sp: sp.shape_pt_position if sp.shape_pt_position is not None else 0)
+        points = sorted(
+            shape_points,
+            key=lambda sp: sp.shape_pt_position
+            if sp.shape_pt_position is not None
+            else 0,
+        )
 
         pb_shape = PbShape(
             shape_id=shape_id,

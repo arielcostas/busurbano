@@ -1,11 +1,13 @@
 """
 Logging configuration for the GTFS application.
 """
+
 import logging
 from colorama import init, Fore, Style
 
 # Initialize Colorama (required on Windows)
 init(autoreset=True)
+
 
 class ColorFormatter(logging.Formatter):
     def format(self, record: logging.LogRecord):
@@ -28,16 +30,18 @@ class ColorFormatter(logging.Formatter):
 
         # Add color to the entire line
         formatter = logging.Formatter(
-            prefix + log_format + Style.RESET_ALL, "%Y-%m-%d %H:%M:%S")
+            prefix + log_format + Style.RESET_ALL, "%Y-%m-%d %H:%M:%S"
+        )
         return formatter.format(record)
+
 
 def get_logger(name: str) -> logging.Logger:
     """
     Create and return a logger with the given name.
-    
+
     Args:
         name (str): The name of the logger.
-        
+
     Returns:
         logging.Logger: Configured logger instance.
     """
@@ -50,5 +54,5 @@ def get_logger(name: str) -> logging.Logger:
         console_handler.setLevel(logging.DEBUG)
         console_handler.setFormatter(ColorFormatter())
         logger.addHandler(console_handler)
-        
+
     return logger

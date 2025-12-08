@@ -40,7 +40,6 @@ def get_all_feed_dates(feed_dir: str) -> List[str]:
                     if len(result) > 0:
                         return result
 
-
     # Fallback: use calendar_dates.txt
     if os.path.exists(calendar_dates_path):
         with open(calendar_dates_path, encoding="utf-8") as f:

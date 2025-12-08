@@ -3,7 +3,7 @@ import {
   Links,
   Meta,
   Scripts,
-  ScrollRestoration
+  ScrollRestoration,
 } from "react-router";
 
 import "@fontsource-variable/roboto";

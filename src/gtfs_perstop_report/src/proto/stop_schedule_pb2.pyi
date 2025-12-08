@@ -1,7 +1,13 @@
 from google.protobuf.internal import containers as _containers
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
-from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Mapping, Optional as _Optional, Union as _Union
+from typing import (
+    ClassVar as _ClassVar,
+    Iterable as _Iterable,
+    Mapping as _Mapping,
+    Optional as _Optional,
+    Union as _Union,
+)
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
@@ -11,7 +17,9 @@ class Epsg25829(_message.Message):
     Y_FIELD_NUMBER: _ClassVar[int]
     x: float
     y: float
-    def __init__(self, x: _Optional[float] = ..., y: _Optional[float] = ...) -> None: ...
+    def __init__(
+        self, x: _Optional[float] = ..., y: _Optional[float] = ...
+    ) -> None: ...
 
 class Shape(_message.Message):
     __slots__ = ["points", "shape_id"]
@@ -19,12 +27,34 @@ class Shape(_message.Message):
     SHAPE_ID_FIELD_NUMBER: _ClassVar[int]
     points: _containers.RepeatedCompositeFieldContainer[Epsg25829]
     shape_id: str
-    def __init__(self, shape_id: _Optional[str] = ..., points: _Optional[_Iterable[_Union[Epsg25829, _Mapping]]] = ...) -> None: ...
+    def __init__(
+        self,
+        shape_id: _Optional[str] = ...,
+        points: _Optional[_Iterable[_Union[Epsg25829, _Mapping]]] = ...,
+    ) -> None: ...
 
 class StopArrivals(_message.Message):
     __slots__ = ["arrivals", "location", "stop_id"]
     class ScheduledArrival(_message.Message):
-        __slots__ = ["calling_ssm", "calling_time", "line", "next_streets", "previous_trip_shape_id", "route", "service_id", "shape_dist_traveled", "shape_id", "starting_code", "starting_name", "starting_time", "stop_sequence", "terminus_code", "terminus_name", "terminus_time", "trip_id"]
+        __slots__ = [
+            "calling_ssm",
+            "calling_time",
+            "line",
+            "next_streets",
+            "previous_trip_shape_id",
+            "route",
+            "service_id",
+            "shape_dist_traveled",
+            "shape_id",
+            "starting_code",
+            "starting_name",
+            "starting_time",
+            "stop_sequence",
+            "terminus_code",
+            "terminus_name",
+            "terminus_time",
+            "trip_id",
+        ]
         CALLING_SSM_FIELD_NUMBER: _ClassVar[int]
         CALLING_TIME_FIELD_NUMBER: _ClassVar[int]
         LINE_FIELD_NUMBER: _ClassVar[int]
@@ -59,11 +89,38 @@ class StopArrivals(_message.Message):
         terminus_name: str
         terminus_time: str
         trip_id: str
-        def __init__(self, service_id: _Optional[str] = ..., trip_id: _Optional[str] = ..., line: _Optional[str] = ..., route: _Optional[str] = ..., shape_id: _Optional[str] = ..., shape_dist_traveled: _Optional[float] = ..., stop_sequence: _Optional[int] = ..., next_streets: _Optional[_Iterable[str]] = ..., starting_code: _Optional[str] = ..., starting_name: _Optional[str] = ..., starting_time: _Optional[str] = ..., calling_time: _Optional[str] = ..., calling_ssm: _Optional[int] = ..., terminus_code: _Optional[str] = ..., terminus_name: _Optional[str] = ..., terminus_time: _Optional[str] = ..., previous_trip_shape_id: _Optional[str] = ...) -> None: ...
+        def __init__(
+            self,
+            service_id: _Optional[str] = ...,
+            trip_id: _Optional[str] = ...,
+            line: _Optional[str] = ...,
+            route: _Optional[str] = ...,
+            shape_id: _Optional[str] = ...,
+            shape_dist_traveled: _Optional[float] = ...,
+            stop_sequence: _Optional[int] = ...,
+            next_streets: _Optional[_Iterable[str]] = ...,
+            starting_code: _Optional[str] = ...,
+            starting_name: _Optional[str] = ...,
+            starting_time: _Optional[str] = ...,
+            calling_time: _Optional[str] = ...,
+            calling_ssm: _Optional[int] = ...,
+            terminus_code: _Optional[str] = ...,
+            terminus_name: _Optional[str] = ...,
+            terminus_time: _Optional[str] = ...,
+            previous_trip_shape_id: _Optional[str] = ...,
+        ) -> None: ...
+
     ARRIVALS_FIELD_NUMBER: _ClassVar[int]
     LOCATION_FIELD_NUMBER: _ClassVar[int]
     STOP_ID_FIELD_NUMBER: _ClassVar[int]
     arrivals: _containers.RepeatedCompositeFieldContainer[StopArrivals.ScheduledArrival]
     location: Epsg25829
     stop_id: str
-    def __init__(self, stop_id: _Optional[str] = ..., location: _Optional[_Union[Epsg25829, _Mapping]] = ..., arrivals: _Optional[_Iterable[_Union[StopArrivals.ScheduledArrival, _Mapping]]] = ...) -> None: ...
+    def __init__(
+        self,
+        stop_id: _Optional[str] = ...,
+        location: _Optional[_Union[Epsg25829, _Mapping]] = ...,
+        arrivals: _Optional[
+            _Iterable[_Union[StopArrivals.ScheduledArrival, _Mapping]]
+        ] = ...,
+    ) -> None: ...

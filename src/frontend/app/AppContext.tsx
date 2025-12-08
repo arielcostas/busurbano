@@ -23,7 +23,9 @@ export const useApp = () => {
     ...map,
     // Mock region support for now since we only have one region
     region: "vigo" as RegionId,
-    setRegion: (region: RegionId) => { console.log("Set region", region); },
+    setRegion: (region: RegionId) => {
+      console.log("Set region", region);
+    },
   };
 };
 

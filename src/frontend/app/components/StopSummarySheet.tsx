@@ -102,10 +102,10 @@ export const StopSheet: React.FC<StopSheetProps> = ({
   // Show only the next 4 arrivals
   const sortedData = data
     ? [...data].sort(
-      (a, b) =>
-        (a.realTime?.minutes ?? a.schedule?.minutes ?? 999) -
-        (b.realTime?.minutes ?? b.schedule?.minutes ?? 999)
-    )
+        (a, b) =>
+          (a.realTime?.minutes ?? a.schedule?.minutes ?? 999) -
+          (b.realTime?.minutes ?? b.schedule?.minutes ?? 999)
+      )
     : [];
   const limitedEstimates = sortedData.slice(0, 4);
 

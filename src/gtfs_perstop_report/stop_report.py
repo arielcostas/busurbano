@@ -32,8 +32,7 @@ def parse_args():
         default="./output/",
         help="Directory to write reports to (default: ./output/)",
     )
-    parser.add_argument("--feed-dir", type=str,
-                        help="Path to the feed directory")
+    parser.add_argument("--feed-dir", type=str, help="Path to the feed directory")
     parser.add_argument(
         "--feed-url",
         type=str,
@@ -244,12 +243,9 @@ def build_trip_previous_shape_map(
         if shift_key not in trips_by_shift:
             trips_by_shift[shift_key] = []
 
-        trips_by_shift[shift_key].append((
-            trip,
-            trip_number,
-            first_stop.stop_id,
-            last_stop.stop_id
-        ))
+        trips_by_shift[shift_key].append(
+            (trip, trip_number, first_stop.stop_id, last_stop.stop_id)
+        )
     # For each shift, sort trips by trip number and link consecutive trips
     for shift_key, shift_trips in trips_by_shift.items():
         # Sort by trip number
@@ -262,16 +258,20 @@ def build_trip_previous_shape_map(
             # Check if trips are consecutive (trip numbers differ by 1),
             # if previous trip's terminus matches current trip's start,
             # and if both trips have valid shape IDs
-            if (current_num == prev_num + 1 and
-                prev_end_stop == current_start_stop and
-                prev_trip.shape_id and
-                    current_trip.shape_id):
+            if (
+                current_num == prev_num + 1
+                and prev_end_stop == current_start_stop
+                and prev_trip.shape_id
+                and current_trip.shape_id
+            ):
                 trip_previous_shape[current_trip.trip_id] = prev_trip.shape_id
 
     return trip_previous_shape
 
 
-def get_stop_arrivals(feed_dir: str, date: str, provider) -> Dict[str, List[Dict[str, Any]]]:
+def get_stop_arrivals(
+    feed_dir: str, date: str, provider
+) -> Dict[str, List[Dict[str, Any]]]:
     """
     Process trips for the given date and organize stop arrivals.
     Also includes night services from the previous day (times >= 24:00:00).
@@ -293,15 +293,16 @@ def get_stop_arrivals(feed_dir: str, date: str, provider) -> Dict[str, List[Dict
     if not active_services:
         logger.info("No active services found for the given date.")
 
-    logger.info(
-        f"Found {len(active_services)} active services for date {date}.")
+    logger.info(f"Found {len(active_services)} active services for date {date}.")
 
     # Also get services from the previous day to include night services (times >= 24:00)
-    prev_date = (datetime.strptime(date, "%Y-%m-%d") -
-                 timedelta(days=1)).strftime("%Y-%m-%d")
+    prev_date = (datetime.strptime(date, "%Y-%m-%d") - timedelta(days=1)).strftime(
+        "%Y-%m-%d"
+    )
     prev_services = get_active_services(feed_dir, prev_date)
     logger.info(
-        f"Found {len(prev_services)} active services for previous date {prev_date} (for night services).")
+        f"Found {len(prev_services)} active services for previous date {prev_date} (for night services)."
+    )
 
     all_services = list(set(active_services + prev_services))
 
@@ -314,18 +315,17 @@ def get_stop_arrivals(feed_dir: str, date: str, provider) -> Dict[str, List[Dict
     logger.info(f"Found {total_trip_count} trips for active services.")
 
     # Get all trip IDs
-    all_trip_ids = [trip.trip_id for trip_list in trips.values()
-                    for trip in trip_list]
+    all_trip_ids = [trip.trip_id for trip_list in trips.values() for trip in trip_list]
 
     # Get stops for all trips
     stops_for_all_trips = get_stops_for_trips(feed_dir, all_trip_ids)
     logger.info(f"Precomputed stops for {len(stops_for_all_trips)} trips.")
 
     # Build mapping from trip_id to previous trip's shape_id
-    trip_previous_shape_map = build_trip_previous_shape_map(
-        trips, stops_for_all_trips)
+    trip_previous_shape_map = build_trip_previous_shape_map(trips, stops_for_all_trips)
     logger.info(
-        f"Built previous trip shape mapping for {len(trip_previous_shape_map)} trips.")
+        f"Built previous trip shape mapping for {len(trip_previous_shape_map)} trips."
+    )
 
     # Load routes information
     routes = load_routes(feed_dir)
@@ -389,8 +389,7 @@ def get_stop_arrivals(feed_dir: str, date: str, provider) -> Dict[str, List[Dict
                 stop_to_segment_idx.append(len(segment_names) - 1)
 
             # Precompute future street transitions per segment
-            future_suffix_by_segment: list[tuple[str, ...]] = [
-                ()] * len(segment_names)
+            future_suffix_by_segment: list[tuple[str, ...]] = [()] * len(segment_names)
             future_tuple: tuple[str, ...] = ()
             for idx in range(len(segment_names) - 1, -1, -1):
                 future_suffix_by_segment[idx] = future_tuple
@@ -437,7 +436,7 @@ def get_stop_arrivals(feed_dir: str, date: str, provider) -> Dict[str, List[Dict
                 passes.append("previous")
 
             for mode in passes:
-                is_current_mode = (mode == "current")
+                is_current_mode = mode == "current"
 
                 for i, (stop_time, _) in enumerate(trip_stop_pairs):
                     # Skip the last stop of the trip (terminus) to avoid duplication
@@ -457,11 +456,9 @@ def get_stop_arrivals(feed_dir: str, date: str, provider) -> Dict[str, List[Dict
                             continue
 
                         # Normalize times for display on current day (e.g. 25:30 -> 01:30)
-                        final_starting_time = normalize_gtfs_time(
-                            starting_time)
+                        final_starting_time = normalize_gtfs_time(starting_time)
                         final_calling_time = normalize_gtfs_time(dep_time)
-                        final_terminus_time = normalize_gtfs_time(
-                            terminus_time)
+                        final_terminus_time = normalize_gtfs_time(terminus_time)
                         # SSM should be small (early morning)
                         final_calling_ssm = time_to_seconds(final_calling_time)
                     else:
@@ -489,12 +486,10 @@ def get_stop_arrivals(feed_dir: str, date: str, provider) -> Dict[str, List[Dict
                     # Format IDs and route using provider-specific logic
                     service_id_fmt = provider.format_service_id(service_id)
                     trip_id_fmt = provider.format_trip_id(trip_id)
-                    route_fmt = provider.format_route(
-                        trip_headsign, terminus_name)
+                    route_fmt = provider.format_route(trip_headsign, terminus_name)
 
                     # Get previous trip shape_id if available
-                    previous_trip_shape_id = trip_previous_shape_map.get(
-                        trip_id, "")
+                    previous_trip_shape_id = trip_previous_shape_map.get(trip_id, "")
 
                     stop_arrivals[stop_code].append(
                         {
@@ -616,8 +611,7 @@ def main():
         feed_dir = args.feed_dir
     else:
         logger.info(f"Downloading GTFS feed from {feed_url}...")
-        feed_dir = download_feed_from_url(
-            feed_url, output_dir, args.force_download)
+        feed_dir = download_feed_from_url(feed_url, output_dir, args.force_download)
         if feed_dir is None:
             logger.info("Download was skipped (feed not modified). Exiting.")
             return
@@ -642,8 +636,7 @@ def main():
         _, stop_summary = process_date(feed_dir, date, output_dir, provider)
         all_stops_summary[date] = stop_summary
 
-    logger.info(
-        "Finished processing all dates. Beginning with shape transformation.")
+    logger.info("Finished processing all dates. Beginning with shape transformation.")
 
     # Process shapes, converting each coordinate to EPSG:25829 and saving as Protobuf
     process_shapes(feed_dir, output_dir)

@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { Outlet } from "react-router";
-import { PageTitleProvider, usePageTitleContext } from "~/contexts/PageTitleContext";
+import {
+  PageTitleProvider,
+  usePageTitleContext,
+} from "~/contexts/PageTitleContext";
 import { ThemeColorManager } from "../ThemeColorManager";
 import "./AppShell.css";
 import { Drawer } from "./Drawer";

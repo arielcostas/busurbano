@@ -28,10 +28,7 @@ export const REGION_DATA: RegionData = {
   consolidatedCirculationsEndpoint: "/api/vigo/GetConsolidatedCirculations",
   timetableEndpoint: "/api/vigo/GetStopTimetable",
   shapeEndpoint: "/api/vigo/GetShape",
-  defaultCenter: [
-    42.229188855975046,
-    -8.72246955783102
-  ] as LngLatLike,
+  defaultCenter: [42.229188855975046, -8.72246955783102] as LngLatLike,
   bounds: {
     sw: [-8.951059, 42.098923] as LngLatLike,
     ne: [-8.447748, 42.3496] as LngLatLike,
@@ -42,4 +39,3 @@ export const REGION_DATA: RegionData = {
 };
 
 export const getAvailableRegions = (): RegionData[] => [REGION_DATA];
-

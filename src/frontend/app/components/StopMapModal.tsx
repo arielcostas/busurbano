@@ -1,11 +1,12 @@
 import maplibregl from "maplibre-gl";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Map, {
-  Layer,
-  Marker,
-  Source,
-  type MapRef
-} from "react-map-gl/maplibre";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import Map, { Layer, Marker, Source, type MapRef } from "react-map-gl/maplibre";
 import { Sheet } from "react-modal-sheet";
 import { useApp } from "~/AppContext";
 import { REGION_DATA } from "~/config/RegionConfig";
@@ -161,7 +162,7 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
           maxZoom: 17,
         } as any);
       }
-    } catch { }
+    } catch {}
   }, [stop, selectedBus, shapeData, previousShapeData]);
 
   // Load style without traffic layers for the stop map
@@ -337,11 +338,7 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
   }
 
   return (
-    <Sheet
-      isOpen={isOpen}
-      onClose={onClose}
-      detent="content"
-    >
+    <Sheet isOpen={isOpen} onClose={onClose} detent="content">
       <Sheet.Container style={{ backgroundColor: "var(--background-color)" }}>
         <Sheet.Header />
         <Sheet.Content disableDrag={true}>
@@ -358,7 +355,11 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
                   }}
                   style={{ width: "100%", height: "50vh" }}
                   mapStyle={styleSpec}
-                  attributionControl={{ compact: false, customAttribution: "Concello de Vigo & Viguesa de Transportes SL" }}
+                  attributionControl={{
+                    compact: false,
+                    customAttribution:
+                      "Concello de Vigo & Viguesa de Transportes SL",
+                  }}
                   ref={mapRef}
                   interactive={true}
                   onMove={(e) => {

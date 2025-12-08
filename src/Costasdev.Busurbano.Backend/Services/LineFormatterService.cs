@@ -1,4 +1,4 @@
-﻿using Costasdev.Busurbano.Backend.Types;
+using Costasdev.Busurbano.Backend.Types;
 
 namespace Costasdev.Busurbano.Backend.Services;
 
@@ -25,27 +25,27 @@ public class LineFormatterService
                     .Replace("\"", "");
                 return circulation;
             case "FUT":
-            {
-                if (circulation.Route == "CASTELAO-CAMELIAS-G.BARBÓN.M.GARRIDO")
                 {
-                    circulation.Line = "MAR";
-                    circulation.Route = "MARCADOR ⚽: CASTELAO-CAMELIAS-G.BARBÓN.M.GARRIDO";
-                }
+                    if (circulation.Route == "CASTELAO-CAMELIAS-G.BARBÓN.M.GARRIDO")
+                    {
+                        circulation.Line = "MAR";
+                        circulation.Route = "MARCADOR ⚽: CASTELAO-CAMELIAS-G.BARBÓN.M.GARRIDO";
+                    }
 
-                if (circulation.Route == "P. ESPAÑA-T.VIGO-S.BADÍA")
-                {
-                    circulation.Line = "RIO";
-                    circulation.Route = "RÍO ⚽: P. ESPAÑA-T.VIGO-S.BADÍA";
-                }
+                    if (circulation.Route == "P. ESPAÑA-T.VIGO-S.BADÍA")
+                    {
+                        circulation.Line = "RIO";
+                        circulation.Route = "RÍO ⚽: P. ESPAÑA-T.VIGO-S.BADÍA";
+                    }
 
-                if (circulation.Route == "NAVIA-BOUZAS-URZAIZ-G. ESPINO")
-                {
-                    circulation.Line = "GOL";
-                    circulation.Route = "GOL ⚽: NAVIA-BOUZAS-URZAIZ-G. ESPINO";
-                }
+                    if (circulation.Route == "NAVIA-BOUZAS-URZAIZ-G. ESPINO")
+                    {
+                        circulation.Line = "GOL";
+                        circulation.Route = "GOL ⚽: NAVIA-BOUZAS-URZAIZ-G. ESPINO";
+                    }
 
-                return circulation;
-            }
+                    return circulation;
+                }
             default:
                 return circulation;
         }

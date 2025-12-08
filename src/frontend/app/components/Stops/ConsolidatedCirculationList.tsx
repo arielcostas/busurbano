@@ -7,17 +7,17 @@ import "./ConsolidatedCirculationList.css";
 
 interface ConsolidatedCirculationListProps {
   data: ConsolidatedCirculation[];
-  onCirculationClick?: (estimate: ConsolidatedCirculation, index: number) => void;
+  onCirculationClick?: (
+    estimate: ConsolidatedCirculation,
+    index: number
+  ) => void;
   reduced?: boolean;
   driver?: string;
 }
 
-export const ConsolidatedCirculationList: React.FC<ConsolidatedCirculationListProps> = ({
-  data,
-  onCirculationClick,
-  reduced,
-  driver,
-}) => {
+export const ConsolidatedCirculationList: React.FC<
+  ConsolidatedCirculationListProps
+> = ({ data, onCirculationClick, reduced, driver }) => {
   const { t } = useTranslation();
 
   const sortedData = [...data].sort(

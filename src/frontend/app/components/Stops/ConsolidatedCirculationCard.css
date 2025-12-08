@@ -1,4 +1,4 @@
-@import '../../tailwind.css';
+@import "../../tailwind.css";
 
 .consolidated-circulation-card {
   all: unset;
@@ -39,7 +39,6 @@
 .consolidated-circulation-card:disabled {
   pointer-events: none;
 }
-
 
 .consolidated-circulation-card .card-row {
   display: flex;

@@ -12,7 +12,9 @@ class Epsg25829(_message.Message):
     Y_FIELD_NUMBER: _ClassVar[int]
     x: float
     y: float
-    def __init__(self, x: _Optional[float] = ..., y: _Optional[float] = ...) -> None: ...
+    def __init__(
+        self, x: _Optional[float] = ..., y: _Optional[float] = ...
+    ) -> None: ...
 
 class StopArrivals(_message.Message):
     __slots__ = ()
@@ -50,11 +52,37 @@ class StopArrivals(_message.Message):
         terminus_code: str
         terminus_name: str
         terminus_time: str
-        def __init__(self, service_id: _Optional[str] = ..., trip_id: _Optional[str] = ..., line: _Optional[str] = ..., route: _Optional[str] = ..., shape_id: _Optional[str] = ..., shape_dist_traveled: _Optional[float] = ..., stop_sequence: _Optional[int] = ..., next_streets: _Optional[_Iterable[str]] = ..., starting_code: _Optional[str] = ..., starting_name: _Optional[str] = ..., starting_time: _Optional[str] = ..., calling_time: _Optional[str] = ..., calling_ssm: _Optional[int] = ..., terminus_code: _Optional[str] = ..., terminus_name: _Optional[str] = ..., terminus_time: _Optional[str] = ...) -> None: ...
+        def __init__(
+            self,
+            service_id: _Optional[str] = ...,
+            trip_id: _Optional[str] = ...,
+            line: _Optional[str] = ...,
+            route: _Optional[str] = ...,
+            shape_id: _Optional[str] = ...,
+            shape_dist_traveled: _Optional[float] = ...,
+            stop_sequence: _Optional[int] = ...,
+            next_streets: _Optional[_Iterable[str]] = ...,
+            starting_code: _Optional[str] = ...,
+            starting_name: _Optional[str] = ...,
+            starting_time: _Optional[str] = ...,
+            calling_time: _Optional[str] = ...,
+            calling_ssm: _Optional[int] = ...,
+            terminus_code: _Optional[str] = ...,
+            terminus_name: _Optional[str] = ...,
+            terminus_time: _Optional[str] = ...,
+        ) -> None: ...
+
     STOP_ID_FIELD_NUMBER: _ClassVar[int]
     LOCATION_FIELD_NUMBER: _ClassVar[int]
     ARRIVALS_FIELD_NUMBER: _ClassVar[int]
     stop_id: str
     location: Epsg25829
     arrivals: _containers.RepeatedCompositeFieldContainer[StopArrivals.ScheduledArrival]
-    def __init__(self, stop_id: _Optional[str] = ..., location: _Optional[_Union[Epsg25829, _Mapping]] = ..., arrivals: _Optional[_Iterable[_Union[StopArrivals.ScheduledArrival, _Mapping]]] = ...) -> None: ...
+    def __init__(
+        self,
+        stop_id: _Optional[str] = ...,
+        location: _Optional[_Union[Epsg25829, _Mapping]] = ...,
+        arrivals: _Optional[
+            _Iterable[_Union[StopArrivals.ScheduledArrival, _Mapping]]
+        ] = ...,
+    ) -> None: ...

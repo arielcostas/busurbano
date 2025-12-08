@@ -29,15 +29,12 @@ tasks:
       - mkdir dist/frontend
       - mv src/frontend/build/client/ dist/frontend/
 
-  format-backend:
+  format:
     desc: Format backend solution.
     cmds:
-      - dotnet format --verbosity diagnostic
-
-  format-frontend:
-    desc: Format frontend sources.
-    cmds:
-      - 'prettier --write src/frontend/**/*.{ts,tsx,css}'
+      - dotnet format --verbosity diagnostic src/Costasdev.Busurbano.Backend/Costasdev.Busurbano.Backend.csproj
+      - npx prettier --write "src/frontend/**/*.{ts,tsx,css}"
+      - uvx ruff format ./src/gtfs_perstop_report ./src/stop_downloader
 
   gen-stop-report:
     desc: Generate stop-based JSON reports for specified dates or date ranges.

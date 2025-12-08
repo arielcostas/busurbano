@@ -57,7 +57,7 @@ export default function NavBar({ orientation = "horizontal" }: NavBarProps) {
               updateMapState(coords, 16);
             }
           },
-          () => { },
+          () => {},
           {
             enableHighAccuracy: false,
             maximumAge: 5 * 60 * 1000,
@@ -70,13 +70,14 @@ export default function NavBar({ orientation = "horizontal" }: NavBarProps) {
       name: t("navbar.lines", "Líneas"),
       icon: Route,
       path: "/lines",
-    }
+    },
   ];
 
   return (
     <nav
-      className={`${styles.navBar} ${orientation === "vertical" ? styles.vertical : ""
-        }`}
+      className={`${styles.navBar} ${
+        orientation === "vertical" ? styles.vertical : ""
+      }`}
     >
       {navItems.map((item) => {
         const Icon = item.icon;

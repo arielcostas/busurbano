@@ -6,13 +6,10 @@ interface LineIconProps {
   mode?: "rounded" | "pill" | "default";
 }
 
-const LineIcon: React.FC<LineIconProps> = ({
-  line,
-  mode = "default",
-}) => {
+const LineIcon: React.FC<LineIconProps> = ({ line, mode = "default" }) => {
   const actualLine = useMemo(() => {
-    return line.trim().replace('510', 'NAD');
-  }, [line])
+    return line.trim().replace("510", "NAD");
+  }, [line]);
 
   const formattedLine = useMemo(() => {
     return /^[a-zA-Z]/.test(actualLine) ? actualLine : `L${actualLine}`;

@@ -217,7 +217,9 @@ export default function StopList() {
       if (isNumericSearch) {
         // Direct match for stop codes
         const stopId = searchQuery.trim();
-        const exactMatch = data.filter((stop) => stop.stopId === stopId || stop.stopId.endsWith(`:${stopId}`));
+        const exactMatch = data.filter(
+          (stop) => stop.stopId === stopId || stop.stopId.endsWith(`:${stopId}`)
+        );
         if (exactMatch.length > 0) {
           items = exactMatch;
         } else {
@@ -281,7 +283,9 @@ export default function StopList() {
           {/* Favourites Gallery */}
           {!loading && (
             <StopGallery
-              stops={favouriteStops.sort((a, b) => a.stopId.localeCompare(b.stopId))}
+              stops={favouriteStops.sort((a, b) =>
+                a.stopId.localeCompare(b.stopId)
+              )}
               title={t("stoplist.favourites")}
               emptyMessage={t("stoplist.no_favourites")}
             />
@@ -301,9 +305,24 @@ export default function StopList() {
           <div className="w-full px-4 flex flex-col gap-2">
             <div className="flex items-center gap-2">
               {userLocation && (
-                <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                <svg
+                  className="w-5 h-5 text-blue-600 dark:text-blue-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
                 </svg>
               )}
               <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
@@ -322,9 +341,10 @@ export default function StopList() {
                 </>
               )}
               {!loading && data
-                ? (userLocation ? sortedAllStops.slice(0, 6) : sortedAllStops).map(
-                  (stop) => <StopItem key={stop.stopId} stop={stop} />
-                )
+                ? (userLocation
+                  ? sortedAllStops.slice(0, 6)
+                  : sortedAllStops
+                ).map((stop) => <StopItem key={stop.stopId} stop={stop} />)
                 : null}
             </ul>
           </div>

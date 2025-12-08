@@ -12,7 +12,7 @@ import Map, {
   Source,
   type MapLayerMouseEvent,
   type MapRef,
-  type StyleSpecification
+  type StyleSpecification,
 } from "react-map-gl/maplibre";
 import { StopSheet } from "~/components/StopSummarySheet";
 import { REGION_DATA } from "~/config/RegionConfig";
@@ -35,7 +35,13 @@ export default function StopMap() {
   const [stops, setStops] = useState<
     GeoJsonFeature<
       Point,
-      { stopId: string; name: string; lines: string[]; cancelled?: boolean, prefix: string }
+      {
+        stopId: string;
+        name: string;
+        lines: string[];
+        cancelled?: boolean;
+        prefix: string;
+      }
     >[]
   >([]);
   const [selectedStop, setSelectedStop] = useState<Stop | null>(null);
@@ -51,7 +57,12 @@ export default function StopMap() {
   const onMapClick = (e: MapLayerMouseEvent) => {
     const features = e.features;
     if (!features || features.length === 0) {
-      console.debug("No features found on map click. Position:", e.lngLat, "Point:", e.point);
+      console.debug(
+        "No features found on map click. Position:",
+        e.lngLat,
+        "Point:",
+        e.point
+      );
       return;
     }
     const feature = features[0];
@@ -65,7 +76,13 @@ export default function StopMap() {
     StopDataProvider.getStops().then((data) => {
       const features: GeoJsonFeature<
         Point,
-        { stopId: string; name: string; lines: string[]; cancelled?: boolean, prefix: string }
+        {
+          stopId: string;
+          name: string;
+          lines: string[];
+          cancelled?: boolean;
+          prefix: string;
+        }
       >[] = data.map((s) => ({
         type: "Feature",
         geometry: {
@@ -77,7 +94,11 @@ export default function StopMap() {
           name: s.name.original,
           lines: s.lines,
           cancelled: s.cancelled ?? false,
-          prefix: s.stopId.startsWith("renfe:") ? "stop-renfe" : (s.cancelled ? "stop-vitrasa-cancelled" : "stop-vitrasa"),
+          prefix: s.stopId.startsWith("renfe:")
+            ? "stop-renfe"
+            : s.cancelled
+              ? "stop-vitrasa-cancelled"
+              : "stop-vitrasa",
         },
       }));
       setStops(features);
@@ -190,7 +211,11 @@ export default function StopMap() {
       maxBounds={[REGION_DATA.bounds.sw, REGION_DATA.bounds.ne]}
     >
       <NavigationControl position="top-right" />
-      <GeolocateControl position="top-right" trackUserLocation={true} positionOptions={{ enableHighAccuracy: false }} />
+      <GeolocateControl
+        position="top-right"
+        trackUserLocation={true}
+        positionOptions={{ enableHighAccuracy: false }}
+      />
 
       <Source
         id="stops-source"
@@ -204,10 +229,7 @@ export default function StopMap() {
         minzoom={11}
         source="stops-source"
         layout={{
-          "icon-image": [
-            "get",
-            "prefix"
-          ],
+          "icon-image": ["get", "prefix"],
           "icon-size": [
             "interpolate",
             ["linear"],
@@ -242,22 +264,20 @@ export default function StopMap() {
             "case",
             ["==", ["get", "prefix"], "stop-renfe"],
             "#870164",
-            "#e72b37"
+            "#e72b37",
           ],
           "text-halo-color": "#FFF",
           "text-halo-width": 1,
         }}
       />
 
-      {
-        selectedStop && (
-          <StopSheet
-            isOpen={isSheetOpen}
-            onClose={() => setIsSheetOpen(false)}
-            stop={selectedStop}
-          />
-        )
-      }
-    </Map >
+      {selectedStop && (
+        <StopSheet
+          isOpen={isSheetOpen}
+          onClose={() => setIsSheetOpen(false)}
+          stop={selectedStop}
+        />
+      )}
+    </Map>
   );
 }

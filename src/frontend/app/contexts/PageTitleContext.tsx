@@ -24,7 +24,9 @@ export const PageTitleProvider: React.FC<{ children: React.ReactNode }> = ({
 export const usePageTitleContext = () => {
   const context = useContext(PageTitleContext);
   if (!context) {
-    throw new Error("usePageTitleContext must be used within a PageTitleProvider");
+    throw new Error(
+      "usePageTitleContext must be used within a PageTitleProvider"
+    );
   }
   return context;
 };

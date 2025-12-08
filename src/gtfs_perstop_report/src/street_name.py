@@ -3,7 +3,8 @@ import re
 
 re_remove_quotation_marks = re.compile(r'[""”]', re.IGNORECASE)
 re_anything_before_stopcharacters_with_parentheses = re.compile(
-    r'^(.*?)(?:,|\s\s|\s-\s| \d| S\/N|\s\()', re.IGNORECASE)
+    r"^(.*?)(?:,|\s\s|\s-\s| \d| S\/N|\s\()", re.IGNORECASE
+)
 
 
 NAME_REPLACEMENTS = {
@@ -17,15 +18,13 @@ NAME_REPLACEMENTS = {
     " do ": " ",
     " da ": " ",
     " das ": " ",
-    "Riós": "Ríos"
+    "Riós": "Ríos",
 }
 
 
 def get_street_name(original_name: str) -> str:
-    original_name = re.sub(re_remove_quotation_marks,
-                           '', original_name).strip()
-    match = re.match(
-        re_anything_before_stopcharacters_with_parentheses, original_name)
+    original_name = re.sub(re_remove_quotation_marks, "", original_name).strip()
+    match = re.match(re_anything_before_stopcharacters_with_parentheses, original_name)
     if match:
         street_name = match.group(1)
     else:
@@ -41,9 +40,9 @@ def get_street_name(original_name: str) -> str:
 
 def normalise_stop_name(original_name: str | None) -> str:
     if original_name is None:
-        return ''
-    stop_name = re.sub(re_remove_quotation_marks, '', original_name).strip()
+        return ""
+    stop_name = re.sub(re_remove_quotation_marks, "", original_name).strip()
 
-    stop_name = stop_name.replace('  ', ', ')
+    stop_name = stop_name.replace("  ", ", ")
 
     return stop_name

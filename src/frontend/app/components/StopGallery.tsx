@@ -36,7 +36,9 @@ const StopGallery: React.FC<StopGalleryProps> = ({
   if (stops.length === 0 && emptyMessage) {
     return (
       <div className="w-full px-4 flex flex-col gap-2">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{title}</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          {title}
+        </h3>
         <div className="text-center">
           <p className="text-sm px-4 py-3 bg-gray-100 dark:bg-gray-800 rounded-lg">
             {emptyMessage}
@@ -52,15 +54,17 @@ const StopGallery: React.FC<StopGalleryProps> = ({
 
   return (
     <div className="w-full px-4 flex flex-col gap-2">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{title}</h3>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+        {title}
+      </h3>
 
       <div
         ref={scrollRef}
         className="overflow-x-auto overflow-y-hidden snap-x snap-mandatory scrollbar-hide pb-2"
         style={{
-          WebkitOverflowScrolling: 'touch',
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none'
+          WebkitOverflowScrolling: "touch",
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
         }}
       >
         <div className="flex gap-3">
@@ -73,8 +77,11 @@ const StopGallery: React.FC<StopGalleryProps> = ({
         {stops.map((_, index) => (
           <span
             key={index}
-            className={`w-1.5 h-1.5 rounded-full transition-colors duration-200 ${index === activeIndex ? "bg-blue-600" : "bg-gray-300 dark:bg-gray-700"
-              }`}
+            className={`w-1.5 h-1.5 rounded-full transition-colors duration-200 ${
+              index === activeIndex
+                ? "bg-blue-600"
+                : "bg-gray-300 dark:bg-gray-700"
+            }`}
           ></span>
         ))}
       </div>

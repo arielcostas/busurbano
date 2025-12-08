@@ -22,7 +22,9 @@ const StopGalleryItem: React.FC<StopGalleryItemProps> = ({ stop }) => {
         to={`/stops/${stop.stopId}`}
       >
         <div className="flex items-center gap-2 mb-1">
-          {stop.favourite && <span className="text-yellow-500 text-base">★</span>}
+          {stop.favourite && (
+            <span className="text-yellow-500 text-base">★</span>
+          )}
           <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">
             ({stop.stopId})
           </span>
@@ -30,10 +32,10 @@ const StopGalleryItem: React.FC<StopGalleryItemProps> = ({ stop }) => {
         <div
           className="text-[0.95rem] font-semibold mb-2 leading-snug line-clamp-2 min-h-[2.5em]"
           style={{
-            display: '-webkit-box',
+            display: "-webkit-box",
             WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden'
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
           }}
         >
           {StopDataProvider.getDisplayName(stop)}

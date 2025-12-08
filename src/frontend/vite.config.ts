@@ -11,11 +11,7 @@ export default defineConfig({
   define: {
     __COMMIT_HASH__: JSON.stringify(commitHash),
   },
-  plugins: [
-    reactRouter(),
-    tsconfigPaths(),
-    tailwindcss()
-  ],
+  plugins: [reactRouter(), tsconfigPaths(), tailwindcss()],
   server: {
     proxy: {
       "^/api": {

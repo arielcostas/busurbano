@@ -1,4 +1,3 @@
-
 interface LineColorInfo {
   background: string;
   text: string;
@@ -61,7 +60,5 @@ export function getLineColour(line: string): LineColorInfo {
   let formattedLine = /^[a-zA-Z]/.test(line) ? line : `L${line}`;
   formattedLine = formattedLine.toLowerCase().trim();
 
-  return (
-    vigoLineColors[formattedLine.toLowerCase().trim()] ?? defaultLineColor
-  );
+  return vigoLineColors[formattedLine.toLowerCase().trim()] ?? defaultLineColor;
 }

@@ -2,22 +2,29 @@ import { Computer, Moon, Sun } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { usePageTitle } from "~/contexts/PageTitleContext";
 import { useApp, type Theme } from "../AppContext";
-import '../tailwind-full.css';
+import "../tailwind-full.css";
 
 export default function Settings() {
   const { t, i18n } = useTranslation();
   usePageTitle(t("navbar.settings", "Ajustes"));
-  const {
-    theme,
-    setTheme,
-    mapPositionMode,
-    setMapPositionMode
-  } = useApp();
+  const { theme, setTheme, mapPositionMode, setMapPositionMode } = useApp();
 
   const THEMES = [
-    { value: "light" as Theme, label: t("about.theme_light", "Claro"), icon: Sun },
-    { value: "dark" as Theme, label: t("about.theme_dark", "Oscuro"), icon: Moon },
-    { value: "system" as Theme, label: t("about.theme_system", "Sistema"), icon: Computer },
+    {
+      value: "light" as Theme,
+      label: t("about.theme_light", "Claro"),
+      icon: Sun,
+    },
+    {
+      value: "dark" as Theme,
+      label: t("about.theme_dark", "Oscuro"),
+      icon: Moon,
+    },
+    {
+      value: "system" as Theme,
+      label: t("about.theme_system", "Sistema"),
+      icon: Computer,
+    },
   ];
 
   return (
@@ -37,9 +44,10 @@ export default function Settings() {
                 rounded-lg border-2 transition-all duration-200
                 hover:bg-gray-50 dark:hover:bg-gray-800
                 focus:outline-none focus:ring focus:ring-blue-500 dark:focus:ring-offset-gray-900
-                ${value === theme
-                  ? "border-blue-600 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 font-semibold"
-                  : "border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300"
+                ${
+                  value === theme
+                    ? "border-blue-600 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 font-semibold"
+                    : "border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300"
                 }
               `}
             >

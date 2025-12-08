@@ -198,9 +198,7 @@ export default function Estimates() {
     loadData();
 
     StopDataProvider.pushRecent(stopId);
-    setFavourited(
-      StopDataProvider.isFavourite(stopId)
-    );
+    setFavourited(StopDataProvider.isFavourite(stopId));
     setDataLoading(false);
   }, [stopId, loadData]);
 
@@ -246,34 +244,48 @@ export default function Estimates() {
               <div className="flex items-center justify-between py-2">
                 <div className="flex items-center gap-8">
                   <Star
-                    className={`cursor-pointer transition-colors ${favourited
-                      ? "fill-[var(--star-color)] text-[var(--star-color)]"
-                      : "text-slate-500"
-                      }`}
+                    className={`cursor-pointer transition-colors ${
+                      favourited
+                        ? "fill-[var(--star-color)] text-[var(--star-color)]"
+                        : "text-slate-500"
+                    }`}
                     onClick={toggleFavourite}
                   />
 
-                  <CircleHelp className="text-slate-500 cursor-pointer" onClick={() => setIsHelpModalOpen(true)} />
+                  <CircleHelp
+                    className="text-slate-500 cursor-pointer"
+                    onClick={() => setIsHelpModalOpen(true)}
+                  />
                 </div>
 
                 <div className="consolidated-circulation-caption">
-                  {t("estimates.caption", "Estimaciones de llegadas a las {{time}}", {
-                    time: dataDate?.toLocaleTimeString(),
-                  })}
+                  {t(
+                    "estimates.caption",
+                    "Estimaciones de llegadas a las {{time}}",
+                    {
+                      time: dataDate?.toLocaleTimeString(),
+                    }
+                  )}
                 </div>
 
                 <div>
                   {isReducedView ? (
-                    <EyeClosed className="text-slate-500" onClick={() => setIsReducedView(false)} />
+                    <EyeClosed
+                      className="text-slate-500"
+                      onClick={() => setIsReducedView(false)}
+                    />
                   ) : (
-                    <Eye className="text-slate-500" onClick={() => setIsReducedView(true)} />
+                    <Eye
+                      className="text-slate-500"
+                      onClick={() => setIsReducedView(true)}
+                    />
                   )}
                 </div>
               </div>
               <ConsolidatedCirculationList
                 data={data}
                 reduced={isReducedView}
-                driver={stopData?.stopId.split(':')[0]}
+                driver={stopData?.stopId.split(":")[0]}
                 onCirculationClick={(estimate, idx) => {
                   setSelectedCirculationId(getCirculationId(estimate));
                   setIsMapModalOpen(true);
@@ -295,8 +307,8 @@ export default function Estimates() {
               previousTripShapeId: c.previousTripShapeId,
               schedule: c.schedule
                 ? {
-                  shapeId: c.schedule.shapeId,
-                }
+                    shapeId: c.schedule.shapeId,
+                  }
                 : undefined,
             }))}
             isOpen={isMapModalOpen}

@@ -24,10 +24,9 @@ def load_stop_overrides(file_path):
         return {}
 
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, "r", encoding="utf-8") as f:
             overrides = yaml.safe_load(f)
-            print(
-                f"Loaded {len(overrides) if overrides else 0} stop overrides")
+            print(f"Loaded {len(overrides) if overrides else 0} stop overrides")
             return overrides or {}
     except Exception as e:
         print(f"Error loading overrides: {e}", file=sys.stderr)
@@ -93,12 +92,10 @@ def apply_overrides(stops, overrides):
             # Create the new stop
             new_stop = {
                 "stopId": stop_id_int,
-                "name": {
-                    "original": override.get("name", f"Stop {stop_id_int}")
-                },
+                "name": {"original": override.get("name", f"Stop {stop_id_int}")},
                 "latitude": override.get("location", {}).get("latitude"),
                 "longitude": override.get("location", {}).get("longitude"),
-                "lines": override.get("lines", [])
+                "lines": override.get("lines", []),
             }
 
             # Add optional fields (excluding the 'new' parameter)
@@ -132,7 +129,7 @@ def download_stops_vitrasa() -> list[dict]:
     try:
         with urllib.request.urlopen(req) as response:
             # Read the response and decode from ISO-8859-1 to UTF-8
-            content = response.read().decode('iso-8859-1')
+            content = response.read().decode("iso-8859-1")
             data = json.loads(content)
 
         print(f"Downloaded {len(data)} stops")
@@ -142,16 +139,16 @@ def download_stops_vitrasa() -> list[dict]:
         for stop in data:
             name = stop.get("nombre", "").strip()
             # Fix double space equals comma-space: "Castrelos  202" -> "Castrelos, 202"; and remove quotes
-            name = name.replace("  ", ", ").replace('"', '').replace("'", "")
+            name = name.replace("  ", ", ").replace('"', "").replace("'", "")
 
             processed_stop = {
                 "stopId": "vitrasa:" + str(stop.get("id")),
-                "name": {
-                    "original": name
-                },
+                "name": {"original": name},
                 "latitude": stop.get("lat"),
                 "longitude": stop.get("lon"),
-                "lines": [line.strip() for line in stop.get("lineas", "").split(",")] if stop.get("lineas") else []
+                "lines": [line.strip() for line in stop.get("lineas", "").split(",")]
+                if stop.get("lineas")
+                else [],
             }
             processed_stops.append(processed_stop)
 
@@ -171,10 +168,19 @@ def download_stops_renfe() -> list[dict]:
         with urllib.request.urlopen(req) as response:
             content = response.read()
             data = csv.DictReader(
-                content.decode('utf-8').splitlines(),
-                delimiter=';',
-                fieldnames=["CODE", "NAME", "LAT", "LNG",
-                            "ADDRESS", "ZIP", "CITY", "PROVINCE", "COUNTRY"]
+                content.decode("utf-8").splitlines(),
+                delimiter=";",
+                fieldnames=[
+                    "CODE",
+                    "NAME",
+                    "LAT",
+                    "LNG",
+                    "ADDRESS",
+                    "ZIP",
+                    "CITY",
+                    "PROVINCE",
+                    "COUNTRY",
+                ],
             )
 
         stops = [row for row in data]
@@ -191,12 +197,10 @@ def download_stops_renfe() -> list[dict]:
 
             processed_stop = {
                 "stopId": "renfe:" + str(stop.get("CODE", 0)),
-                "name": {
-                    "original": name
-                },
-                "latitude": float(stop.get("LAT", 0).replace(',', '.')),
-                "longitude": float(stop.get("LNG", 0).replace(',', '.')),
-                "lines": []
+                "name": {"original": name},
+                "latitude": float(stop.get("LAT", 0).replace(",", ".")),
+                "longitude": float(stop.get("LNG", 0).replace(",", ".")),
+                "lines": [],
             }
             processed_stops.append(processed_stop)
 
@@ -229,17 +233,15 @@ def main():
             all_stops = apply_overrides(all_stops, overrides)
 
         # Filter out hidden stops
-        visible_stops = [
-            stop for stop in all_stops if not stop.get("hide")]
-        print(
-            f"Removed {len(all_stops) - len(visible_stops)} hidden stops")
+        visible_stops = [stop for stop in all_stops if not stop.get("hide")]
+        print(f"Removed {len(all_stops) - len(visible_stops)} hidden stops")
 
         # Sort stops by ID ascending
         visible_stops.sort(key=lambda x: x["stopId"])
 
         output_file = os.path.join(SCRIPT_DIR, OUTPUT_FILE)
 
-        with open(output_file, 'w', encoding='utf-8') as f:
+        with open(output_file, "w", encoding="utf-8") as f:
             json.dump(visible_stops, f, ensure_ascii=False, indent=2)
 
         print(f"Saved processed stops data to {output_file}")
@@ -249,6 +251,7 @@ def main():
         print(f"Error processing stops data: {e}", file=sys.stderr)
         # Print full exception traceback
         import traceback
+
         traceback.print_exc()
         return 1
 
