@@ -185,3 +185,4 @@ jobs:
         if: needs.detect-changes.outputs.stops-script == 'true'
         run: |
           scp -r dist/gtfs_perstop_report/* ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }}:/opt/gtfs_vigo_stops/
+          ssh ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }} "/opt/gtfs_vigo_stops/force-update.sh"

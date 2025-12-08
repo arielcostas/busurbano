@@ -113,7 +113,7 @@ def download_feed_from_url(
             return None
 
     # Create a directory in the system temporary directory
-    temp_dir = tempfile.mkdtemp(prefix="gtfs_vigo_")
+    temp_dir = tempfile.mkdtemp(prefix="gtfs_feed_")
 
     # Create a temporary zip file in the temporary directory
     zip_filename = os.path.join(temp_dir, "gtfs_vigo.zip")
