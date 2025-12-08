@@ -87,6 +87,16 @@
   --line-gol: hsl(208, 68%, 66%);
   --line-gol-text: hsl(0, 0%, 100%);
 
+  --line-md: hsl(316, 99%, 27%);
+  --line-md-text: hsl(0, 0%, 100%);
+  --line-ave: hsl(316, 99%, 27%);
+  --line-ave-text: hsl(0, 0%, 100%);
+  --line-alvia: hsl(316, 99%, 27%);
+  --line-alvia-text: hsl(0, 0%, 100%);
+  --line-trencelta: hsl(135, 58%, 25%);
+  --line-trencelta-text: hsl(0, 0%, 100%);
+  --line-regional: hsl(316, 99%, 27%);
+  --line-regional-text: hsl(0, 0%, 100%);
 }
 
 .line-icon-default {

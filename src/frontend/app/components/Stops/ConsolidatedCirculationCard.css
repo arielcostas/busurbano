@@ -61,7 +61,6 @@
 }
 
 .consolidated-circulation-card .route-info strong {
-  font-size: 1rem;
   color: var(--text-color);
   overflow: hidden;
   text-overflow: ellipsis;

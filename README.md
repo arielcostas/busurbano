@@ -79,12 +79,12 @@ npm run lint:fix      # Auto-fix ESLint issues
 - **Ruff**: Formatting and linting (configured in `pyproject.toml`)
 
 ```sh
-cd src/gtfs_vigo_stops
+cd src/gtfs_perstop_report
 ruff format .         # Format Python files
 ruff check .          # Check for linting issues
 ```
 
-### C#
+### C #
 
 - **EditorConfig**: Formatting rules (configured in `.editorconfig`)
 - Format on save is enabled in VSCode
@@ -92,6 +92,7 @@ ruff check .          # Check for linting issues
 ### VSCode Setup
 
 When you open this project in VSCode, you'll be prompted to install recommended extensions. These include:
+
 - Prettier
 - ESLint
 - Ruff

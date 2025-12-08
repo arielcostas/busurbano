@@ -7,7 +7,7 @@ Busurbano is a public transit app for urban buses in Spain (currently Vigo). It 
 **Three-component system:**
 1. **Backend** (`src/Costasdev.Busurbano.Backend`): ASP.NET Core 9 Web API serving transit data
 2. **Frontend** (`src/frontend`): React 19 SPA using react-router v7 (SSR disabled), MapLibre GL, Vite
-3. **Python utilities**: GTFS processing (`gtfs_vigo_stops`), delay collection daemon (`delay_collector`), stop data downloaders
+3. **Python utilities**: GTFS processing (`gtfs_perstop_report`), delay collection daemon (`delay_collector`), stop data downloaders
 
 **Data flow:**
 - Frontend fetches stop metadata from static JSON (`/stops/vigo.json`) + real-time estimates from backend `/api/vigo/*` endpoints

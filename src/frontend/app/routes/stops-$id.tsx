@@ -247,8 +247,8 @@ export default function Estimates() {
                 <div className="flex items-center gap-8">
                   <Star
                     className={`cursor-pointer transition-colors ${favourited
-                        ? "fill-[var(--star-color)] text-[var(--star-color)]"
-                        : "text-slate-500"
+                      ? "fill-[var(--star-color)] text-[var(--star-color)]"
+                      : "text-slate-500"
                       }`}
                     onClick={toggleFavourite}
                   />
@@ -273,6 +273,7 @@ export default function Estimates() {
               <ConsolidatedCirculationList
                 data={data}
                 reduced={isReducedView}
+                driver={stopData?.stopId.split(':')[0]}
                 onCirculationClick={(estimate, idx) => {
                   setSelectedCirculationId(getCirculationId(estimate));
                   setIsMapModalOpen(true);

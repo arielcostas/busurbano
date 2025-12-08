@@ -19,27 +19,27 @@ def get_all_feed_dates(feed_dir: str) -> List[str]:
     if os.path.exists(calendar_path):
         with open(calendar_path, encoding="utf-8") as f:
             reader = csv.DictReader(f)
-            start_dates: List[str] = []
-            end_dates: List[str] = []
-            for row in reader:
-                if row.get("start_date") and row.get("end_date"):
-                    start_dates.append(row["start_date"])
-                    end_dates.append(row["end_date"])
-            if start_dates and end_dates:
-                min_date = min(start_dates)
-                max_date = max(end_dates)
-                # Convert YYYYMMDD to YYYY-MM-DD
-                start = datetime.strptime(min_date, "%Y%m%d")
-                end = datetime.strptime(max_date, "%Y%m%d")
-                result: List[str] = []
-                while start <= end:
-                    result.append(start.strftime("%Y-%m-%d"))
-                    start += timedelta(days=1)
-                return result
-            else:
-                # Return from today to 7 days ahead if no valid dates found
-                today = datetime.now()
-                return [(today + timedelta(days=i)).strftime("%Y-%m-%d") for i in range(8)]
+            rows = list(reader)
+            if rows:  # Check if there's actual data
+                start_dates: List[str] = []
+                end_dates: List[str] = []
+                for row in rows:
+                    if row.get("start_date") and row.get("end_date"):
+                        start_dates.append(row["start_date"])
+                        end_dates.append(row["end_date"])
+                if start_dates and end_dates:
+                    min_date = min(start_dates)
+                    max_date = max(end_dates)
+                    # Convert YYYYMMDD to YYYY-MM-DD
+                    start = datetime.strptime(min_date, "%Y%m%d")
+                    end = datetime.strptime(max_date, "%Y%m%d")
+                    result: List[str] = []
+                    while start <= end:
+                        result.append(start.strftime("%Y-%m-%d"))
+                        start += timedelta(days=1)
+                    if len(result) > 0:
+                        return result
+
 
     # Fallback: use calendar_dates.txt
     if os.path.exists(calendar_dates_path):
@@ -51,9 +51,11 @@ def get_all_feed_dates(feed_dir: str) -> List[str]:
                     # Convert YYYYMMDD to YYYY-MM-DD
                     d = row["date"]
                     dates.add(f"{d[:4]}-{d[4:6]}-{d[6:]}")
-            return sorted(dates)
+            if len(dates) > 0:
+                return sorted(dates)
 
-    return []
+    today = datetime.today()
+    return [(today + timedelta(days=i)).strftime("%Y-%m-%d") for i in range(8)]
 
 
 def time_to_seconds(time_str: str) -> int:

@@ -104,7 +104,7 @@ export default function StopList() {
     }
 
     if (!userLocation) {
-      return [...data].sort((a, b) => a.stopId - b.stopId);
+      return [...data].sort((a, b) => a.stopId.localeCompare(b.stopId));
     }
 
     const toRadians = (value: number) => (value * Math.PI) / 180;
@@ -147,7 +147,7 @@ export default function StopList() {
       })
       .sort((a, b) => {
         if (a.distance === b.distance) {
-          return a.stop.stopId - b.stop.stopId;
+          return a.stop.stopId.localeCompare(b.stop.stopId);
         }
         return a.distance - b.distance;
       })
@@ -216,8 +216,8 @@ export default function StopList() {
       let items: Stop[];
       if (isNumericSearch) {
         // Direct match for stop codes
-        const stopId = parseInt(searchQuery.trim(), 10);
-        const exactMatch = data.filter((stop) => stop.stopId === stopId);
+        const stopId = searchQuery.trim();
+        const exactMatch = data.filter((stop) => stop.stopId === stopId || stop.stopId.endsWith(`:${stopId}`));
         if (exactMatch.length > 0) {
           items = exactMatch;
         } else {
@@ -281,7 +281,7 @@ export default function StopList() {
           {/* Favourites Gallery */}
           {!loading && (
             <StopGallery
-              stops={favouriteStops.sort((a, b) => a.stopId - b.stopId)}
+              stops={favouriteStops.sort((a, b) => a.stopId.localeCompare(b.stopId))}
               title={t("stoplist.favourites")}
               emptyMessage={t("stoplist.no_favourites")}
             />

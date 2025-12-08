@@ -28,7 +28,7 @@ public class RenfeTransitProvider : ITransitProvider
         }
 
         var now = nowLocal.AddSeconds(60 - nowLocal.Second);
-        var scopeEnd = now.AddMinutes(300);
+        var scopeEnd = now.AddMinutes(8 * 60);
 
         var scheduledWindow = stopArrivals.Arrivals
             .Where(c => c.CallingDateTime(nowLocal.Date) != null)
@@ -49,11 +49,12 @@ public class RenfeTransitProvider : ITransitProvider
                 {
                     Running = sched.StartingDateTime(nowLocal.Date)!.Value <= now,
                     Minutes = minutes,
-                    TripId = sched.TripId,
-                    ServiceId = sched.ServiceId,
+                    TripId = sched.ServiceId[(sched.ServiceId.Length - 6)..(sched.ServiceId.Length - 1)],
+                    ServiceId = sched.ServiceId[(sched.ServiceId.Length - 6)..(sched.ServiceId.Length - 1)],
                     ShapeId = sched.ShapeId,
                 },
-                RealTime = null
+                RealTime = null,
+                NextStreets = [.. sched.NextStreets]
             });
         }
 

@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Marquee from 'react-fast-marquee';
 import { useTranslation } from "react-i18next";
 import LineIcon from "~components/LineIcon";
@@ -12,6 +12,7 @@ interface ConsolidatedCirculationCardProps {
   onMapClick?: () => void;
   readonly?: boolean;
   reduced?: boolean;
+  driver?: string;
 }
 
 // Utility function to parse service ID and get the turn number
@@ -71,9 +72,52 @@ const parseServiceId = (serviceId: string): string => {
   return `${displayLine}-${turnNumber}`;
 };
 
+const AutoMarquee = ({ text }: { text: string }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [shouldScroll, setShouldScroll] = useState(false);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const checkScroll = () => {
+      // 9px per char for text-sm font-mono is a safe upper bound estimate
+      // (14px * 0.6 = 8.4px)
+      const charWidth = 9;
+      const availableWidth = el.offsetWidth;
+      const textWidth = text.length * charWidth;
+
+      setShouldScroll(textWidth > availableWidth);
+    };
+
+    checkScroll();
+
+    const observer = new ResizeObserver(checkScroll);
+    observer.observe(el);
+
+    return () => observer.disconnect();
+  }, [text]);
+
+  if (shouldScroll) {
+    return (
+      <div ref={containerRef} className="w-full overflow-hidden">
+        <Marquee speed={60} gradient={false}>
+          <div className="mr-64 text-sm font-mono">{text}</div>
+        </Marquee>
+      </div>
+    );
+  }
+
+  return (
+    <div ref={containerRef} className="w-full overflow-hidden text-sm font-mono truncate">
+      {text}
+    </div>
+  );
+};
+
 export const ConsolidatedCirculationCard: React.FC<
   ConsolidatedCirculationCardProps
-> = ({ estimate, onMapClick, readonly, reduced }) => {
+> = ({ estimate, onMapClick, readonly, reduced, driver }) => {
   const { t } = useTranslation();
 
   const formatDistance = (meters: number) => {
@@ -157,7 +201,7 @@ export const ConsolidatedCirculationCard: React.FC<
       chips.push(delayChip);
     }
 
-    if (estimate.schedule) {
+    if (estimate.schedule && driver !== 'renfe') {
       chips.push({
         label: `${parseServiceId(estimate.schedule.serviceId)} · ${getTripIdDisplay(
           estimate.schedule.tripId
@@ -199,14 +243,17 @@ export const ConsolidatedCirculationCard: React.FC<
 
   // Check if bus has GPS position (live tracking)
   const hasGpsPosition = !!estimate.currentPosition;
+  const isRenfe = driver === 'renfe';
+  const isClickable = hasGpsPosition;
+  const looksDisabled = !isClickable && !isRenfe;
 
   const Tag = readonly ? "div" : "button";
   const interactiveProps = readonly
     ? {}
     : {
-      onClick: onMapClick,
+      onClick: isClickable ? onMapClick : undefined,
       type: "button" as const,
-      disabled: !hasGpsPosition,
+      disabled: !isClickable,
     };
 
   if (reduced) {
@@ -217,12 +264,14 @@ export const ConsolidatedCirculationCard: React.FC<
           bg-(--message-background-color) border border-(--border-color)
           rounded-xl px-3 py-2.5 transition-all
           ${readonly
-            ? !hasGpsPosition
+            ? looksDisabled
               ? "opacity-70 cursor-not-allowed"
               : ""
-            : hasGpsPosition
+            : isClickable
               ? "cursor-pointer hover:shadow-[0_4px_14px_rgba(0,0,0,0.08)] hover:border-(--button-background-color) hover:bg-[color-mix(in_oklab,var(--button-background-color)_5%,var(--message-background-color))] active:scale-[0.98]"
-              : "opacity-70 cursor-not-allowed"
+              : looksDisabled
+                ? "opacity-70 cursor-not-allowed"
+                : ""
           }
         `.trim()}
         {...interactiveProps}
@@ -232,6 +281,9 @@ export const ConsolidatedCirculationCard: React.FC<
         </div>
         <div className="flex-1 min-w-0 flex flex-col gap-1">
           <strong className="text-base text-(--text-color) overflow-hidden text-ellipsis line-clamp-2 leading-tight">
+            {driver === 'renfe' && estimate.schedule?.tripId && (
+              <span className="font-mono text-slate-500 mr-1.5 text-sm">{estimate.schedule.tripId}</span>
+            )}
             {estimate.route}
           </strong>
           {metaChips.length > 0 && (
@@ -295,12 +347,14 @@ export const ConsolidatedCirculationCard: React.FC<
   return (
     <Tag
       className={`consolidated-circulation-card ${readonly
-        ? !hasGpsPosition
+        ? looksDisabled
           ? "no-gps"
           : ""
-        : hasGpsPosition
+        : isClickable
           ? "has-gps"
-          : "no-gps"
+          : looksDisabled
+            ? "no-gps"
+            : ""
         }`}
       {...interactiveProps}
     >
@@ -310,17 +364,15 @@ export const ConsolidatedCirculationCard: React.FC<
             <LineIcon line={estimate.line} mode="pill" />
           </div>
           <div className="route-info">
-            <strong>{estimate.route}</strong>
-            {estimate.nextStreets && estimate.nextStreets.length > 0 && (() => {
-              const text = estimate.nextStreets.join(" — ");
-              return (
-                <Marquee speed={85} play={text.length > 30}>
-                  <div className="mr-32 font-mono">
-                    {text}
-                  </div>
-                </Marquee>
-              );
-            })()}
+            <strong className="uppercase">
+              {driver === 'renfe' && estimate.schedule?.tripId && (
+                <span className="font-mono text-slate-500 mr-2 text-[0.9em]">{estimate.schedule.tripId}</span>
+              )}
+              {estimate.route}
+            </strong>
+            {estimate.nextStreets && estimate.nextStreets.length > 0 && (
+              <AutoMarquee text={estimate.nextStreets.join(" — ")} />
+            )}
           </div>
           <div className={`eta-badge ${timeClass}`}>
             <div className="eta-text">

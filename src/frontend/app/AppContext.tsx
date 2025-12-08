@@ -3,11 +3,11 @@ import { type ReactNode } from "react";
 import { type RegionId } from "./config/RegionConfig";
 import { MapProvider, useMap } from "./contexts/MapContext";
 import {
-    SettingsProvider,
-    useSettings,
-    type MapPositionMode,
-    type TableStyle,
-    type Theme,
+  SettingsProvider,
+  useSettings,
+  type MapPositionMode,
+  type TableStyle,
+  type Theme,
 } from "./contexts/SettingsContext";
 
 // Re-export types for compatibility
@@ -21,6 +21,9 @@ export const useApp = () => {
   return {
     ...settings,
     ...map,
+    // Mock region support for now since we only have one region
+    region: "vigo" as RegionId,
+    setRegion: (region: RegionId) => { console.log("Set region", region); },
   };
 };
 

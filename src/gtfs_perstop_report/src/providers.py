@@ -72,12 +72,13 @@ class RenfeProvider:
     @staticmethod
     def format_route(route: str, terminus_name: str) -> str:
         """Use terminus name as route if route is empty."""
-        return route if route else terminus_name
+        val = route if route else terminus_name
+        return val.replace("NY", "Ñ").replace("ny", "ñ")
 
     @staticmethod
     def extract_street_name(stop_name: str) -> str:
         """Preserve full stop name for train stations."""
-        return stop_name
+        return stop_name.replace("NY", "Ñ").replace("ny", "ñ")
 
 
 class DefaultProvider:

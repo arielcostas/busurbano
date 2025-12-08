@@ -9,12 +9,14 @@ interface ConsolidatedCirculationListProps {
   data: ConsolidatedCirculation[];
   onCirculationClick?: (estimate: ConsolidatedCirculation, index: number) => void;
   reduced?: boolean;
+  driver?: string;
 }
 
 export const ConsolidatedCirculationList: React.FC<ConsolidatedCirculationListProps> = ({
   data,
   onCirculationClick,
   reduced,
+  driver,
 }) => {
   const { t } = useTranslation();
 
@@ -43,6 +45,7 @@ export const ConsolidatedCirculationList: React.FC<ConsolidatedCirculationListPr
           {sortedData.map((estimate, idx) => (
             <ConsolidatedCirculationCard
               reduced={reduced}
+              driver={driver}
               key={generateKey(estimate)}
               estimate={estimate}
               onMapClick={() => onCirculationClick?.(estimate, idx)}

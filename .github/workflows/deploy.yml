@@ -31,7 +31,7 @@ jobs:
               - 'src/Costasdev.Busurbano.Backend/**'
               - 'src/common/**'
             stops-script:
-              - 'src/gtfs_vigo_stops/**'
+              - 'src/gtfs_perstop_report/**'
 
   build-frontend:
     runs-on: ubuntu-latest
@@ -109,7 +109,7 @@ jobs:
         uses: actions/upload-artifact@v5
         with:
           name: stop_report
-          path: src/gtfs_vigo_stops/
+          path: src/gtfs_perstop_report/
 
   deploy:
     runs-on: ubuntu-latest
@@ -184,4 +184,4 @@ jobs:
       - name: Deploy stop report script
         if: needs.detect-changes.outputs.stops-script == 'true'
         run: |
-          scp -r dist/stop_report/* ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }}:/opt/gtfs_vigo_stops/
+          scp -r dist/stop_report/* ${{ secrets.TARGET_USER }}@${{ secrets.TARGET_HOST }}:/opt/gtfs_perstop_report/

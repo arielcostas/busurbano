@@ -1,6 +1,26 @@
 import type { LngLatLike } from "maplibre-gl";
 
-export const REGION_DATA = {
+export type RegionId = "vigo";
+
+export interface RegionData {
+  id: RegionId;
+  name: string;
+  stopsEndpoint: string;
+  estimatesEndpoint: string;
+  consolidatedCirculationsEndpoint: string;
+  timetableEndpoint: string;
+  shapeEndpoint: string;
+  defaultCenter: LngLatLike;
+  bounds: {
+    sw: LngLatLike;
+    ne: LngLatLike;
+  };
+  textColour: string;
+  defaultZoom: number;
+  showMeters: boolean;
+}
+
+export const REGION_DATA: RegionData = {
   id: "vigo",
   name: "Vigo",
   stopsEndpoint: "/stops/vigo.json",
@@ -20,3 +40,6 @@ export const REGION_DATA = {
   defaultZoom: 14,
   showMeters: true,
 };
+
+export const getAvailableRegions = (): RegionData[] => [REGION_DATA];
+
