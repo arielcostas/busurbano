@@ -1162,6 +1162,7 @@
     "longitude": -8.729603006,
     "lines": [
       "C1",
+      "C2",
       "C3d",
       "A",
       "5A",
@@ -2086,6 +2087,7 @@
     "lines": [
       "C3d",
       "C3i",
+      "4A",
       "4C",
       "12A",
       "15A",
@@ -2102,6 +2104,7 @@
     "lines": [
       "C3d",
       "C3i",
+      "4A",
       "4C",
       "12A",
       "15A",
@@ -5540,7 +5543,6 @@
     "latitude": 42.224562288,
     "longitude": -8.66579419,
     "lines": [
-      "15A",
       "25"
     ]
   },
@@ -5552,7 +5554,6 @@
     "latitude": 42.226051942,
     "longitude": -8.663629647,
     "lines": [
-      "15A",
       "25"
     ]
   },
@@ -5564,7 +5565,6 @@
     "latitude": 42.227533616,
     "longitude": -8.661561664,
     "lines": [
-      "15A",
       "25"
     ]
   },
@@ -5576,7 +5576,6 @@
     "latitude": 42.228984217,
     "longitude": -8.658438326,
     "lines": [
-      "15A",
       "25"
     ]
   },
@@ -5612,7 +5611,6 @@
     "latitude": 42.222838218,
     "longitude": -8.667795118,
     "lines": [
-      "15A",
       "25"
     ]
   },
@@ -6010,6 +6008,7 @@
       "15C",
       "16",
       "17",
+      "18A",
       "18B",
       "18H",
       "24",
@@ -6476,6 +6475,7 @@
     "latitude": 42.232258514,
     "longitude": -8.705770621,
     "lines": [
+      "C2",
       "A",
       "4A",
       "4C",
@@ -6502,6 +6502,7 @@
     "latitude": 42.232042043,
     "longitude": -8.703616807,
     "lines": [
+      "C2",
       "A",
       "4A",
       "4C",
@@ -7351,21 +7352,6 @@
     ]
   },
   {
-    "stopId": 6620,
-    "name": {
-      "original": "Rúa de Policarpo Sanz, 40"
-    },
-    "latitude": 42.23757846151978,
-    "longitude": -8.721031378896738,
-    "lines": [
-      "A"
-    ],
-    "amenities": [
-      "shelter",
-      "display"
-    ]
-  },
-  {
     "stopId": 6640,
     "name": {
       "original": "Rúa do Porriño (fronte Instituto)"
@@ -7788,6 +7774,7 @@
     "latitude": 42.232427317,
     "longitude": -8.711371073,
     "lines": [
+      "C2",
       "A",
       "4A",
       "4C",
@@ -8795,6 +8782,7 @@
     "latitude": 42.20492472,
     "longitude": -8.768904292,
     "lines": [
+      "4A",
       "12A"
     ]
   },
@@ -8806,6 +8794,7 @@
     "latitude": 42.208040013,
     "longitude": -8.767458581,
     "lines": [
+      "4A",
       "12A"
     ]
   },
@@ -8817,6 +8806,7 @@
     "latitude": 42.208926096,
     "longitude": -8.765294038,
     "lines": [
+      "4A",
       "12A"
     ]
   },
@@ -8876,6 +8866,7 @@
     "latitude": 42.213820465,
     "longitude": -8.760651176,
     "lines": [
+      "4A",
       "12A"
     ]
   },
@@ -8911,6 +8902,7 @@
     "latitude": 42.212034517,
     "longitude": -8.760916715,
     "lines": [
+      "4A",
       "12A"
     ]
   },
@@ -9375,6 +9367,7 @@
     "longitude": -8.732178,
     "lines": [
       "C1",
+      "C2",
       "C3d",
       "A",
       "5A",
@@ -9393,6 +9386,7 @@
     "longitude": -8.734096707,
     "lines": [
       "C1",
+      "C2",
       "C3d",
       "A",
       "9B",
@@ -9410,6 +9404,7 @@
     "longitude": -8.731302569,
     "lines": [
       "C1",
+      "C2",
       "C3d",
       "A",
       "5A",
@@ -9428,6 +9423,7 @@
     "longitude": -8.732861043,
     "lines": [
       "C1",
+      "C2",
       "C3d",
       "A",
       "5A",
@@ -9633,6 +9629,7 @@
     "latitude": 42.232028188,
     "longitude": -8.708203776,
     "lines": [
+      "C2",
       "C3i",
       "A",
       "4A",
@@ -9879,6 +9876,7 @@
     "longitude": -8.718398782,
     "lines": [
       "C1",
+      "C2",
       "A",
       "4A",
       "4C",
@@ -9908,6 +9906,7 @@
     "latitude": 42.233986283,
     "longitude": -8.71541048,
     "lines": [
+      "C2",
       "A",
       "4A",
       "4C",
@@ -10319,17 +10318,6 @@
     "longitude": -8.710390551,
     "lines": [
       "H2"
-    ]
-  },
-  {
-    "stopId": 14121,
-    "name": {
-      "original": "Rúa da Reconquista, 2"
-    },
-    "latitude": 42.238625474,
-    "longitude": -8.723242095,
-    "lines": [
-      "A"
     ]
   },
   {
@@ -10872,6 +10860,7 @@
     "longitude": -8.731391435,
     "lines": [
       "C1",
+      "C2",
       "C3d",
       "A",
       "5A",
@@ -11841,24 +11830,6 @@
     ]
   },
   {
-    "stopId": 14260,
-    "name": {
-      "original": "Avda. da Gran Vía (fronte Avda. de Madrid)"
-    },
-    "latitude": 42.228741057,
-    "longitude": -8.71961914,
-    "lines": [
-      "A",
-      "7",
-      "14",
-      "16",
-      "18A",
-      "18B",
-      "18H",
-      "H2"
-    ]
-  },
-  {
     "stopId": 14261,
     "name": {
       "original": "Rúa de Zamora, 1"
@@ -11878,6 +11849,7 @@
     "longitude": -8.720083317,
     "lines": [
       "C1",
+      "C2",
       "A",
       "4A",
       "4C",
@@ -12445,6 +12417,7 @@
     "longitude": -8.726765331,
     "lines": [
       "C1",
+      "C2",
       "C3d",
       "A",
       "5A",
@@ -13012,6 +12985,7 @@
     "latitude": 42.210791203,
     "longitude": -8.761940347,
     "lines": [
+      "4A",
       "12A"
     ]
   },
@@ -13240,6 +13214,7 @@
     "longitude": -8.735414067,
     "lines": [
       "C1",
+      "C2",
       "C3d",
       "A",
       "9B",
@@ -14914,7 +14889,6 @@
     "latitude": 42.229676205,
     "longitude": -8.657383392,
     "lines": [
-      "15A",
       "25"
     ]
   },
@@ -14967,17 +14941,6 @@
     ]
   },
   {
-    "stopId": 20194,
-    "name": {
-      "original": "Rúa de Cánovas del Castillo, 28"
-    },
-    "latitude": 42.240364985,
-    "longitude": -8.724530974,
-    "lines": [
-      "A"
-    ]
-  },
-  {
     "stopId": 20195,
     "name": {
       "original": "Praza de Compostela (fronte 35)"
@@ -15023,20 +14986,6 @@
     "lines": [
       "5B",
       "12A"
-    ]
-  },
-  {
-    "stopId": 20198,
-    "name": {
-      "original": "Rúa de Policarpo Sanz, 26"
-    },
-    "latitude": 42.237533428,
-    "longitude": -8.722195046,
-    "lines": [
-      "A"
-    ],
-    "amenities": [
-      "shelter"
     ]
   },
   {
@@ -15087,6 +15036,7 @@
     "longitude": -8.723353532,
     "lines": [
       "C1",
+      "C2",
       "C3d",
       "A",
       "5A",
@@ -15108,6 +15058,7 @@
     "longitude": -8.720556548,
     "lines": [
       "C1",
+      "C2",
       "A",
       "5A",
       "9B",
