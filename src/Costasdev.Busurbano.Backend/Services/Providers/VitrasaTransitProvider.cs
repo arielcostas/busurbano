@@ -105,7 +105,6 @@ public class VitrasaTransitProvider : ITransitProvider
                     var scheduleTerminus = NormalizeRouteName(c.TerminusName);
 
                     // TODO: Replace ñapa with  fuzzy matching or better logic
-                    Console.WriteLine($"Matching estimate route '{estimate.Route}' (normalized '{estimateRoute}') with schedule route '{c.Route}' (normalized '{scheduleRoute}') and terminus '{c.TerminusName}' (normalized '{scheduleTerminus}')");
                     return scheduleRoute == estimateRoute || scheduleTerminus == estimateRoute ||
                         scheduleRoute.Contains(estimateRoute) || estimateRoute.Contains(scheduleRoute);
                 })
