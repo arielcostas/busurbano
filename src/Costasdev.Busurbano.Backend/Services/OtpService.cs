@@ -161,13 +161,24 @@ public class OtpService
 
         int cardTicketsRequired = 0;
         DateTime? lastTicketPurchased = null;
+        int tripsPaidWithTicket = 0;
 
         foreach (var leg in busLegs)
         {
-            if (lastTicketPurchased == null || (leg.StartTime - lastTicketPurchased.Value).TotalMinutes > 45)
+            // If no ticket purchased, ticket expired (no free transfers after 45 mins), or max trips with ticket reached
+            if (
+                lastTicketPurchased == null ||
+                (leg.StartTime - lastTicketPurchased.Value).TotalMinutes > 45 ||
+                tripsPaidWithTicket >= 3
+            )
             {
                 cardTicketsRequired++;
                 lastTicketPurchased = leg.StartTime;
+                tripsPaidWithTicket = 1;
+            }
+            else
+            {
+                tripsPaidWithTicket++;
             }
         }
 

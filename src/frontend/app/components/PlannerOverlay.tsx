@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import {
   reverseGeocode,
@@ -20,6 +26,7 @@ interface PlannerOverlayProps {
   inline?: boolean;
   clearPickerOnOpen?: boolean;
   showLastDestinationWhenCollapsed?: boolean;
+  cardBackground?: string;
 }
 
 export const PlannerOverlay: React.FC<PlannerOverlayProps> = ({
@@ -29,6 +36,7 @@ export const PlannerOverlay: React.FC<PlannerOverlayProps> = ({
   inline,
   clearPickerOnOpen = false,
   showLastDestinationWhenCollapsed = true,
+  cardBackground,
 }) => {
   const { t } = useTranslation();
   const { origin, setOrigin, destination, setDestination, loading, error } =
@@ -108,6 +116,14 @@ export const PlannerOverlay: React.FC<PlannerOverlayProps> = ({
       clearPickerOnOpen ? "" : field === "origin" ? originQuery : destQuery
     );
     setPickerOpen(true);
+
+    // When opening destination picker, auto-fill origin from current location if not set
+    if (field === "destination" && !origin) {
+      console.log(
+        "[PlannerOverlay] Destination picker opened with no origin, requesting geolocation"
+      );
+      setOriginFromCurrentLocation(false);
+    }
   };
 
   const applyPickedResult = (result: PlannerSearchResult) => {
@@ -121,34 +137,75 @@ export const PlannerOverlay: React.FC<PlannerOverlayProps> = ({
     setPickerOpen(false);
   };
 
-  const setOriginFromCurrentLocation = () => {
-    if (!navigator.geolocation) return;
-    setLocationLoading(true);
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        try {
-          const rev = await reverseGeocode(
+  const setOriginFromCurrentLocation = useCallback(
+    (closePicker: boolean = true) => {
+      console.log(
+        "[PlannerOverlay] setOriginFromCurrentLocation called, closePicker:",
+        closePicker
+      );
+      if (!navigator.geolocation) {
+        console.warn("[PlannerOverlay] Geolocation not available");
+        return;
+      }
+      setLocationLoading(true);
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          console.log(
+            "[PlannerOverlay] Geolocation success:",
             pos.coords.latitude,
             pos.coords.longitude
           );
-          const picked: PlannerSearchResult = {
-            name: rev?.name || "Ubicación actual",
-            label: rev?.label || "GPS",
-            lat: pos.coords.latitude,
-            lon: pos.coords.longitude,
-            layer: "current-location",
-          };
-          setOrigin(picked);
-          setOriginQuery(picked.name || "");
-          setPickerOpen(false);
-        } finally {
+          try {
+            // Set immediately using raw coordinates; refine later if reverse geocode works.
+            const initial: PlannerSearchResult = {
+              name: t("planner.current_location"),
+              label: "GPS",
+              lat: pos.coords.latitude,
+              lon: pos.coords.longitude,
+              layer: "current-location",
+            };
+            console.log("[PlannerOverlay] Setting initial origin:", initial);
+            setOrigin(initial);
+            setOriginQuery(initial.name || "");
+
+            try {
+              const rev = await reverseGeocode(
+                pos.coords.latitude,
+                pos.coords.longitude
+              );
+              console.log("[PlannerOverlay] Reverse geocode result:", rev);
+              if (rev) {
+                const refined: PlannerSearchResult = {
+                  ...initial,
+                  name: rev.name || initial.name,
+                  label: rev.label || initial.label,
+                  layer: "current-location",
+                };
+                console.log(
+                  "[PlannerOverlay] Setting refined origin:",
+                  refined
+                );
+                setOrigin(refined);
+                setOriginQuery(refined.name || "");
+              }
+            } catch (err) {
+              console.error("[PlannerOverlay] Reverse geocode failed:", err);
+            }
+
+            if (closePicker) setPickerOpen(false);
+          } finally {
+            setLocationLoading(false);
+          }
+        },
+        (err) => {
+          console.error("[PlannerOverlay] Geolocation error:", err);
           setLocationLoading(false);
-        }
-      },
-      () => setLocationLoading(false),
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
-  };
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    },
+    [setOrigin, t]
+  );
 
   useEffect(() => {
     if (!pickerOpen) return;
@@ -199,8 +256,8 @@ export const PlannerOverlay: React.FC<PlannerOverlayProps> = ({
     : "pointer-events-none absolute left-0 right-0 top-0 z-20 flex justify-center";
 
   const cardClass = inline
-    ? "pointer-events-auto w-full overflow-hidden rounded-xl bg-white dark:bg-slate-900 px-2 flex flex-col gap-3"
-    : "pointer-events-auto w-[min(640px,calc(100%-16px))] px-2 py-1 flex flex-col gap-3 m-4 overflow-hidden rounded-xl border border-slate-200/80 dark:border-slate-700/70 bg-white/95 dark:bg-slate-900/90 shadow-2xl backdrop-blur";
+    ? `pointer-events-auto w-full overflow-hidden rounded-xl px-2 flex flex-col gap-3 ${cardBackground || "bg-white dark:bg-slate-900"}`
+    : `pointer-events-auto w-[min(640px,calc(100%-16px))] px-2 py-1 flex flex-col gap-3 m-4 overflow-hidden rounded-xl border border-slate-200/80 dark:border-slate-700/70 shadow-2xl backdrop-blur ${cardBackground || "bg-white/95 dark:bg-slate-900/90"}`;
 
   return (
     <div className={wrapperClass}>
@@ -346,7 +403,12 @@ export const PlannerOverlay: React.FC<PlannerOverlayProps> = ({
                       time = targetDate;
                     }
 
-                    onSearch(origin, destination, time, timeMode === "arrive");
+                    await onSearch(
+                      origin,
+                      destination,
+                      time,
+                      timeMode === "arrive"
+                    );
 
                     // After search, if origin was current location, switch to reverse-geocoded address
                     if (
@@ -492,7 +554,7 @@ export const PlannerOverlay: React.FC<PlannerOverlayProps> = ({
                 <li className="border-t border-slate-100 dark:border-slate-700 px-4 py-2 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/70">
                   {remoteLoading
                     ? t("planner.searching_ellipsis")
-                    : t("planner.results")}
+                    : t("planner.results", "Results")}
                 </li>
               )}
               {remoteResults.map((r, i) => (

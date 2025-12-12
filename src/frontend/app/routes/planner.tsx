@@ -3,17 +3,43 @@ import maplibregl, { type StyleSpecification } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import Map, { Layer, Marker, Source, type MapRef } from "react-map-gl/maplibre";
+import Map, { Layer, Source, type MapRef } from "react-map-gl/maplibre";
 import { useLocation } from "react-router";
 
 import { useApp } from "~/AppContext";
 import LineIcon from "~/components/LineIcon";
 import { PlannerOverlay } from "~/components/PlannerOverlay";
 import { REGION_DATA } from "~/config/RegionConfig";
+import { usePageTitle } from "~/contexts/PageTitleContext";
 import { type Itinerary } from "~/data/PlannerApi";
 import { usePlanner } from "~/hooks/usePlanner";
 import { DEFAULT_STYLE, loadStyle } from "~/maps/styleloader";
 import "../tailwind-full.css";
+
+export interface ConsolidatedCirculation {
+  line: string;
+  route: string;
+  schedule?: {
+    running: boolean;
+    minutes: number;
+    serviceId: string;
+    tripId: string;
+    shapeId?: string;
+  };
+  realTime?: {
+    minutes: number;
+    distance: number;
+  };
+  currentPosition?: {
+    latitude: number;
+    longitude: number;
+    orientationDegrees: number;
+    shapeIndex?: number;
+  };
+  isPreviousTrip?: boolean;
+  previousTripShapeId?: string;
+  nextStreets?: string[];
+}
 
 const FARE_CASH_PER_BUS = 1.63;
 const FARE_CARD_PER_BUS = 0.67;
@@ -106,14 +132,16 @@ const ItinerarySummary = ({
 
   return (
     <div
-      className="bg-white p-4 rounded-lg shadow mb-3 cursor-pointer hover:bg-gray-50 border border-gray-200"
+      className="bg-white dark:bg-slate-800 p-4 rounded-lg shadow mb-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-700 border border-gray-200 dark:border-slate-700"
       onClick={onClick}
     >
       <div className="flex justify-between items-center mb-2">
-        <div className="font-bold text-lg">
+        <div className="font-bold text-lg text-slate-900 dark:text-slate-100">
           {startTime} - {endTime}
         </div>
-        <div className="text-gray-600">{durationMinutes} min</div>
+        <div className="text-gray-600 dark:text-gray-400">
+          {durationMinutes} min
+        </div>
       </div>
 
       <div className="flex items-center gap-2 overflow-x-auto pb-2">
@@ -146,7 +174,7 @@ const ItinerarySummary = ({
                 <div className="flex items-center gap-2">
                   <LineIcon
                     line={leg.routeShortName || leg.routeName || leg.mode || ""}
-                    mode="rounded"
+                    mode="pill"
                   />
                 </div>
               )}
@@ -155,7 +183,7 @@ const ItinerarySummary = ({
         })}
       </div>
 
-      <div className="flex items-center justify-between text-sm text-slate-600 mt-1">
+      <div className="flex items-center justify-between text-sm text-slate-600 dark:text-slate-400 mt-1">
         <span>
           {t("planner.walk")}: {formatDistance(walkTotals.meters)}
           {walkTotals.minutes
@@ -163,11 +191,11 @@ const ItinerarySummary = ({
             : ""}
         </span>
         <span className="flex items-center gap-3">
-          <span className="flex items-center gap-1 font-semibold text-slate-700">
+          <span className="flex items-center gap-1 font-semibold text-slate-700 dark:text-slate-300">
             <Coins className="w-4 h-4" />
             {formatCurrency(cashFare)}
           </span>
-          <span className="flex items-center gap-1 text-slate-600">
+          <span className="flex items-center gap-1 text-slate-600 dark:text-slate-400">
             <CreditCard className="w-4 h-4" />
             {t("planner.card_fare", { amount: cardFare })}
           </span>
@@ -187,6 +215,9 @@ const ItineraryDetail = ({
   const { t } = useTranslation();
   const mapRef = useRef<MapRef>(null);
   const { destination: userDestination } = usePlanner();
+  const [nextArrivals, setNextArrivals] = useState<
+    Record<string, ConsolidatedCirculation[]>
+  >({});
 
   const routeGeoJson = {
     type: "FeatureCollection",
@@ -208,18 +239,41 @@ const ItineraryDetail = ({
     })),
   };
 
-  // Collect unique stops with their roles (board, alight, transfer)
-  const stopMarkers = useMemo(() => {
+  // Create GeoJSON for all markers
+  const markersGeoJson = useMemo(() => {
+    const features: any[] = [];
+    const origin = itinerary.legs[0]?.from;
+    const destination = itinerary.legs[itinerary.legs.length - 1]?.to;
+
+    // Origin marker (red)
+    if (origin?.lat && origin?.lon) {
+      features.push({
+        type: "Feature",
+        geometry: { type: "Point", coordinates: [origin.lon, origin.lat] },
+        properties: { type: "origin", name: origin.name || "Origin" },
+      });
+    }
+
+    // Destination marker (green)
+    if (destination?.lat && destination?.lon) {
+      features.push({
+        type: "Feature",
+        geometry: {
+          type: "Point",
+          coordinates: [destination.lon, destination.lat],
+        },
+        properties: {
+          type: "destination",
+          name: destination.name || "Destination",
+        },
+      });
+    }
+
+    // Collect unique stops with their roles (board, alight, transfer)
     const stopsMap: Record<
       string,
-      {
-        lat: number;
-        lon: number;
-        name: string;
-        type: "board" | "alight" | "transfer";
-      }
+      { lat: number; lon: number; name: string; type: string }
     > = {};
-
     itinerary.legs.forEach((leg, idx) => {
       if (leg.mode !== "WALK") {
         // Boarding stop
@@ -254,7 +308,30 @@ const ItineraryDetail = ({
       }
     });
 
-    return Object.values(stopsMap);
+    // Add stop markers
+    Object.values(stopsMap).forEach((stop) => {
+      features.push({
+        type: "Feature",
+        geometry: { type: "Point", coordinates: [stop.lon, stop.lat] },
+        properties: { type: stop.type, name: stop.name },
+      });
+    });
+
+    // Add intermediate stops
+    itinerary.legs.forEach((leg) => {
+      leg.intermediateStops?.forEach((stop) => {
+        features.push({
+          type: "Feature",
+          geometry: { type: "Point", coordinates: [stop.lon, stop.lat] },
+          properties: {
+            type: "intermediate",
+            name: stop.name || "Intermediate stop",
+          },
+        });
+      });
+    });
+
+    return { type: "FeatureCollection", features };
   }, [itinerary]);
 
   // Get origin and destination coordinates
@@ -276,6 +353,17 @@ const ItineraryDetail = ({
           );
         });
 
+        // Also include markers (origin, destination, transfers, intermediate) so all are visible
+        markersGeoJson.features.forEach((feature: any) => {
+          if (
+            feature.geometry?.type === "Point" &&
+            Array.isArray(feature.geometry.coordinates)
+          ) {
+            const [lng, lat] = feature.geometry.coordinates as [number, number];
+            bounds.extend([lng, lat]);
+          }
+        });
+
         // Ensure bounds are valid before fitting
         if (!bounds.isEmpty()) {
           mapRef.current.fitBounds(bounds, { padding: 80, duration: 1000 });
@@ -284,17 +372,52 @@ const ItineraryDetail = ({
     }, 100);
 
     return () => clearTimeout(timer);
-  }, [itinerary]);
+  }, [mapRef.current, itinerary]);
 
   const { theme } = useApp();
   const [mapStyle, setMapStyle] = useState<StyleSpecification>(DEFAULT_STYLE);
 
   useEffect(() => {
     const styleName = "openfreemap";
-    loadStyle(styleName, theme)
+    loadStyle(styleName, theme, { includeTraffic: false })
       .then((style) => setMapStyle(style))
       .catch((error) => console.error("Failed to load map style:", error));
   }, [theme]);
+
+  // Fetch next arrivals for bus legs
+  useEffect(() => {
+    const fetchArrivals = async () => {
+      const arrivalsByStop: Record<string, ConsolidatedCirculation[]> = {};
+
+      for (const leg of itinerary.legs) {
+        if (leg.mode !== "WALK" && leg.from?.stopId) {
+          const stopKey = leg.from.name || leg.from.stopId;
+          if (!arrivalsByStop[stopKey]) {
+            try {
+              const resp = await fetch(
+                `${REGION_DATA.consolidatedCirculationsEndpoint}?stopId=${encodeURIComponent(leg.from.stopCode || leg.from.stopId)}`,
+                { headers: { Accept: "application/json" } }
+              );
+
+              if (resp.ok) {
+                const data: ConsolidatedCirculation[] = await resp.json();
+                arrivalsByStop[stopKey] = data;
+              }
+            } catch (err) {
+              console.warn(
+                `Failed to fetch arrivals for ${leg.from.stopId}:`,
+                err
+              );
+            }
+          }
+        }
+      }
+
+      setNextArrivals(arrivalsByStop);
+    };
+
+    fetchArrivals();
+  }, [itinerary]);
 
   return (
     <div className="flex flex-col md:flex-row h-full">
@@ -320,7 +443,6 @@ const ItineraryDetail = ({
               paint={{
                 "line-color": ["get", "color"],
                 "line-width": 5,
-                // Dotted for walking segments, solid for bus segments
                 "line-dasharray": [
                   "case",
                   ["==", ["get", "mode"], "WALK"],
@@ -331,55 +453,119 @@ const ItineraryDetail = ({
             />
           </Source>
 
-          {/* Origin marker (red) */}
-          {origin?.lat && origin?.lon && (
-            <Marker longitude={origin.lon} latitude={origin.lat}>
-              <div className="w-6 h-6 bg-red-600 rounded-full border-2 border-white shadow-lg flex items-center justify-center">
-                <div className="w-2 h-2 bg-white rounded-full"></div>
-              </div>
-            </Marker>
-          )}
-
-          {/* Destination marker (green) */}
-          {destination?.lat && destination?.lon && (
-            <Marker longitude={destination.lon} latitude={destination.lat}>
-              <div className="w-6 h-6 bg-green-600 rounded-full border-2 border-white shadow-lg flex items-center justify-center">
-                <div className="w-2 h-2 bg-white rounded-full"></div>
-              </div>
-            </Marker>
-          )}
-
-          {/* Stop markers (boarding, alighting, transfer) */}
-          {stopMarkers.map((stop, idx) => (
-            <Marker key={idx} longitude={stop.lon} latitude={stop.lat}>
-              <div
-                className={`w-5 h-5 rounded-full border-2 border-white shadow-md ${
-                  stop.type === "board"
-                    ? "bg-blue-500"
-                    : stop.type === "alight"
-                      ? "bg-purple-500"
-                      : "bg-orange-500"
-                }`}
-                title={`${stop.name} (${stop.type})`}
-              />
-            </Marker>
-          ))}
-
-          {/* Intermediate stops (smaller white dots) */}
-          {itinerary.legs.map((leg, legIdx) =>
-            leg.intermediateStops?.map((stop, stopIdx) => (
-              <Marker
-                key={`intermediate-${legIdx}-${stopIdx}`}
-                longitude={stop.lon}
-                latitude={stop.lat}
-              >
-                <div
-                  className="w-3 h-3 rounded-full border border-gray-400 bg-white shadow-sm"
-                  title={stop.name || "Intermediate stop"}
-                />
-              </Marker>
-            ))
-          )}
+          {/* All markers as GeoJSON layers */}
+          <Source id="markers" type="geojson" data={markersGeoJson as any}>
+            {/* Outer circle for origin/destination markers */}
+            <Layer
+              id="markers-outer"
+              type="circle"
+              filter={[
+                "in",
+                ["get", "type"],
+                ["literal", ["origin", "destination"]],
+              ]}
+              paint={{
+                "circle-radius": [
+                  "interpolate",
+                  ["linear"],
+                  ["zoom"],
+                  10,
+                  6,
+                  16,
+                  8,
+                  20,
+                  10,
+                ],
+                "circle-color": [
+                  "case",
+                  ["==", ["get", "type"], "origin"],
+                  "#dc2626",
+                  "#16a34a",
+                ],
+                "circle-stroke-width": 2,
+                "circle-stroke-color": "#ffffff",
+              }}
+            />
+            {/* Inner circle for origin/destination markers */}
+            <Layer
+              id="markers-inner"
+              type="circle"
+              filter={[
+                "in",
+                ["get", "type"],
+                ["literal", ["origin", "destination"]],
+              ]}
+              paint={{
+                "circle-radius": [
+                  "interpolate",
+                  ["linear"],
+                  ["zoom"],
+                  10,
+                  2,
+                  16,
+                  3,
+                  20,
+                  4,
+                ],
+                "circle-color": "#ffffff",
+              }}
+            />
+            {/* Stop markers (board, alight, transfer) */}
+            <Layer
+              id="markers-stops"
+              type="circle"
+              filter={[
+                "in",
+                ["get", "type"],
+                ["literal", ["board", "alight", "transfer"]],
+              ]}
+              paint={{
+                "circle-radius": [
+                  "interpolate",
+                  ["linear"],
+                  ["zoom"],
+                  10,
+                  4,
+                  16,
+                  6,
+                  20,
+                  7,
+                ],
+                "circle-color": [
+                  "case",
+                  ["==", ["get", "type"], "board"],
+                  "#3b82f6",
+                  ["==", ["get", "type"], "alight"],
+                  "#a855f7",
+                  "#f97316",
+                ],
+                "circle-stroke-width": 2,
+                "circle-stroke-color": "#ffffff",
+              }}
+            />
+            {/* Intermediate stops (smaller white dots) */}
+            <Layer
+              id="markers-intermediate"
+              type="circle"
+              filter={["==", ["get", "type"], "intermediate"]}
+              paint={{
+                "circle-radius": [
+                  "interpolate",
+                  ["linear"],
+                  ["zoom"],
+                  10,
+                  2,
+                  16,
+                  3,
+                  20,
+                  4,
+                ],
+                "circle-color": "#ffffff",
+                "circle-stroke-width": 1,
+                "circle-stroke-color": "#9ca3af",
+              }}
+            />
+          </Source>
         </Map>
 
         <button
@@ -393,7 +579,7 @@ const ItineraryDetail = ({
       {/* Details Panel */}
       <div className="h-1/3 md:h-full md:w-96 lg:w-md overflow-y-auto bg-white dark:bg-slate-900 border-t md:border-t-0 md:border-l border-slate-200 dark:border-slate-700">
         <div className="px-4 py-4">
-          <h2 className="text-xl font-bold mb-4">
+          <h2 className="text-xl font-bold mb-4 text-slate-900 dark:text-slate-100">
             {t("planner.itinerary_details")}
           </h2>
 
@@ -438,7 +624,7 @@ const ItineraryDetail = ({
                       </>
                     )}
                   </div>
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
                     {new Date(leg.startTime).toLocaleTimeString([], {
                       hour: "2-digit",
                       minute: "2-digit",
@@ -451,6 +637,47 @@ const ItineraryDetail = ({
                     ).toFixed(0)}{" "}
                     {t("estimates.minutes")}
                   </div>
+                  {leg.mode !== "WALK" &&
+                    leg.from?.name &&
+                    nextArrivals[leg.from.name] && (
+                      <div className="mt-2 text-xs text-gray-600 dark:text-gray-400">
+                        <div className="font-semibold mb-1">
+                          {t("planner.next_arrivals", "Next arrivals")}:
+                        </div>
+                        {nextArrivals[leg.from.name]
+                          .filter(
+                            (circ) =>
+                              circ.line ===
+                              (leg.routeShortName || leg.routeName)
+                          )
+                          .slice(0, 2)
+                          .map((circ, idx) => {
+                            const minutes =
+                              circ.realTime?.minutes ?? circ.schedule?.minutes;
+                            if (minutes === undefined) return null;
+                            return (
+                              <div
+                                key={idx}
+                                className="flex items-center gap-2 py-0.5"
+                              >
+                                <span className="font-semibold">
+                                  {circ.line}
+                                </span>
+                                <span className="text-gray-500 dark:text-gray-500">
+                                  →
+                                </span>
+                                <span className="flex-1 truncate">
+                                  {circ.route}
+                                </span>
+                                <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                                  {minutes} {t("estimates.minutes")}
+                                  {circ.realTime && " 🟢"}
+                                </span>
+                              </div>
+                            );
+                          })}
+                      </div>
+                    )}
                   <div className="text-sm mt-1">
                     {leg.mode === "WALK" ? (
                       <span>
@@ -518,6 +745,7 @@ const ItineraryDetail = ({
 
 export default function PlannerPage() {
   const { t } = useTranslation();
+  usePageTitle(t("navbar.planner", "Planificador"));
   const location = useLocation();
   const {
     plan,
@@ -541,15 +769,31 @@ export default function PlannerPage() {
       plan.itineraries[selectedItineraryIndex]
     ) {
       setSelectedItinerary(plan.itineraries[selectedItineraryIndex]);
+    } else {
+      setSelectedItinerary(null);
     }
   }, [plan, selectedItineraryIndex]);
 
-  // When navigating to /planner (even if already on it), reset the active itinerary
+  // Intercept back button when viewing itinerary detail
   useEffect(() => {
-    setSelectedItinerary(null);
-    deselectItinerary();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.key]);
+    const handlePopState = (e: PopStateEvent) => {
+      if (selectedItinerary) {
+        e.preventDefault();
+        setSelectedItinerary(null);
+        deselectItinerary();
+        window.history.pushState(null, "", window.location.href);
+      }
+    };
+
+    if (selectedItinerary) {
+      window.history.pushState(null, "", window.location.href);
+      window.addEventListener("popstate", handlePopState);
+    }
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [selectedItinerary, deselectItinerary]);
 
   if (selectedItinerary) {
     return (
@@ -579,13 +823,14 @@ export default function PlannerPage() {
         onSearch={(origin, destination, time, arriveBy) =>
           searchRoute(origin, destination, time, arriveBy)
         }
+        cardBackground="bg-transparent"
       />
 
       {plan && (
         <div>
           <div className="flex justify-between items-center my-4">
             <div>
-              <h2 className="text-xl font-bold">
+              <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
                 {t("planner.results_title")}
               </h2>
               {searchTimeDisplay && (
@@ -601,12 +846,14 @@ export default function PlannerPage() {
           </div>
 
           {plan.itineraries.length === 0 ? (
-            <div className="p-8 text-center bg-gray-50 rounded-lg border border-dashed border-gray-300">
+            <div className="p-8 text-center bg-gray-50 dark:bg-slate-800 rounded-lg border border-dashed border-gray-300 dark:border-slate-600">
               <div className="text-4xl mb-2">😕</div>
-              <h3 className="text-lg font-bold mb-1">
+              <h3 className="text-lg font-bold mb-1 text-slate-900 dark:text-slate-100">
                 {t("planner.no_routes_found")}
               </h3>
-              <p className="text-gray-600">{t("planner.no_routes_message")}</p>
+              <p className="text-gray-600 dark:text-gray-400">
+                {t("planner.no_routes_message")}
+              </p>
             </div>
           ) : (
             <div className="space-y-3">

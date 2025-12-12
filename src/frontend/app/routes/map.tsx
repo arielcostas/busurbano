@@ -45,37 +45,10 @@ export default function StopMap() {
   const { mapState, updateMapState, theme } = useApp();
   const mapRef = useRef<MapRef>(null);
 
-  const { searchRoute, origin, setOrigin } = usePlanner();
+  const { searchRoute } = usePlanner();
 
   // Style state for Map component
   const [mapStyle, setMapStyle] = useState<StyleSpecification>(DEFAULT_STYLE);
-
-  // Set default origin to current location on first load (map page)
-  useEffect(() => {
-    // On the map page, always default to current location on load,
-    // overriding any previously used address. The user can change it after.
-    if (!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        try {
-          // Keep display as "Current location" until a search is performed
-          setOrigin({
-            name: t("planner.current_location"),
-            label: "GPS",
-            lat: pos.coords.latitude,
-            lon: pos.coords.longitude,
-            layer: "current-location",
-          });
-        } catch (_) {
-          // ignore
-        }
-      },
-      () => {
-        // ignore geolocation errors; user can set origin manually
-      },
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
-  }, [setOrigin, t]);
 
   // Handle click events on clusters and individual stops
   const onMapClick = (e: MapLayerMouseEvent) => {
@@ -222,6 +195,7 @@ export default function StopMap() {
         onNavigateToPlanner={() => navigate("/planner")}
         clearPickerOnOpen={true}
         showLastDestinationWhenCollapsed={false}
+        cardBackground="bg-white/95 dark:bg-slate-900/90"
       />
 
       <Map

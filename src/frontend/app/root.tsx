@@ -24,10 +24,6 @@ import "./i18n";
 
 export const links: Route.LinksFunction = () => [];
 
-export function HydrateFallback() {
-  return "Cargando...";
-}
-
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es">

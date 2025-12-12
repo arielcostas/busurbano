@@ -1,7 +1,8 @@
 import { Home, Map, Navigation2, Route } from "lucide-react";
 import type { LngLatLike } from "maplibre-gl";
 import { useTranslation } from "react-i18next";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
+import { usePlanner } from "~/hooks/usePlanner";
 import { useApp } from "../../AppContext";
 import styles from "./NavBar.module.css";
 
@@ -28,6 +29,8 @@ export default function NavBar({ orientation = "horizontal" }: NavBarProps) {
   const { t } = useTranslation();
   const { mapState, updateMapState, mapPositionMode } = useApp();
   const location = useLocation();
+  const navigate = useNavigate();
+  const { deselectItinerary } = usePlanner();
 
   const navItems = [
     {
@@ -94,8 +97,18 @@ export default function NavBar({ orientation = "horizontal" }: NavBarProps) {
           <Link
             key={item.name}
             to={item.path}
-            className={`${styles.link} ${isActive ? styles.active : ""}`}
-            onClick={item.callback ? item.callback : undefined}
+            className={`${styles.link} ${isActive ? styles.active : ""}${item.path === "/planner" ? " planner-nav-link" : ""}`}
+            onClick={(e) => {
+              if (
+                item.path === "/planner" &&
+                location.pathname === "/planner"
+              ) {
+                deselectItinerary();
+                window.location.reload();
+              } else if (item.callback) {
+                item.callback();
+              }
+            }}
             title={item.name}
             aria-label={item.name}
           >
