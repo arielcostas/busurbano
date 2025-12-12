@@ -1,7 +1,7 @@
 import StopDataProvider, { type Stop } from "../data/StopDataProvider";
 import "./map.css";
 
-import { loadStyle } from "app/maps/styleloader";
+import { DEFAULT_STYLE, loadStyle } from "app/maps/styleloader";
 import type { Feature as GeoJsonFeature, Point } from "geojson";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -18,15 +18,6 @@ import { StopSheet } from "~/components/StopSummarySheet";
 import { REGION_DATA } from "~/config/RegionConfig";
 import { usePageTitle } from "~/contexts/PageTitleContext";
 import { useApp } from "../AppContext";
-
-// Default minimal fallback style before dynamic loading
-const defaultStyle: StyleSpecification = {
-  version: 8,
-  glyphs: `${window.location.origin}/maps/fonts/{fontstack}/{range}.pbf`,
-  sprite: `${window.location.origin}/maps/spritesheet/sprite`,
-  sources: {},
-  layers: [],
-};
 
 // Componente principal del mapa
 export default function StopMap() {
@@ -48,10 +39,9 @@ export default function StopMap() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const { mapState, updateMapState, theme } = useApp();
   const mapRef = useRef<MapRef>(null);
-  const [mapStyleKey, setMapStyleKey] = useState<string>("light");
 
   // Style state for Map component
-  const [mapStyle, setMapStyle] = useState<StyleSpecification>(defaultStyle);
+  const [mapStyle, setMapStyle] = useState<StyleSpecification>(DEFAULT_STYLE);
 
   // Handle click events on clusters and individual stops
   const onMapClick = (e: MapLayerMouseEvent) => {
@@ -111,7 +101,7 @@ export default function StopMap() {
     loadStyle(styleName, theme)
       .then((style) => setMapStyle(style))
       .catch((error) => console.error("Failed to load map style:", error));
-  }, [mapStyleKey, theme]);
+  }, [theme]);
 
   useEffect(() => {
     const handleMapChange = () => {

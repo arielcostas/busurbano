@@ -14,18 +14,10 @@
 
 .app-shell__body {
   display: flex;
+  flex-direction: column;
   flex: 1;
   overflow: hidden;
   position: relative;
-}
-
-.app-shell__sidebar {
-  display: none; /* Hidden on mobile */
-  width: 80px;
-  border-right: 1px solid var(--border-color);
-  background: var(--background-color);
-  flex-shrink: 0;
-  z-index: 5;
 }
 
 .app-shell__main {
@@ -37,17 +29,12 @@
 
 .app-shell__bottom-nav {
   flex-shrink: 0;
-  display: block; /* Visible on mobile */
+  display: block;
   z-index: 10;
-}
 
-/* Desktop styles */
-@media (min-width: 768px) {
-  .app-shell__sidebar {
-    display: block;
-  }
-
-  .app-shell__bottom-nav {
-    display: none;
-  }
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+  background: var(--background-color);
+  border-top: 1px solid var(--border-color);
 }

@@ -11,6 +11,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<ShapeTraversalService>();
 
+builder.Services.AddHttpClient<OtpService>();
 builder.Services.AddScoped<VitrasaTransitProvider>();
 builder.Services.AddScoped<RenfeTransitProvider>();
 

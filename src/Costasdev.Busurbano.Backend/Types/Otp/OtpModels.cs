@@ -1,0 +1,187 @@
+using System.Text.Json.Serialization;
+
+namespace Costasdev.Busurbano.Backend.Types.Otp;
+
+public class OtpResponse
+{
+    [JsonPropertyName("plan")]
+    public OtpPlan? Plan { get; set; }
+
+    [JsonPropertyName("error")]
+    public OtpError? Error { get; set; }
+}
+
+public class OtpError
+{
+    [JsonPropertyName("id")]
+    public int Id { get; set; }
+
+    [JsonPropertyName("msg")]
+    public string? Msg { get; set; }
+
+    [JsonPropertyName("message")]
+    public string? Message { get; set; }
+}
+
+public class OtpPlan
+{
+    [JsonPropertyName("date")]
+    public long Date { get; set; }
+
+    [JsonPropertyName("from")]
+    public OtpPlace? From { get; set; }
+
+    [JsonPropertyName("to")]
+    public OtpPlace? To { get; set; }
+
+    [JsonPropertyName("itineraries")]
+    public List<OtpItinerary> Itineraries { get; set; } = new();
+}
+
+public class OtpItinerary
+{
+    [JsonPropertyName("duration")]
+    public long Duration { get; set; }
+
+    [JsonPropertyName("startTime")]
+    public long StartTime { get; set; }
+
+    [JsonPropertyName("endTime")]
+    public long EndTime { get; set; }
+
+    [JsonPropertyName("walkTime")]
+    public long WalkTime { get; set; }
+
+    [JsonPropertyName("transitTime")]
+    public long TransitTime { get; set; }
+
+    [JsonPropertyName("waitingTime")]
+    public long WaitingTime { get; set; }
+
+    [JsonPropertyName("walkDistance")]
+    public double WalkDistance { get; set; }
+
+    [JsonPropertyName("legs")]
+    public List<OtpLeg> Legs { get; set; } = new();
+}
+
+public class OtpLeg
+{
+    [JsonPropertyName("startTime")]
+    public long StartTime { get; set; }
+
+    [JsonPropertyName("endTime")]
+    public long EndTime { get; set; }
+
+    [JsonPropertyName("mode")]
+    public string? Mode { get; set; }
+
+    [JsonPropertyName("route")]
+    public string? Route { get; set; }
+
+    [JsonPropertyName("routeShortName")]
+    public string? RouteShortName { get; set; }
+
+    [JsonPropertyName("routeLongName")]
+    public string? RouteLongName { get; set; }
+
+    [JsonPropertyName("agencyName")]
+    public string? AgencyName { get; set; }
+
+    [JsonPropertyName("from")]
+    public OtpPlace? From { get; set; }
+
+    [JsonPropertyName("to")]
+    public OtpPlace? To { get; set; }
+
+    [JsonPropertyName("legGeometry")]
+    public OtpGeometry? LegGeometry { get; set; }
+
+    [JsonPropertyName("steps")]
+    public List<OtpWalkStep> Steps { get; set; } = new();
+
+    [JsonPropertyName("headsign")]
+    public string? Headsign { get; set; }
+}
+
+public class OtpPlace
+{
+    [JsonPropertyName("name")]
+    public string? Name { get; set; }
+
+    [JsonPropertyName("lat")]
+    public double Lat { get; set; }
+
+    [JsonPropertyName("lon")]
+    public double Lon { get; set; }
+
+    [JsonPropertyName("stopId")]
+    public string? StopId { get; set; }
+
+    [JsonPropertyName("stopCode")]
+    public string? StopCode { get; set; }
+}
+
+public class OtpGeometry
+{
+    [JsonPropertyName("points")]
+    public string? Points { get; set; }
+
+    [JsonPropertyName("length")]
+    public int Length { get; set; }
+}
+
+public class OtpWalkStep
+{
+    [JsonPropertyName("distance")]
+    public double Distance { get; set; }
+
+    [JsonPropertyName("relativeDirection")]
+    public string? RelativeDirection { get; set; }
+
+    [JsonPropertyName("streetName")]
+    public string? StreetName { get; set; }
+
+    [JsonPropertyName("absoluteDirection")]
+    public string? AbsoluteDirection { get; set; }
+
+    [JsonPropertyName("lat")]
+    public double Lat { get; set; }
+
+    [JsonPropertyName("lon")]
+    public double Lon { get; set; }
+}
+
+// Geocoding Models (Pelias-like)
+public class OtpGeocodeResponse
+{
+    [JsonPropertyName("features")]
+    public List<OtpGeocodeFeature> Features { get; set; } = new();
+}
+
+public class OtpGeocodeFeature
+{
+    [JsonPropertyName("geometry")]
+    public OtpGeocodeGeometry? Geometry { get; set; }
+
+    [JsonPropertyName("properties")]
+    public OtpGeocodeProperties? Properties { get; set; }
+}
+
+public class OtpGeocodeGeometry
+{
+    [JsonPropertyName("coordinates")]
+    public List<double> Coordinates { get; set; } = new(); // [lon, lat]
+}
+
+public class OtpGeocodeProperties
+{
+    [JsonPropertyName("name")]
+    public string? Name { get; set; }
+
+    [JsonPropertyName("label")]
+    public string? Label { get; set; }
+
+    [JsonPropertyName("layer")]
+    public string? Layer { get; set; }
+}

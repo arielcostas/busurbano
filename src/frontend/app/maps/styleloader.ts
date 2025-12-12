@@ -5,6 +5,14 @@ export interface StyleLoaderOptions {
   includeTraffic?: boolean;
 }
 
+export const DEFAULT_STYLE: StyleSpecification = {
+  version: 8,
+  glyphs: `${window.location.origin}/maps/fonts/{fontstack}/{range}.pbf`,
+  sprite: `${window.location.origin}/maps/spritesheet/sprite`,
+  sources: {},
+  layers: [],
+};
+
 export async function loadStyle(
   styleName: string,
   colorScheme: Theme,

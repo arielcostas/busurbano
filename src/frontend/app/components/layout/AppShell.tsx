@@ -24,9 +24,6 @@ const AppShellContent: React.FC = () => {
       />
       <Drawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
       <div className="app-shell__body">
-        <aside className="app-shell__sidebar">
-          <NavBar orientation="vertical" />
-        </aside>
         <main className="app-shell__main">
           <Outlet />
         </main>

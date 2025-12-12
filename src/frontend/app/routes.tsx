@@ -9,4 +9,5 @@ export default [
   route("/settings", "routes/settings.tsx"),
   route("/about", "routes/about.tsx"),
   route("/favourites", "routes/favourites.tsx"),
+  route("/planner", "routes/planner.tsx"),
 ] satisfies RouteConfig;
