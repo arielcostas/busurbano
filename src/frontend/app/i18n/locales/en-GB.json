@@ -141,7 +141,27 @@
     "home": "Home",
     "map": "Map",
     "planner": "Planner",
-    "lines": "Lines"
+    "lines": "Lines",
+    "favourites": "Favourites"
+  },
+  "favourites": {
+    "title": "Favourites",
+    "empty": "You don't have any favourite stops yet.",
+    "empty_description": "Go to a stop and mark it as favourite to see it here.",
+    "special_places": "Special Places",
+    "home": "Home",
+    "work": "Work",
+    "set_home": "Set Home",
+    "set_work": "Set Work",
+    "edit_home": "Edit Home",
+    "edit_work": "Edit Work",
+    "remove_home": "Remove Home",
+    "remove_work": "Remove Work",
+    "not_set": "Not set",
+    "favourite_stops": "Favourite Stops",
+    "remove": "Remove",
+    "view_estimates": "View estimates",
+    "confirm_remove": "Remove this favourite?"
   },
   "lines": {
     "description": "Below is a list of Vigo urban bus lines with their respective routes and links to official timetables."

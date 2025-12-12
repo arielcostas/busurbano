@@ -191,8 +191,14 @@ public class OtpGeocodeProperties
     [JsonPropertyName("name")]
     public string? Name { get; set; }
 
-    [JsonPropertyName("label")]
-    public string? Label { get; set; }
+    [JsonPropertyName("postalcode")]
+    public string? PostalCode { get; set; }
+
+    [JsonPropertyName("localadmin")]
+    public string? LocalAdmin { get; set; }
+
+    [JsonPropertyName("region")]
+    public string? Region { get; set; }
 
     [JsonPropertyName("layer")]
     public string? Layer { get; set; }

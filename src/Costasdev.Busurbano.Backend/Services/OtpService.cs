@@ -36,13 +36,13 @@ public class OtpService
         try
         {
             // https://planificador-rutas-api.vigo.org/v1/autocomplete?text=XXXX&layers=venue,street,address&lang=es
-            var url = $"{_config.OtpGeocodingBaseUrl}/autocomplete?text={Uri.EscapeDataString(query)}&layers=venue,street,address&lang=es";
+            var url = $"{_config.OtpGeocodingBaseUrl}/autocomplete?text={Uri.EscapeDataString(query)}&layers=venue,address&lang=es";
             var response = await _httpClient.GetFromJsonAsync<OtpGeocodeResponse>(url);
 
             var results = response?.Features.Select(f => new PlannerSearchResult
             {
                 Name = f.Properties?.Name,
-                Label = f.Properties?.Label,
+                Label = $"{f.Properties?.PostalCode} ${f.Properties?.LocalAdmin}, {f.Properties?.Region}",
                 Layer = f.Properties?.Layer,
                 Lat = f.Geometry?.Coordinates.Count > 1 ? f.Geometry.Coordinates[1] : 0,
                 Lon = f.Geometry?.Coordinates.Count > 0 ? f.Geometry.Coordinates[0] : 0

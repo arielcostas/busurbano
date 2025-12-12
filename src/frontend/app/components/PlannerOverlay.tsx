@@ -1,3 +1,4 @@
+import { MapPin } from "lucide-react";
 import React, {
   useCallback,
   useEffect,
@@ -6,6 +7,8 @@ import React, {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
+import PlaceListItem from "~/components/PlaceListItem";
+import { REGION_DATA } from "~/config/RegionConfig";
 import {
   reverseGeocode,
   searchPlaces,
@@ -55,6 +58,14 @@ export const PlannerOverlay: React.FC<PlannerOverlayProps> = ({
   const [favouriteStops, setFavouriteStops] = useState<PlannerSearchResult[]>(
     []
   );
+  const [recentPlaces, setRecentPlaces] = useState<PlannerSearchResult[]>([]);
+  const RECENT_KEY = `recentPlaces_${REGION_DATA.id}`;
+  const clearRecentPlaces = useCallback(() => {
+    setRecentPlaces([]);
+    try {
+      localStorage.removeItem(RECENT_KEY);
+    } catch {}
+  }, []);
 
   const pickerInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -100,6 +111,43 @@ export const PlannerOverlay: React.FC<PlannerOverlayProps> = ({
       .catch(() => setFavouriteStops([]));
   }, []);
 
+  // Load recent places from localStorage
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(RECENT_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as PlannerSearchResult[];
+        setRecentPlaces(parsed.slice(0, 20));
+      }
+    } catch {
+      setRecentPlaces([]);
+    }
+  }, []);
+
+  const addRecentPlace = useCallback(
+    (p: PlannerSearchResult) => {
+      const key = `${p.lat.toFixed(5)},${p.lon.toFixed(5)}`;
+      const existing = recentPlaces.filter(
+        (rp) => `${rp.lat.toFixed(5)},${rp.lon.toFixed(5)}` !== key
+      );
+      const updated = [
+        {
+          name: p.name,
+          label: p.label,
+          lat: p.lat,
+          lon: p.lon,
+          layer: p.layer,
+        },
+        ...existing,
+      ].slice(0, 20);
+      setRecentPlaces(updated);
+      try {
+        localStorage.setItem(RECENT_KEY, JSON.stringify(updated));
+      } catch {}
+    },
+    [recentPlaces]
+  );
+
   const filteredFavouriteStops = useMemo(() => {
     const q = pickerQuery.trim().toLowerCase();
     if (!q) return favouriteStops;
@@ -109,6 +157,28 @@ export const PlannerOverlay: React.FC<PlannerOverlayProps> = ({
         (s.label || "").toLowerCase().includes(q)
     );
   }, [favouriteStops, pickerQuery]);
+
+  const sortedRemoteResults = useMemo(() => {
+    const order: Record<string, number> = { venue: 0, address: 1, street: 2 };
+    const q = pickerQuery.trim().toLowerCase();
+    const base = q
+      ? remoteResults.filter(
+          (s) =>
+            (s.name || "").toLowerCase().includes(q) ||
+            (s.label || "").toLowerCase().includes(q)
+        )
+      : remoteResults;
+    return [...base].sort((a, b) => {
+      const oa = order[a.layer || ""] ?? 99;
+      const ob = order[b.layer || ""] ?? 99;
+      if (oa !== ob) return oa - ob;
+      // Secondary: shorter label first, then name alpha
+      const la = (a.label || "").length;
+      const lb = (b.label || "").length;
+      if (la !== lb) return la - lb;
+      return (a.name || "").localeCompare(b.name || "");
+    });
+  }, [remoteResults, pickerQuery]);
 
   const openPicker = (field: PickerField) => {
     setPickerField(field);
@@ -134,6 +204,7 @@ export const PlannerOverlay: React.FC<PlannerOverlayProps> = ({
       setDestination(result);
       setDestQuery(result.name || "");
     }
+    addRecentPlace(result);
     setPickerOpen(false);
   };
 
@@ -484,15 +555,17 @@ export const PlannerOverlay: React.FC<PlannerOverlayProps> = ({
                 />
                 <button
                   type="button"
-                  aria-label={t("planner.confirm")}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-xl px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold"
+                  aria-label={t("planner.clear")}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md px-2 py-1 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 text-xs font-semibold"
                   onClick={() => {
-                    const pick = remoteResults[0] || filteredFavouriteStops[0];
-                    if (pick) applyPickedResult(pick);
-                    else setPickerOpen(false);
+                    if (pickerQuery) {
+                      setPickerQuery("");
+                    } else {
+                      setPickerOpen(false);
+                    }
                   }}
                 >
-                  {t("planner.confirm")}
+                  ×
                 </button>
               </div>
             </div>
@@ -506,20 +579,41 @@ export const PlannerOverlay: React.FC<PlannerOverlayProps> = ({
                     onClick={setOriginFromCurrentLocation}
                     disabled={locationLoading}
                   >
-                    <div>
-                      <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                        {t("planner.current_location")}
-                      </div>
-                      <div className="text-xs text-slate-500 dark:text-slate-400">
-                        {t("planner.gps")}
+                    <div className="flex items-center gap-2">
+                      <span className="inline-flex items-center justify-center w-4 h-4">
+                        <MapPin className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                      </span>
+                      <div>
+                        <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                          {t("planner.current_location")}
+                        </div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400">
+                          {t("planner.gps")}
+                        </div>
                       </div>
                     </div>
                     <div className="text-lg text-slate-600 dark:text-slate-400">
-                      {locationLoading ? "…" : "📍"}
+                      {locationLoading ? "…" : ""}
                     </div>
                   </button>
                 </li>
               )}
+
+              {(remoteLoading || sortedRemoteResults.length > 0) && (
+                <li className="border-t border-slate-100 dark:border-slate-700 px-4 py-2 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/70">
+                  {remoteLoading
+                    ? t("planner.searching_ellipsis")
+                    : t("planner.results", "Results")}
+                </li>
+              )}
+
+              {sortedRemoteResults.map((r, i) => (
+                <PlaceListItem
+                  key={`remote-${i}`}
+                  place={r}
+                  onClick={applyPickedResult}
+                />
+              ))}
 
               {filteredFavouriteStops.length > 0 && (
                 <>
@@ -527,39 +621,32 @@ export const PlannerOverlay: React.FC<PlannerOverlayProps> = ({
                     {t("planner.favourite_stops")}
                   </li>
                   {filteredFavouriteStops.map((r, i) => (
-                    <li
+                    <PlaceListItem
                       key={`fav-${i}`}
-                      className="border-t border-slate-100 dark:border-slate-700"
-                    >
-                      <button
-                        type="button"
-                        className="w-full px-4 py-3 text-left hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors duration-200"
-                        onClick={() => applyPickedResult(r)}
-                      >
-                        <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                          {r.name}
-                        </div>
-                        {r.label && (
-                          <div className="text-xs text-slate-500 dark:text-slate-400">
-                            {r.label}
-                          </div>
-                        )}
-                      </button>
-                    </li>
+                      place={r}
+                      onClick={applyPickedResult}
+                    />
                   ))}
                 </>
               )}
 
-              {(remoteLoading || remoteResults.length > 0) && (
-                <li className="border-t border-slate-100 dark:border-slate-700 px-4 py-2 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/70">
-                  {remoteLoading
-                    ? t("planner.searching_ellipsis")
-                    : t("planner.results", "Results")}
+              {recentPlaces.length > 0 && (
+                <li className="border-t border-slate-100 dark:border-slate-700 px-4 py-2 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/70 flex items-center justify-between">
+                  <span>
+                    {t("planner.recent_locations", "Recent locations")}
+                  </span>
+                  <button
+                    type="button"
+                    className="text-xs font-semibold text-red-600 dark:text-red-400 hover:underline"
+                    onClick={clearRecentPlaces}
+                  >
+                    {t("planner.clear")}
+                  </button>
                 </li>
               )}
-              {remoteResults.map((r, i) => (
+              {recentPlaces.map((r, i) => (
                 <li
-                  key={`remote-${i}`}
+                  key={`recent-${i}`}
                   className="border-t border-slate-100 dark:border-slate-700"
                 >
                   <button

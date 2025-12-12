@@ -754,6 +754,8 @@ export default function PlannerPage() {
     selectedItineraryIndex,
     selectItinerary,
     deselectItinerary,
+    setOrigin,
+    setDestination,
   } = usePlanner();
   const [selectedItinerary, setSelectedItinerary] = useState<Itinerary | null>(
     null
@@ -839,7 +841,31 @@ export default function PlannerPage() {
                 </p>
               )}
             </div>
-            <button onClick={clearRoute} className="text-sm text-red-500">
+            <button
+              onClick={() => {
+                clearRoute();
+                setDestination(null);
+                if (navigator.geolocation) {
+                  navigator.geolocation.getCurrentPosition(
+                    async (pos) => {
+                      const initial = {
+                        name: t("planner.current_location"),
+                        label: "GPS",
+                        lat: pos.coords.latitude,
+                        lon: pos.coords.longitude,
+                        layer: "current-location",
+                      } as any;
+                      setOrigin(initial);
+                    },
+                    () => {
+                      // If geolocation fails, just keep origin empty
+                    },
+                    { enableHighAccuracy: true, timeout: 10000 }
+                  );
+                }
+              }}
+              className="text-sm text-red-500"
+            >
               {t("planner.clear")}
             </button>
           </div>

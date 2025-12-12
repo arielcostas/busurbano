@@ -141,7 +141,27 @@
     "home": "Inicio",
     "map": "Mapa",
     "planner": "Planificador",
-    "lines": "Líneas"
+    "lines": "Líneas",
+    "favourites": "Favoritos"
+  },
+  "favourites": {
+    "title": "Favoritos",
+    "empty": "Aún no tienes paradas favoritas.",
+    "empty_description": "Accede a una parada y márcala como favorita para verla aquí.",
+    "special_places": "Lugares especiales",
+    "home": "Casa",
+    "work": "Trabajo",
+    "set_home": "Establecer Casa",
+    "set_work": "Establecer Trabajo",
+    "edit_home": "Editar Casa",
+    "edit_work": "Editar Trabajo",
+    "remove_home": "Eliminar Casa",
+    "remove_work": "Eliminar Trabajo",
+    "not_set": "No establecido",
+    "favourite_stops": "Paradas favoritas",
+    "remove": "Eliminar",
+    "view_estimates": "Ver estimaciones",
+    "confirm_remove": "¿Eliminar esta parada de favoritos?"
   },
   "lines": {
     "description": "A continuación se muestra una lista de las líneas de autobús urbano de Vigo con sus respectivas rutas y enlaces a los horarios oficiales."
