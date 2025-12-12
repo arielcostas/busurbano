@@ -120,8 +120,8 @@
     "searching_ellipsis": "Buscando…",
     "results": "Resultados",
     "close": "Cerrar",
-    "results_title": "Results",
-    "clear": "Clear",
+    "results_title": "Resultados",
+    "clear": "Borrar",
     "no_routes_found": "No se encontraron rutas",
     "no_routes_message": "No pudimos encontrar una ruta para tu viaje. Intenta cambiar la hora o las ubicaciones.",
     "walk": "Caminar",
@@ -129,8 +129,8 @@
     "from_to": "De {{from}} a {{to}}",
     "itinerary_details": "Detalles del itinerario",
     "back": "← Atrás",
-    "cash_fare": "{{amount}} €",
-    "card_fare": "{{amount}} €"
+    "fare": "{{amount}} €",
+    "free": "Gratuito"
   },
   "common": {
     "loading": "Cargando...",

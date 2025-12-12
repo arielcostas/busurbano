@@ -14,6 +14,11 @@ public class AppConfiguration
     public int MaxWalkTime { get; set; } = 20;
     public int NumItineraries { get; set; } = 4;
 
+    // Comfort/Slack Parameters
+    public int TransferSlackSeconds { get; set; } = 120; // Extra buffer for transfers
+    public int MinTransferTimeSeconds { get; set; } = 120; // Minimum transfer time
+    public double WalkReluctance { get; set; } = 2.0; // Slightly penalize walking to add slack
+
     // Fare Configuration
     public double FareCashPerBus { get; set; } = 1.63;
     public double FareCardPerBus { get; set; } = 0.67;

@@ -98,9 +98,26 @@ public class OtpService
     {
         try
         {
-            var date = time ?? DateTime.Now;
-            var dateStr = date.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture);
-            var timeStr = date.ToString("h:mm tt", CultureInfo.InvariantCulture);
+            // Convert the provided time to Europe/Madrid local time and pass explicit offset to OTP
+            var tz = TimeZoneInfo.FindSystemTimeZoneById("Europe/Madrid");
+            DateTime utcReference;
+            if (time.HasValue)
+            {
+                var t = time.Value;
+                if (t.Kind == DateTimeKind.Unspecified)
+                    t = DateTime.SpecifyKind(t, DateTimeKind.Utc);
+                utcReference = t.Kind == DateTimeKind.Utc ? t : t.ToUniversalTime();
+            }
+            else
+            {
+                utcReference = DateTime.UtcNow;
+            }
+
+            var localMadrid = TimeZoneInfo.ConvertTimeFromUtc(utcReference, tz);
+            var offsetSeconds = (int)tz.GetUtcOffset(localMadrid).TotalSeconds;
+
+            var dateStr = localMadrid.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture);
+            var timeStr = localMadrid.ToString("HH:mm", CultureInfo.InvariantCulture);
 
             var queryParams = new Dictionary<string, string>
             {
@@ -116,8 +133,14 @@ public class OtpService
                 { "walkSpeed", _config.WalkSpeed.ToString(CultureInfo.InvariantCulture) },
                 { "maxWalkDistance", _config.MaxWalkDistance.ToString() }, // Note: OTP might ignore this if it's too small
                 { "optimize", "QUICK" },
-                { "wheelchair", "false" }
+                { "wheelchair", "false" },
+                { "timeZoneOffset", offsetSeconds.ToString(CultureInfo.InvariantCulture) }
             };
+
+            // Add slack/comfort parameters
+            queryParams["transferSlack"] = _config.TransferSlackSeconds.ToString();
+            queryParams["minTransferTime"] = _config.MinTransferTimeSeconds.ToString();
+            queryParams["walkReluctance"] = _config.WalkReluctance.ToString(CultureInfo.InvariantCulture);
 
             var queryString = string.Join("&", queryParams.Select(kvp => $"{kvp.Key}={Uri.EscapeDataString(kvp.Value)}"));
             var url = $"{_config.OtpPlannerBaseUrl}/plan?{queryString}";
@@ -140,14 +163,12 @@ public class OtpService
 
     private RoutePlan MapToRoutePlan(OtpPlan otpPlan)
     {
-        // Compute time offset: OTP's "date" field is the server time in millis
-        var otpServerTime = DateTimeOffset.FromUnixTimeMilliseconds(otpPlan.Date);
-        var now = DateTimeOffset.Now;
-        var timeOffsetSeconds = (long)(otpServerTime - now).TotalSeconds;
+        // OTP times are already correct when requested with explicit offset
+        var timeOffsetSeconds = 0L;
 
         return new RoutePlan
         {
-            Itineraries = otpPlan.Itineraries.Select(MapItinerary).ToList(),
+            Itineraries = otpPlan.Itineraries.Select(MapItinerary).OrderBy(i => i.DurationSeconds).ToList(),
             TimeOffsetSeconds = timeOffsetSeconds
         };
     }
@@ -185,8 +206,8 @@ public class OtpService
         return new Itinerary
         {
             DurationSeconds = otpItinerary.Duration,
-            StartTime = DateTimeOffset.FromUnixTimeMilliseconds(otpItinerary.StartTime).LocalDateTime, // Assuming local time or handling timezone
-            EndTime = DateTimeOffset.FromUnixTimeMilliseconds(otpItinerary.EndTime).LocalDateTime,
+            StartTime = DateTimeOffset.FromUnixTimeMilliseconds(otpItinerary.StartTime).UtcDateTime,
+            EndTime = DateTimeOffset.FromUnixTimeMilliseconds(otpItinerary.EndTime).UtcDateTime,
             WalkDistanceMeters = otpItinerary.WalkDistance,
             WalkTimeSeconds = otpItinerary.WalkTime,
             TransitTimeSeconds = otpItinerary.TransitTime,
@@ -211,8 +232,8 @@ public class OtpService
             RouteTextColor = otpLeg.RouteTextColor,
             From = MapPlace(otpLeg.From),
             To = MapPlace(otpLeg.To),
-            StartTime = DateTimeOffset.FromUnixTimeMilliseconds(otpLeg.StartTime).LocalDateTime,
-            EndTime = DateTimeOffset.FromUnixTimeMilliseconds(otpLeg.EndTime).LocalDateTime,
+            StartTime = DateTimeOffset.FromUnixTimeMilliseconds(otpLeg.StartTime).UtcDateTime,
+            EndTime = DateTimeOffset.FromUnixTimeMilliseconds(otpLeg.EndTime).UtcDateTime,
             DistanceMeters = otpLeg.Distance,
             Geometry = DecodePolyline(otpLeg.LegGeometry?.Points),
             Steps = otpLeg.Steps.Select(MapStep).ToList(),

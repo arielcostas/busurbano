@@ -104,10 +104,12 @@ const ItinerarySummary = ({
   const startTime = new Date(itinerary.startTime).toLocaleTimeString([], {
     hour: "2-digit",
     minute: "2-digit",
+    timeZone: "Europe/Madrid",
   });
   const endTime = new Date(itinerary.endTime).toLocaleTimeString([], {
     hour: "2-digit",
     minute: "2-digit",
+    timeZone: "Europe/Madrid",
   });
 
   const walkTotals = sumWalkMetrics(itinerary.legs);
@@ -120,15 +122,6 @@ const ItinerarySummary = ({
   const cardFare = (
     itinerary.cardFareEuro ?? busLegsCount * FARE_CARD_PER_BUS
   ).toFixed(2);
-
-  // Format currency based on locale (ES/GL: "1,50 €", EN: "€1.50")
-  const formatCurrency = (amount: string) => {
-    const isSpanishOrGalician =
-      i18n.language.startsWith("es") || i18n.language.startsWith("gl");
-    return isSpanishOrGalician
-      ? t("planner.cash_fare", { amount })
-      : t("planner.cash_fare", { amount });
-  };
 
   return (
     <div
@@ -193,11 +186,15 @@ const ItinerarySummary = ({
         <span className="flex items-center gap-3">
           <span className="flex items-center gap-1 font-semibold text-slate-700 dark:text-slate-300">
             <Coins className="w-4 h-4" />
-            {formatCurrency(cashFare)}
+            {cashFare === "0.00"
+              ? t("planner.free")
+              : t("planner.fare", { amount: cashFare })}
           </span>
           <span className="flex items-center gap-1 text-slate-600 dark:text-slate-400">
             <CreditCard className="w-4 h-4" />
-            {t("planner.card_fare", { amount: cardFare })}
+            {cardFare === "0.00"
+              ? t("planner.free")
+              : t("planner.fare", { amount: cardFare })}
           </span>
         </span>
       </div>
@@ -628,6 +625,7 @@ const ItineraryDetail = ({
                     {new Date(leg.startTime).toLocaleTimeString([], {
                       hour: "2-digit",
                       minute: "2-digit",
+                      timeZone: "Europe/Madrid",
                     })}{" "}
                     -{" "}
                     {(
@@ -812,6 +810,7 @@ export default function PlannerPage() {
     ? new Date(searchTime).toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
+        timeZone: "Europe/Madrid",
       })
     : null;
 
