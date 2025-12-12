@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
-
 namespace Costasdev.Busurbano.Backend.Types.Planner;
 
 public class RoutePlan
 {
     public List<Itinerary> Itineraries { get; set; } = new();
+    public long? TimeOffsetSeconds { get; set; }
 }
 
 public class Itinerary
@@ -17,6 +16,8 @@ public class Itinerary
     public double TransitTimeSeconds { get; set; }
     public double WaitingTimeSeconds { get; set; }
     public List<Leg> Legs { get; set; } = new();
+    public double? CashFareEuro { get; set; }
+    public double? CardFareEuro { get; set; }
 }
 
 public class Leg
@@ -27,6 +28,8 @@ public class Leg
     public string? RouteLongName { get; set; }
     public string? Headsign { get; set; }
     public string? AgencyName { get; set; }
+    public string? RouteColor { get; set; }
+    public string? RouteTextColor { get; set; }
     public PlannerPlace? From { get; set; }
     public PlannerPlace? To { get; set; }
     public DateTime StartTime { get; set; }
@@ -37,6 +40,8 @@ public class Leg
     public PlannerGeometry? Geometry { get; set; }
 
     public List<Step> Steps { get; set; } = new();
+
+    public List<PlannerPlace> IntermediateStops { get; set; } = new();
 }
 
 public class PlannerPlace

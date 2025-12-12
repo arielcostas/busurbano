@@ -98,6 +98,40 @@
     "lines": "Lines",
     "view_all_estimates": "View all estimates"
   },
+  "planner": {
+    "where_to": "Where do you want to go?",
+    "origin": "Origin",
+    "destination": "Destination",
+    "when": "When",
+    "now": "Now",
+    "depart_at": "Depart at",
+    "arrive_by": "Arrive by",
+    "search_route": "Search route",
+    "searching": "Searching…",
+    "select_origin": "Select origin",
+    "select_destination": "Select destination",
+    "search_origin": "Search origin",
+    "search_destination": "Search destination",
+    "confirm": "→",
+    "current_location": "Current location",
+    "using_gps": "Using GPS…",
+    "gps": "GPS",
+    "favourite_stops": "★ Favourites",
+    "searching_ellipsis": "Searching…",
+    "results": "Results",
+    "close": "Close",
+    "results_title": "Results",
+    "clear": "Clear",
+    "no_routes_found": "No routes found",
+    "no_routes_message": "We couldn't find a route for your trip. Try changing the time or locations.",
+    "walk": "Walk",
+    "walk_to": "Walk {{distance}} to {{destination}}",
+    "from_to": "From {{from}} to {{to}}",
+    "itinerary_details": "Itinerary Details",
+    "back": "← Back",
+    "cash_fare": "€{{amount}}",
+    "card_fare": "€{{amount}}"
+  },
   "common": {
     "loading": "Loading...",
     "error": "An unexpected error occurred.",
@@ -106,6 +140,7 @@
   "navbar": {
     "home": "Home",
     "map": "Map",
+    "planner": "Planner",
     "lines": "Lines"
   },
   "lines": {

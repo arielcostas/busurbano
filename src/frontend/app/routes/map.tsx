@@ -14,14 +14,19 @@ import Map, {
   type MapRef,
   type StyleSpecification,
 } from "react-map-gl/maplibre";
+import { useNavigate } from "react-router";
+import { PlannerOverlay } from "~/components/PlannerOverlay";
 import { StopSheet } from "~/components/StopSummarySheet";
 import { REGION_DATA } from "~/config/RegionConfig";
 import { usePageTitle } from "~/contexts/PageTitleContext";
+import { usePlanner } from "~/hooks/usePlanner";
 import { useApp } from "../AppContext";
+import "../tailwind-full.css";
 
 // Componente principal del mapa
 export default function StopMap() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   usePageTitle(t("navbar.map", "Mapa"));
   const [stops, setStops] = useState<
     GeoJsonFeature<
@@ -40,8 +45,37 @@ export default function StopMap() {
   const { mapState, updateMapState, theme } = useApp();
   const mapRef = useRef<MapRef>(null);
 
+  const { searchRoute, origin, setOrigin } = usePlanner();
+
   // Style state for Map component
   const [mapStyle, setMapStyle] = useState<StyleSpecification>(DEFAULT_STYLE);
+
+  // Set default origin to current location on first load (map page)
+  useEffect(() => {
+    // On the map page, always default to current location on load,
+    // overriding any previously used address. The user can change it after.
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          // Keep display as "Current location" until a search is performed
+          setOrigin({
+            name: t("planner.current_location"),
+            label: "GPS",
+            lat: pos.coords.latitude,
+            lon: pos.coords.longitude,
+            layer: "current-location",
+          });
+        } catch (_) {
+          // ignore
+        }
+      },
+      () => {
+        // ignore geolocation errors; user can set origin manually
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  }, [setOrigin, t]);
 
   // Handle click events on clusters and individual stops
   const onMapClick = (e: MapLayerMouseEvent) => {
@@ -182,92 +216,101 @@ export default function StopMap() {
   };
 
   return (
-    <Map
-      mapStyle={mapStyle}
-      style={{ width: "100%", height: "100%" }}
-      interactiveLayerIds={["stops", "stops-label"]}
-      onClick={onMapClick}
-      minZoom={11}
-      scrollZoom
-      pitch={0}
-      roll={0}
-      ref={mapRef}
-      initialViewState={{
-        latitude: getLatitude(mapState.center),
-        longitude: getLongitude(mapState.center),
-        zoom: mapState.zoom,
-      }}
-      attributionControl={{ compact: false }}
-      maxBounds={[REGION_DATA.bounds.sw, REGION_DATA.bounds.ne]}
-    >
-      <NavigationControl position="top-right" />
-      <GeolocateControl
-        position="top-right"
-        trackUserLocation={true}
-        positionOptions={{ enableHighAccuracy: false }}
+    <div className="relative h-full">
+      <PlannerOverlay
+        onSearch={(o, d, time, arriveBy) => searchRoute(o, d, time, arriveBy)}
+        onNavigateToPlanner={() => navigate("/planner")}
+        clearPickerOnOpen={true}
+        showLastDestinationWhenCollapsed={false}
       />
 
-      <Source
-        id="stops-source"
-        type="geojson"
-        data={{ type: "FeatureCollection", features: stops }}
-      />
-
-      <Layer
-        id="stops"
-        type="symbol"
-        minzoom={11}
-        source="stops-source"
-        layout={{
-          "icon-image": ["get", "prefix"],
-          "icon-size": [
-            "interpolate",
-            ["linear"],
-            ["zoom"],
-            13,
-            0.7,
-            16,
-            0.8,
-            18,
-            1.2,
-          ],
-          "icon-allow-overlap": true,
-          "icon-ignore-placement": true,
+      <Map
+        mapStyle={mapStyle}
+        style={{ width: "100%", height: "100%" }}
+        interactiveLayerIds={["stops", "stops-label"]}
+        onClick={onMapClick}
+        minZoom={11}
+        scrollZoom
+        pitch={0}
+        roll={0}
+        ref={mapRef}
+        initialViewState={{
+          latitude: getLatitude(mapState.center),
+          longitude: getLongitude(mapState.center),
+          zoom: mapState.zoom,
         }}
-      />
-
-      <Layer
-        id="stops-label"
-        type="symbol"
-        source="stops-source"
-        minzoom={16}
-        layout={{
-          "text-field": ["get", "name"],
-          "text-font": ["Noto Sans Bold"],
-          "text-offset": [0, 3],
-          "text-anchor": "center",
-          "text-justify": "center",
-          "text-size": ["interpolate", ["linear"], ["zoom"], 11, 8, 22, 16],
-        }}
-        paint={{
-          "text-color": [
-            "case",
-            ["==", ["get", "prefix"], "stop-renfe"],
-            "#870164",
-            "#e72b37",
-          ],
-          "text-halo-color": "#FFF",
-          "text-halo-width": 1,
-        }}
-      />
-
-      {selectedStop && (
-        <StopSheet
-          isOpen={isSheetOpen}
-          onClose={() => setIsSheetOpen(false)}
-          stop={selectedStop}
+        attributionControl={{ compact: false }}
+        maxBounds={[REGION_DATA.bounds.sw, REGION_DATA.bounds.ne]}
+      >
+        <NavigationControl position="bottom-right" />
+        <GeolocateControl
+          position="bottom-right"
+          trackUserLocation={true}
+          positionOptions={{ enableHighAccuracy: false }}
         />
-      )}
-    </Map>
+
+        <Source
+          id="stops-source"
+          type="geojson"
+          data={{ type: "FeatureCollection", features: stops }}
+        />
+
+        <Layer
+          id="stops"
+          type="symbol"
+          minzoom={11}
+          source="stops-source"
+          layout={{
+            "icon-image": ["get", "prefix"],
+            "icon-size": [
+              "interpolate",
+              ["linear"],
+              ["zoom"],
+              13,
+              0.7,
+              16,
+              0.8,
+              18,
+              1.2,
+            ],
+            "icon-allow-overlap": true,
+            "icon-ignore-placement": true,
+          }}
+        />
+
+        <Layer
+          id="stops-label"
+          type="symbol"
+          source="stops-source"
+          minzoom={16}
+          layout={{
+            "text-field": ["get", "name"],
+            "text-font": ["Noto Sans Bold"],
+            "text-offset": [0, 3],
+            "text-anchor": "center",
+            "text-justify": "center",
+            "text-size": ["interpolate", ["linear"], ["zoom"], 11, 8, 22, 16],
+          }}
+          paint={{
+            "text-color": [
+              "case",
+              ["==", ["get", "prefix"], "stop-renfe"],
+              "#870164",
+              "#e72b37",
+            ],
+            "text-halo-color": "#FFF",
+            "text-halo-width": 1,
+          }}
+        />
+
+        {selectedStop && (
+          <StopSheet
+            isOpen={isSheetOpen}
+            onClose={() => setIsSheetOpen(false)}
+            stop={selectedStop}
+          />
+        )}
+      </Map>
+    </div>
   );
 }

@@ -141,14 +141,37 @@ public class OtpService
 
     private RoutePlan MapToRoutePlan(OtpPlan otpPlan)
     {
+        // Compute time offset: OTP's "date" field is the server time in millis
+        var otpServerTime = DateTimeOffset.FromUnixTimeMilliseconds(otpPlan.Date);
+        var now = DateTimeOffset.Now;
+        var timeOffsetSeconds = (long)(otpServerTime - now).TotalSeconds;
+
         return new RoutePlan
         {
-            Itineraries = otpPlan.Itineraries.Select(MapItinerary).ToList()
+            Itineraries = otpPlan.Itineraries.Select(MapItinerary).ToList(),
+            TimeOffsetSeconds = timeOffsetSeconds
         };
     }
 
     private Itinerary MapItinerary(OtpItinerary otpItinerary)
     {
+        var legs = otpItinerary.Legs.Select(MapLeg).ToList();
+        var busLegs = legs.Where(leg => leg.Mode != null && leg.Mode.ToUpper() != "WALK");
+
+        var cashFareEuro = busLegs.Count() * _config.FareCashPerBus;
+
+        int cardTicketsRequired = 0;
+        DateTime? lastTicketPurchased = null;
+
+        foreach (var leg in busLegs)
+        {
+            if (lastTicketPurchased == null || (leg.StartTime - lastTicketPurchased.Value).TotalMinutes > 45)
+            {
+                cardTicketsRequired++;
+                lastTicketPurchased = leg.StartTime;
+            }
+        }
+
         return new Itinerary
         {
             DurationSeconds = otpItinerary.Duration,
@@ -158,7 +181,9 @@ public class OtpService
             WalkTimeSeconds = otpItinerary.WalkTime,
             TransitTimeSeconds = otpItinerary.TransitTime,
             WaitingTimeSeconds = otpItinerary.WaitingTime,
-            Legs = otpItinerary.Legs.Select(MapLeg).ToList()
+            Legs = legs,
+            CashFareEuro = cashFareEuro,
+            CardFareEuro = cardTicketsRequired * _config.FareCardPerBus
         };
     }
 
@@ -172,12 +197,16 @@ public class OtpService
             RouteLongName = otpLeg.RouteLongName,
             Headsign = otpLeg.Headsign,
             AgencyName = otpLeg.AgencyName,
+            RouteColor = otpLeg.RouteColor,
+            RouteTextColor = otpLeg.RouteTextColor,
             From = MapPlace(otpLeg.From),
             To = MapPlace(otpLeg.To),
             StartTime = DateTimeOffset.FromUnixTimeMilliseconds(otpLeg.StartTime).LocalDateTime,
             EndTime = DateTimeOffset.FromUnixTimeMilliseconds(otpLeg.EndTime).LocalDateTime,
+            DistanceMeters = otpLeg.Distance,
             Geometry = DecodePolyline(otpLeg.LegGeometry?.Points),
-            Steps = otpLeg.Steps.Select(MapStep).ToList()
+            Steps = otpLeg.Steps.Select(MapStep).ToList(),
+            IntermediateStops = otpLeg.IntermediateStops.Select(MapPlace).Where(p => p != null).Cast<PlannerPlace>().ToList()
         };
     }
 
@@ -186,12 +215,35 @@ public class OtpService
         if (otpPlace == null) return null;
         return new PlannerPlace
         {
-            Name = otpPlace.Name,
+            Name = CorrectStopName(otpPlace.Name),
             Lat = otpPlace.Lat,
             Lon = otpPlace.Lon,
             StopId = otpPlace.StopId, // Use string directly
-            StopCode = otpPlace.StopCode
+            StopCode = CorrectStopCode(otpPlace.StopCode)
         };
+    }
+
+    private string CorrectStopCode(string? stopId)
+    {
+        if (string.IsNullOrEmpty(stopId)) return stopId ?? string.Empty;
+
+        var sb = new StringBuilder();
+        foreach (var c in stopId)
+        {
+            if (char.IsNumber(c))
+            {
+                sb.Append(c);
+            }
+        }
+
+        return int.Parse(sb.ToString()).ToString();
+    }
+
+    private string CorrectStopName(string? stopName)
+    {
+        if (string.IsNullOrEmpty(stopName)) return stopName ?? string.Empty;
+
+        return stopName!.Replace("  ", ", ").Replace("\"", "");
     }
 
     private Step MapStep(OtpWalkStep otpStep)

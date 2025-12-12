@@ -183,11 +183,15 @@ body {
 
 @media (min-width: 1024px) {
   .page-container {
-    max-width: 1024px;
+    max-width: 48rem;
   }
 }
 
 .maplibregl-ctrl-attrib-inner {
   font-size: 0.9em;
   color: var(--ml-c-link-2);
+}
+
+.maplibregl-ctrl-icon:before {
+  display: none;
 }

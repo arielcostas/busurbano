@@ -102,6 +102,18 @@ public class OtpLeg
 
     [JsonPropertyName("headsign")]
     public string? Headsign { get; set; }
+
+    [JsonPropertyName("distance")]
+    public double Distance { get; set; }
+
+    [JsonPropertyName("routeColor")]
+    public string? RouteColor { get; set; }
+
+    [JsonPropertyName("routeTextColor")]
+    public string? RouteTextColor { get; set; }
+
+    [JsonPropertyName("intermediateStops")]
+    public List<OtpPlace> IntermediateStops { get; set; } = new();
 }
 
 public class OtpPlace

@@ -128,17 +128,17 @@
 
 .line-icon-rounded {
   display: block;
-  width: 5ch;
-  height: 5ch;
+  width: 4.25ch;
+  height: 4.25ch;
   box-sizing: border-box;
 
   background-color: var(--line-colour);
   color: var(--line-text-colour);
-  padding: 1.75ch 1ch;
+  padding: 1.4ch 0.8ch;
   text-align: center;
   border-radius: 50%;
 
-  font: 600 14px / 1 monospace;
+  font: 600 13px / 1 monospace;
   letter-spacing: 0.05em;
   text-wrap: nowrap;
 }

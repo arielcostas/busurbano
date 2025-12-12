@@ -8,6 +8,7 @@ export interface PlannerSearchResult {
 
 export interface RoutePlan {
   itineraries: Itinerary[];
+  timeOffsetSeconds?: number;
 }
 
 export interface Itinerary {
@@ -19,6 +20,8 @@ export interface Itinerary {
   transitTimeSeconds: number;
   waitingTimeSeconds: number;
   legs: Leg[];
+  cashFareEuro?: number;
+  cardFareEuro?: number;
 }
 
 export interface Leg {

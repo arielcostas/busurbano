@@ -7,7 +7,7 @@
   background-color: var(--background-color);
   border-top: 1px solid var(--border-color);
 
-  max-width: 500px;
+  max-width: 48rem;
   margin-inline: auto;
 }
 

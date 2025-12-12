@@ -13,4 +13,8 @@ public class AppConfiguration
     public int MaxWalkDistance { get; set; } = 1000;
     public int MaxWalkTime { get; set; } = 20;
     public int NumItineraries { get; set; } = 4;
+
+    // Fare Configuration
+    public double FareCashPerBus { get; set; } = 1.63;
+    public double FareCardPerBus { get; set; } = 0.67;
 }

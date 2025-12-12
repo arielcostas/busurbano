@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   type PlannerSearchResult,
   type RoutePlan,
@@ -13,6 +13,9 @@ interface StoredRoute {
   origin: PlannerSearchResult;
   destination: PlannerSearchResult;
   plan: RoutePlan;
+  searchTime?: Date;
+  arriveBy?: boolean;
+  selectedItineraryIndex?: number;
 }
 
 export function usePlanner() {
@@ -23,6 +26,11 @@ export function usePlanner() {
   const [plan, setPlan] = useState<RoutePlan | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [searchTime, setSearchTime] = useState<Date | null>(null);
+  const [arriveBy, setArriveBy] = useState(false);
+  const [selectedItineraryIndex, setSelectedItineraryIndex] = useState<
+    number | null
+  >(null);
 
   // Load from storage on mount
   useEffect(() => {
@@ -34,6 +42,9 @@ export function usePlanner() {
           setOrigin(data.origin);
           setDestination(data.destination);
           setPlan(data.plan);
+          setSearchTime(data.searchTime ? new Date(data.searchTime) : null);
+          setArriveBy(data.arriveBy ?? false);
+          setSelectedItineraryIndex(data.selectedItineraryIndex ?? null);
         } else {
           localStorage.removeItem(STORAGE_KEY);
         }
@@ -47,7 +58,7 @@ export function usePlanner() {
     from: PlannerSearchResult,
     to: PlannerSearchResult,
     time?: Date,
-    arriveBy: boolean = false
+    arriveByParam: boolean = false
   ) => {
     setLoading(true);
     setError(null);
@@ -58,11 +69,14 @@ export function usePlanner() {
         to.lat,
         to.lon,
         time,
-        arriveBy
+        arriveByParam
       );
       setPlan(result);
       setOrigin(from);
       setDestination(to);
+      setSearchTime(time ?? new Date());
+      setArriveBy(arriveByParam);
+      setSelectedItineraryIndex(null); // Reset when doing new search
 
       // Save to storage
       const toStore: StoredRoute = {
@@ -70,6 +84,9 @@ export function usePlanner() {
         origin: from,
         destination: to,
         plan: result,
+        searchTime: time ?? new Date(),
+        arriveBy: arriveByParam,
+        selectedItineraryIndex: null,
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(toStore));
     } catch (err) {
@@ -84,8 +101,43 @@ export function usePlanner() {
     setPlan(null);
     setOrigin(null);
     setDestination(null);
+    setSearchTime(null);
+    setArriveBy(false);
+    setSelectedItineraryIndex(null);
     localStorage.removeItem(STORAGE_KEY);
   };
+
+  const selectItinerary = useCallback((index: number) => {
+    setSelectedItineraryIndex(index);
+
+    // Update storage
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      try {
+        const data: StoredRoute = JSON.parse(stored);
+        data.selectedItineraryIndex = index;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      } catch (e) {
+        // Ignore
+      }
+    }
+  }, []);
+
+  const deselectItinerary = useCallback(() => {
+    setSelectedItineraryIndex(null);
+
+    // Update storage
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      try {
+        const data: StoredRoute = JSON.parse(stored);
+        data.selectedItineraryIndex = null;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      } catch (e) {
+        // Ignore
+      }
+    }
+  }, []);
 
   return {
     origin,
@@ -95,7 +147,12 @@ export function usePlanner() {
     plan,
     loading,
     error,
+    searchTime,
+    arriveBy,
+    selectedItineraryIndex,
     searchRoute,
     clearRoute,
+    selectItinerary,
+    deselectItinerary,
   };
 }

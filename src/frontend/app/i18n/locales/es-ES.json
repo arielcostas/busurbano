@@ -98,6 +98,40 @@
     "lines": "Líneas",
     "view_all_estimates": "Ver todas las estimaciones"
   },
+  "planner": {
+    "where_to": "¿Adónde quieres ir?",
+    "origin": "Origen",
+    "destination": "Destino",
+    "when": "Cuándo",
+    "now": "Ahora",
+    "depart_at": "Salir a",
+    "arrive_by": "Llegar a",
+    "search_route": "Buscar ruta",
+    "searching": "Buscando…",
+    "select_origin": "Seleccionar origen",
+    "select_destination": "Seleccionar destino",
+    "search_origin": "Buscar origen",
+    "search_destination": "Buscar destino",
+    "confirm": "→",
+    "current_location": "Ubicación actual",
+    "using_gps": "Usando GPS…",
+    "gps": "GPS",
+    "favourite_stops": "★ Favoritas",
+    "searching_ellipsis": "Buscando…",
+    "results": "Resultados",
+    "close": "Cerrar",
+    "results_title": "Results",
+    "clear": "Clear",
+    "no_routes_found": "No se encontraron rutas",
+    "no_routes_message": "No pudimos encontrar una ruta para tu viaje. Intenta cambiar la hora o las ubicaciones.",
+    "walk": "Caminar",
+    "walk_to": "Caminar {{distance}} hasta {{destination}}",
+    "from_to": "De {{from}} a {{to}}",
+    "itinerary_details": "Detalles del itinerario",
+    "back": "← Atrás",
+    "cash_fare": "{{amount}} €",
+    "card_fare": "{{amount}} €"
+  },
   "common": {
     "loading": "Cargando...",
     "error": "Ha ocurrido un error inesperado.",
@@ -106,6 +140,7 @@
   "navbar": {
     "home": "Inicio",
     "map": "Mapa",
+    "planner": "Planificador",
     "lines": "Líneas"
   },
   "lines": {

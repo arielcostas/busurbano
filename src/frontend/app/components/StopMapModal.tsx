@@ -9,6 +9,7 @@ import React, {
 import Map, { Layer, Marker, Source, type MapRef } from "react-map-gl/maplibre";
 import { Sheet } from "react-modal-sheet";
 import { useApp } from "~/AppContext";
+import LineIcon from "~/components/LineIcon";
 import { REGION_DATA } from "~/config/RegionConfig";
 import { getLineColour } from "~/data/LineColors";
 import type { Stop } from "~/data/StopDataProvider";
@@ -517,26 +518,12 @@ export const StopMapModal: React.FC<StopMapModalProps> = ({
                           flexDirection: "column",
                           alignItems: "center",
                           gap: 6,
-                          transform: `rotate(${selectedBus.currentPosition.orientationDegrees}deg)`,
+                          filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.3))",
+                          transform: "scale(0.85)",
                           transformOrigin: "center center",
                         }}
                       >
-                        <svg
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          style={{
-                            filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.3))",
-                          }}
-                        >
-                          <path
-                            d="M12 2 L22 22 L12 17 L2 22 Z"
-                            fill={getLineColour(selectedBus.line).background}
-                            stroke="#000"
-                            strokeWidth="2"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
+                        <LineIcon line={selectedBus.line} mode="rounded" />
                       </div>
                     </Marker>
                   )}
