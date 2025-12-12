@@ -1,6 +1,5 @@
 using System.Globalization;
 using System.Text;
-using System.Text.Json;
 using Costasdev.Busurbano.Backend.Configuration;
 using Costasdev.Busurbano.Backend.Types.Otp;
 using Costasdev.Busurbano.Backend.Types.Planner;

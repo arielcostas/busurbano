@@ -86,7 +86,7 @@ export function usePlanner() {
         plan: result,
         searchTime: time ?? new Date(),
         arriveBy: arriveByParam,
-        selectedItineraryIndex: null,
+        selectedItineraryIndex: undefined,
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(toStore));
     } catch (err) {
@@ -131,7 +131,7 @@ export function usePlanner() {
     if (stored) {
       try {
         const data: StoredRoute = JSON.parse(stored);
-        data.selectedItineraryIndex = null;
+        data.selectedItineraryIndex = undefined;
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       } catch (e) {
         // Ignore

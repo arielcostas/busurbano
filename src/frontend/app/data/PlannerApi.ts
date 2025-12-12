@@ -29,6 +29,7 @@ export interface Leg {
   routeName?: string;
   routeShortName?: string;
   routeLongName?: string;
+  routeColor?: string;
   headsign?: string;
   agencyName?: string;
   from?: PlannerPlace;
@@ -38,6 +39,7 @@ export interface Leg {
   distanceMeters: number;
   geometry?: PlannerGeometry;
   steps: Step[];
+  intermediateStops?: PlannerPlace[];
 }
 
 export interface PlannerPlace {

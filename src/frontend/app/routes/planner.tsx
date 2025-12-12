@@ -391,7 +391,7 @@ const ItineraryDetail = ({
       </div>
 
       {/* Details Panel */}
-      <div className="h-1/3 md:h-full md:w-96 lg:w-[28rem] overflow-y-auto bg-white dark:bg-slate-900 border-t md:border-t-0 md:border-l border-slate-200 dark:border-slate-700">
+      <div className="h-1/3 md:h-full md:w-96 lg:w-md overflow-y-auto bg-white dark:bg-slate-900 border-t md:border-t-0 md:border-l border-slate-200 dark:border-slate-700">
         <div className="px-4 py-4">
           <h2 className="text-xl font-bold mb-4">
             {t("planner.itinerary_details")}
