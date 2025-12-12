@@ -14,10 +14,14 @@ NAME_REPLACEMENTS = {
     "FORA DE SERVIZO.G.B.": "",
     "Praza de Fernando O Católico": "",
     "Rúa da Travesía de Vigo": "Travesía de Vigo",
-    " de ": " ",
-    " do ": " ",
-    " da ": " ",
-    " das ": " ",
+    "Rúa de ": " ",
+    "Rúa do ": " ",
+    "Rúa da ": " ",
+    "Rúa das ": " ",
+    "Avda. de ": " ",
+    "Avda. do ": " ",
+    "Avda. da ": " ",
+    "Avda. das ": " ",
     "Riós": "Ríos",
 }
 

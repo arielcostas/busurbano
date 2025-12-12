@@ -117,6 +117,7 @@
 
 .consolidated-circulation-card .card-row.meta {
   justify-content: flex-start;
+  flex-wrap: wrap;
   gap: 0.4rem;
 }
 

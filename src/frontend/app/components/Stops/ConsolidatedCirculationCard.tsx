@@ -250,28 +250,32 @@ export const ConsolidatedCirculationCard: React.FC<
       });
     }
 
-    if (estimate.currentPosition) {
-      if (estimate.isPreviousTrip) {
-        chips.push({ label: t("estimates.previous_trip"), kind: "gps" });
-      } else {
-        chips.push({ label: t("estimates.bus_gps_position"), kind: "gps" });
+    if (!reduced) {
+      if (estimate.currentPosition) {
+        if (estimate.isPreviousTrip) {
+          chips.push({ label: t("estimates.previous_trip"), kind: "gps" });
+        } else {
+          chips.push({ label: t("estimates.bus_gps_position"), kind: "gps" });
+        }
       }
-    }
 
-    if (timeClass === "time-delayed") {
-      chips.push({
-        label: reduced ? "!" : t("estimates.low_accuracy"),
-        tone: "warning",
-        kind: "warning",
-      });
-    }
+      if (driver !== "renfe") {
+        if (timeClass === "time-delayed") {
+          chips.push({
+            label: reduced ? "!" : t("estimates.low_accuracy"),
+            tone: "warning",
+            kind: "warning",
+          });
+        }
 
-    if (timeClass === "time-scheduled") {
-      chips.push({
-        label: reduced ? "⧗" : t("estimates.no_realtime"),
-        tone: "warning",
-        kind: "warning",
-      });
+        if (timeClass === "time-scheduled") {
+          chips.push({
+            label: reduced ? "⧗" : t("estimates.no_realtime"),
+            tone: "warning",
+            kind: "warning",
+          });
+        }
+      }
     }
 
     return chips;
