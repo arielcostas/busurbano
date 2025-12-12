@@ -1,11 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Costasdev.ServiceViewer.Data.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Costasdev.ServiceViewer.Data.Gtfs;
 
-[Table("stop_times")]
-[PrimaryKey(nameof(TripId), nameof(StopSequence))]
+[Table("gtfs_stop_times")]
+[PrimaryKey(nameof(TripId), nameof(StopSequence), nameof(FeedId))]
 public class GtfsStopTime
 {
     [Column("trip_id")]
@@ -13,13 +14,16 @@ public class GtfsStopTime
     [MaxLength(32)]
     public string TripId { get; set; } = null!;
 
+    [Column("feed_id")]public int FeedId { get; set; }
+    [ForeignKey(nameof(FeedId))] public required Feed Feed { get; set; }
+
     [ForeignKey(nameof(TripId))] public GtfsTrip GtfsTrip { get; set; } = null!;
 
-    [Column("arrival_time")] public string ArrivalTime { get; set; }
-    public TimeOnly ArrivalTimeOnly => TimeOnly.Parse(ArrivalTime);
+    [Column("arrival_time")] public string Arrival { get; set; }
+    public TimeSpan ArrivalTime => TimeSpan.FromGtfsTime(Arrival);
 
-    [Column("departure_time")] public string DepartureTime { get; set; }
-    public TimeOnly DepartureTimeOnly => TimeOnly.Parse(DepartureTime);
+    [Column("departure_time")] public string Departure { get; set; }
+    public TimeSpan DepartureTime => TimeSpan.FromGtfsTime(Departure);
 
     [Column("stop_id")]
     [ForeignKey(nameof(GtfsStop))]

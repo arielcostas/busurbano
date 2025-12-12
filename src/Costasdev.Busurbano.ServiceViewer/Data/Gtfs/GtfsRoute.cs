@@ -1,26 +1,30 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Costasdev.ServiceViewer.Data.Gtfs.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace Costasdev.ServiceViewer.Data.Gtfs;
 
-[Table("routes")]
+[Table("gtfs_routes")]
+[PrimaryKey(nameof(Id), nameof(FeedId))]
 public class GtfsRoute
 {
-    [Key]
     [Column("route_id")]
     [MaxLength(255)]
     public required string Id { get; set; }
 
     public string SafeId => Id.Replace(" ", "_").Replace("-", "_");
 
+    [Column("feed_id")]public int FeedId { get; set; }
+    [ForeignKey(nameof(FeedId))] public required Feed Feed { get; set; }
+
     [Column("agency_id")]
-    [ForeignKey(nameof(GtfsAgency))]
+    [ForeignKey(nameof(Agency))]
     [MaxLength(255)]
     public required string AgencyId { get; set; }
 
     [ForeignKey(nameof(AgencyId))]
-    public GtfsAgency GtfsAgency { get; set; } = null!;
+    public GtfsAgency Agency { get; set; } = null!;
 
     /// <summary>
     /// Short name of a route. Often a short, abstract identifier (e.g., "32", "100X", "Green")

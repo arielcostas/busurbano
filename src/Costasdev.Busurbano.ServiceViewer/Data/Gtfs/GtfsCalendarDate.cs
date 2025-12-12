@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Costasdev.ServiceViewer.Data.Gtfs;
 
-[Table("calendar_dates")]
-[PrimaryKey(nameof(ServiceId), nameof(Date))]
+[Table("gtfs_calendar_dates")]
+[PrimaryKey(nameof(ServiceId), nameof(Date), nameof(FeedId))]
 public class GtfsCalendarDate
 {
     [Column("service_id")]
@@ -15,6 +15,9 @@ public class GtfsCalendarDate
 
     [Column("date")]
     public required DateTime Date { get; set; }
+
+    [Column("feed_id")] public int FeedId { get; set; }
+    [ForeignKey(nameof(FeedId))] public required Feed Feed { get; set; }
 
     [Column("exception_type")]
     public required ExceptionType ExceptionType { get; set; }

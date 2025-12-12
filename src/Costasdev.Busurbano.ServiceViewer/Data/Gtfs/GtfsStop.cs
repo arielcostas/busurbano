@@ -1,16 +1,21 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Costasdev.ServiceViewer.Data.Gtfs.Enums;
+using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
 
 namespace Costasdev.ServiceViewer.Data.Gtfs;
 
-[Table("stops")]
+[Table("gtfs_stops")]
+[PrimaryKey(nameof(Id), nameof(FeedId))]
 public class GtfsStop
 {
-    [Key]
     [Column("stop_id")]
     [MaxLength(32)]
     public required string Id { get; set; }
+
+    [Column("feed_id")]public int FeedId { get; set; }
+    [ForeignKey(nameof(FeedId))] public required Feed Feed { get; set; }
 
     [Column("stop_code")]
     [MaxLength(32)]
@@ -24,11 +29,8 @@ public class GtfsStop
     [MaxLength(255)]
     public string? Description { get; set; }
 
-    [Column("stop_lat")]
-    public double Latitude { get; set; }
-
-    [Column("stop_lon")]
-    public double Longitude { get; set; }
+    [Column("stop_pos")]
+    public Point? Position { get; set; }
 
     [Column("stop_url")]
     [MaxLength(255)]

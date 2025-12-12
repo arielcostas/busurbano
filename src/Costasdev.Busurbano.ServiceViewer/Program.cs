@@ -13,7 +13,10 @@ builder.Services.AddDbContext<AppDbContext>(db =>
     {
         throw new InvalidOperationException("Connection string 'Database' is not configured.");
     }
-    db.UseMySQL(connectionString);
+    db.UseNpgsql(connectionString, npg =>
+    {
+        npg.UseNetTopologySuite();
+    });
 });
 
 builder.Services.AddHttpClient();

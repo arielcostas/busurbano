@@ -1,15 +1,20 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Costasdev.ServiceViewer.Data.Gtfs;
 
-[Table("agencies")]
+[Table("gtfs_agencies")]
+[PrimaryKey(nameof(Id), nameof(FeedId))]
 public class GtfsAgency
 {
     [Key]
     [Column("agency_id")]
     [MaxLength(255)]
     public required string Id { get; set; }
+
+    [Column("feed_id")] public int FeedId { get; set; }
+    [ForeignKey(nameof(FeedId))] public required Feed Feed { get; set; }
 
     [Column("agency_name")]
     [MaxLength(255)]

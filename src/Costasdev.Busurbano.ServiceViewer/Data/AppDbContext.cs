@@ -12,26 +12,33 @@ public class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Relación Trip -> StopTimes (cascade delete)
-        modelBuilder.Entity<GtfsTrip>()
-            .HasMany<GtfsStopTime>()
-            .WithOne(st => st.GtfsTrip)
-            .HasForeignKey(st => st.TripId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        // Relación Stop -> StopTimes (cascade delete)
-        modelBuilder.Entity<GtfsStop>()
-            .HasMany<GtfsStopTime>()
-            .WithOne(st => st.GtfsStop)
-            .HasForeignKey(st => st.StopId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        // Relación Route -> Trips (cascade delete)
+        // Route -> Agency
         modelBuilder.Entity<GtfsRoute>()
-            .HasMany<GtfsTrip>()
-            .WithOne(t => t.Route)
-            .HasForeignKey(t => t.RouteId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .HasOne(r => r.Agency)
+            .WithMany()
+            .HasForeignKey(r => new { r.AgencyId, r.FeedId })
+            .HasPrincipalKey(a => new { a.Id, a.FeedId });
+
+        // Trip -> Route
+        modelBuilder.Entity<GtfsTrip>()
+            .HasOne(t => t.Route)
+            .WithMany()
+            .HasForeignKey(t => new { t.RouteId, t.FeedId })
+            .HasPrincipalKey(a => new { a.Id, a.FeedId });
+
+        // Relación StopTimes -> Trip
+        modelBuilder.Entity<GtfsStopTime>()
+            .HasOne(st => st.GtfsTrip)
+            .WithMany()
+            .HasForeignKey(st => new { st.TripId, st.FeedId })
+            .HasPrincipalKey(a => new { a.Id, a.FeedId });
+
+        // Relación StopTimes -> Stop
+        modelBuilder.Entity<GtfsStopTime>()
+            .HasOne(st => st.GtfsStop)
+            .WithMany()
+            .HasForeignKey(st => new { st.StopId, st.FeedId })
+            .HasPrincipalKey(a => new { a.Id, a.FeedId });
 
         modelBuilder.Entity<GtfsTrip>()
             .Property(t => t.TripWheelchairAccessible)

@@ -31,9 +31,9 @@ public class AppDbContextDesignTimeFactory : IDesignTimeDbContextFactory<AppDbCo
         });
         builder.UseLoggerFactory(loggerFactory);
 
-        builder.UseMySQL(
+        builder.UseNpgsql(
             connectionString,
-            options => options.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)
+            options => options.UseNetTopologySuite()
         );
 
         return new AppDbContext(builder.Options);

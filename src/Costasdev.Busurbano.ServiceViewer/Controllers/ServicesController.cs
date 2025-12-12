@@ -101,7 +101,7 @@ public class ServicesController : Controller
                 .Select(t => new
                 {
                     Trip = t,
-                    Sequence = int.TryParse(t.TripId.Split('_').LastOrDefault(), out var seq) ? seq : int.MaxValue
+                    Sequence = int.TryParse(t.Id.Split('_').LastOrDefault(), out var seq) ? seq : int.MaxValue
                 })
                 .OrderBy(t => t.Sequence)
                 .ThenBy(t => t.Trip.TripHeadsign) // Secondary sort to ensure consistent ordering
@@ -113,8 +113,8 @@ public class ServicesController : Controller
                 continue;
             }
 
-            tripsWhoseFirstStopWeWant.Add(orderedTrips.First().TripId);
-            tripsWhoseLastStopWeWant.Add(orderedTrips.Last().TripId);
+            tripsWhoseFirstStopWeWant.Add(orderedTrips.First().Id);
+            tripsWhoseLastStopWeWant.Add(orderedTrips.Last().Id);
             serviceInformations.Add(new ServiceInformation(
                 service,
                 GetNameForServiceId(service),
@@ -130,7 +130,7 @@ public class ServicesController : Controller
             .OrderBy(st => st.StopSequence)
             .GroupBy(st => st.TripId)
             .Select(g => g.First())
-            .ToDictionary(st => st.TripId, st => st.DepartureTime);
+            .ToDictionary(st => st.TripId, st => st.Departure);
 
         var lastStopTimePerTrip = _db.StopTimes
             .AsSplitQuery().AsNoTracking()
@@ -138,7 +138,7 @@ public class ServicesController : Controller
             .OrderByDescending(st => st.StopSequence)
             .GroupBy(st => st.TripId)
             .Select(g => g.First())
-            .ToDictionary(st => st.TripId, st => st.ArrivalTime);
+            .ToDictionary(st => st.TripId, st => st.Arrival);
 
         // 4. Create a view model
         List<ServicesInDayItem> serviceCards = [];
@@ -147,7 +147,7 @@ public class ServicesController : Controller
             // For lines 16-24 switching during the day we want (16, 2), (24,2), (16,1), (24,2)... in sequence
             // TODO: Fix getting the trip sequence for any operator
             var tripsOrdered = serviceInfo.Trips
-                .OrderBy(t => int.Parse(t.TripId.Split('_').LastOrDefault() ?? string.Empty))
+                .OrderBy(t => int.Parse(t.Id.Split('_').LastOrDefault() ?? string.Empty))
                 .ToList();
 
             List<TripGroup> tripGroups = [];
@@ -174,10 +174,10 @@ public class ServicesController : Controller
                 serviceInfo.ServiceName,
                 serviceInfo.Trips,
                 tripGroups,
-                firstStopTimePerTrip.TryGetValue(serviceInfo.FirstTrip.TripId, out var shiftStart)
+                firstStopTimePerTrip.TryGetValue(serviceInfo.FirstTrip.Id, out var shiftStart)
                     ? shiftStart
                     : string.Empty,
-                lastStopTimePerTrip.TryGetValue(serviceInfo.LastTrip.TripId, out var shiftEnd) ? shiftEnd : string.Empty
+                lastStopTimePerTrip.TryGetValue(serviceInfo.LastTrip.Id, out var shiftEnd) ? shiftEnd : string.Empty
             ));
         }
 
@@ -248,7 +248,7 @@ public class ServicesController : Controller
             .Select(t => new
             {
                 Trip = t,
-                Sequence = int.TryParse(t.TripId.Split('_').LastOrDefault(), out var seq) ? seq : int.MaxValue
+                Sequence = int.TryParse(t.Id.Split('_').LastOrDefault(), out var seq) ? seq : int.MaxValue
             })
             .OrderBy(t => t.Sequence)
             .ThenBy(t => t.Trip.TripHeadsign) // Secondary sort to ensure consistent ordering
@@ -263,7 +263,7 @@ public class ServicesController : Controller
             var stopTimes = _db.StopTimes
                 .AsSplitQuery().AsNoTracking()
                 .Include(gtfsStopTime => gtfsStopTime.GtfsStop)
-                .Where(st => st.TripId == trip.TripId)
+                .Where(st => st.TripId == trip.Id)
                 .OrderBy(st => st.StopSequence)
                 .ToList();
 
@@ -277,19 +277,19 @@ public class ServicesController : Controller
 
             var tripDistance = (int?)(lastStop.ShapeDistTraveled - firstStop.ShapeDistTraveled);
             totalDistance += tripDistance ?? 0;
-            totalDrivingMinutes += (lastStop.ArrivalTimeOnly - firstStop.DepartureTimeOnly);
+            totalDrivingMinutes += (lastStop.ArrivalTime - firstStop.DepartureTime);
 
             items.Add(new ServiceDetailsItem
             {
-                TripId = trip.TripId,
+                TripId = trip.Id,
                 SafeRouteId = trip.Route.SafeId,
                 ShortName = trip.Route.ShortName,
                 LongName = trip.TripHeadsign ?? trip.Route.LongName,
                 TotalDistance = tripDistance.HasValue ? $"{tripDistance.Value/1_000:F2} km" : "N/A",
                 FirstStopName = firstStop.GtfsStop.Name,
-                FirstStopTime = firstStop.DepartureTime,
+                FirstStopTime = firstStop.Departure,
                 LastStopName = lastStop.GtfsStop.Name,
-                LastStopTime = lastStop.ArrivalTime
+                LastStopTime = lastStop.Arrival
             });
         }
 

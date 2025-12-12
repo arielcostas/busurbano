@@ -1,28 +1,27 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Costasdev.ServiceViewer.Data.Gtfs.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace Costasdev.ServiceViewer.Data.Gtfs;
 
-[Table("trips")]
+[Table("gtfs_trips")]
+[PrimaryKey(nameof(Id), nameof(FeedId))]
 public class GtfsTrip
 {
-    [Key]
-    [Column("trip_id")]
-    [MaxLength(32)]
-    public string TripId { get; set; } = null!;
+    [Column("trip_id")] [MaxLength(32)] public string Id { get; set; } = null!;
+
+    [Column("feed_id")] public int FeedId { get; set; }
+    [ForeignKey(nameof(FeedId))] public required Feed Feed { get; set; }
 
     [Column("route_id")]
     [MaxLength(32)]
     [ForeignKey(nameof(Route))]
     public string RouteId { get; set; } = null!;
 
-    [ForeignKey(nameof(RouteId))]
-    public GtfsRoute Route { get; set; } = null!;
+    [ForeignKey(nameof(RouteId))] public GtfsRoute Route { get; set; } = null!;
 
-    [Column("service_id")]
-    [MaxLength(32)]
-    public string ServiceId { get; set; } = null!;
+    [Column("service_id")] [MaxLength(32)] public string ServiceId { get; set; } = null!;
 
     [Column("trip_headsign")]
     [MaxLength(255)]
@@ -32,8 +31,7 @@ public class GtfsTrip
     [MaxLength(255)]
     public string? TripShortName { get; set; }
 
-    [Column("direction_id")]
-    public DirectionId DirectionId { get; set; } = DirectionId.Outbound;
+    [Column("direction_id")] public DirectionId DirectionId { get; set; } = DirectionId.Outbound;
 
     /// <summary>
     /// Identifies the block to which the trip belongs. A block consists of a single trip or many
@@ -55,6 +53,5 @@ public class GtfsTrip
     [Column("trip_wheelchair_accessible")]
     public TripWheelchairAccessible TripWheelchairAccessible { get; set; } = TripWheelchairAccessible.Empty;
 
-    [Column("trip_bikes_allowed")]
-    public TripBikesAllowed TripBikesAllowed { get; set; } = TripBikesAllowed.Empty;
+    [Column("trip_bikes_allowed")] public TripBikesAllowed TripBikesAllowed { get; set; } = TripBikesAllowed.Empty;
 }
