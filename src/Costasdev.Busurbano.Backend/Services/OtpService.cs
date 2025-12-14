@@ -78,7 +78,7 @@ public class OtpService
             var result = new PlannerSearchResult
             {
                 Name = feature.Properties?.Name,
-                Label = feature.Properties?.Label,
+                Label = $"{feature.Properties?.PostalCode} ${feature.Properties?.LocalAdmin}, {feature.Properties?.Region}",
                 Layer = feature.Properties?.Layer,
                 Lat = feature.Geometry?.Coordinates.Count > 1 ? feature.Geometry.Coordinates[1] : 0,
                 Lon = feature.Geometry?.Coordinates.Count > 0 ? feature.Geometry.Coordinates[0] : 0
