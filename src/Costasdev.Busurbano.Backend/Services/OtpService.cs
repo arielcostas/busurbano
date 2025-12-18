@@ -42,7 +42,7 @@ public class OtpService
             var results = response?.Features.Select(f => new PlannerSearchResult
             {
                 Name = f.Properties?.Name,
-                Label = $"{f.Properties?.PostalCode} ${f.Properties?.LocalAdmin}, {f.Properties?.Region}",
+                Label = $"{f.Properties?.PostalCode} {f.Properties?.LocalAdmin}, {f.Properties?.Region}",
                 Layer = f.Properties?.Layer,
                 Lat = f.Geometry?.Coordinates.Count > 1 ? f.Geometry.Coordinates[1] : 0,
                 Lon = f.Geometry?.Coordinates.Count > 0 ? f.Geometry.Coordinates[0] : 0
@@ -78,7 +78,7 @@ public class OtpService
             var result = new PlannerSearchResult
             {
                 Name = feature.Properties?.Name,
-                Label = $"{feature.Properties?.PostalCode} ${feature.Properties?.LocalAdmin}, {feature.Properties?.Region}",
+                Label = $"{feature.Properties?.PostalCode} {feature.Properties?.LocalAdmin}, {feature.Properties?.Region}",
                 Layer = feature.Properties?.Layer,
                 Lat = feature.Geometry?.Coordinates.Count > 1 ? feature.Geometry.Coordinates[1] : 0,
                 Lon = feature.Geometry?.Coordinates.Count > 0 ? feature.Geometry.Coordinates[0] : 0
