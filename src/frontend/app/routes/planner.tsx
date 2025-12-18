@@ -592,15 +592,10 @@ const ItineraryDetail = ({
                       <Footprints className="w-4 h-4" />
                     </div>
                   ) : (
-                    <div
-                      className="shadow-sm"
-                      style={{ transform: "scale(0.9)" }}
-                    >
-                      <LineIcon
-                        line={leg.routeShortName || leg.routeName || ""}
-                        mode="rounded"
-                      />
-                    </div>
+                    <LineIcon
+                      line={leg.routeShortName || leg.routeName || ""}
+                      mode="rounded"
+                    />
                   )}
                   {idx < itinerary.legs.length - 1 && (
                     <div className="w-0.5 flex-1 bg-gray-300 dark:bg-gray-600 my-1"></div>
@@ -636,44 +631,61 @@ const ItineraryDetail = ({
                     {t("estimates.minutes")}
                   </div>
                   {leg.mode !== "WALK" &&
-                    leg.from?.name &&
-                    nextArrivals[leg.from.name] && (
+                    leg.from?.stopId &&
+                    nextArrivals[leg.from.name || leg.from.stopId] && (
                       <div className="mt-2 text-xs text-gray-600 dark:text-gray-400">
                         <div className="font-semibold mb-1">
                           {t("planner.next_arrivals", "Next arrivals")}:
                         </div>
-                        {nextArrivals[leg.from.name]
-                          .filter(
-                            (circ) =>
-                              circ.line ===
-                              (leg.routeShortName || leg.routeName)
-                          )
-                          .slice(0, 2)
-                          .map((circ, idx) => {
-                            const minutes =
-                              circ.realTime?.minutes ?? circ.schedule?.minutes;
-                            if (minutes === undefined) return null;
-                            return (
-                              <div
-                                key={idx}
-                                className="flex items-center gap-2 py-0.5"
-                              >
-                                <span className="font-semibold">
-                                  {circ.line}
-                                </span>
-                                <span className="text-gray-500 dark:text-gray-500">
-                                  →
-                                </span>
-                                <span className="flex-1 truncate">
-                                  {circ.route}
-                                </span>
-                                <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-                                  {minutes} {t("estimates.minutes")}
-                                  {circ.realTime && " 🟢"}
-                                </span>
-                              </div>
-                            );
-                          })}
+                        {(() => {
+                          const currentLine =
+                            leg.routeShortName || leg.routeName;
+                          const previousLeg =
+                            idx > 0 ? itinerary.legs[idx - 1] : null;
+                          const previousLine =
+                            previousLeg?.mode !== "WALK"
+                              ? previousLeg?.routeShortName ||
+                                previousLeg?.routeName
+                              : null;
+
+                          const linesToShow = [currentLine];
+                          if (
+                            previousLine &&
+                            previousLeg?.to?.stopId === leg.from?.stopId
+                          ) {
+                            linesToShow.push(previousLine);
+                          }
+
+                          return nextArrivals[leg.from.name || leg.from.stopId]
+                            .filter((circ) => linesToShow.includes(circ.line))
+                            .slice(0, 3)
+                            .map((circ, idx) => {
+                              const minutes =
+                                circ.realTime?.minutes ??
+                                circ.schedule?.minutes;
+                              if (minutes === undefined) return null;
+                              return (
+                                <div
+                                  key={idx}
+                                  className="flex items-center gap-2 py-0.5"
+                                >
+                                  <span className="font-semibold">
+                                    {circ.line}
+                                  </span>
+                                  <span className="text-gray-500 dark:text-gray-500">
+                                    →
+                                  </span>
+                                  <span className="flex-1 truncate">
+                                    {circ.route}
+                                  </span>
+                                  <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                                    {minutes} {t("estimates.minutes")}
+                                    {circ.realTime && " 🟢"}
+                                  </span>
+                                </div>
+                              );
+                            });
+                        })()}
                       </div>
                     )}
                   <div className="text-sm mt-1">
