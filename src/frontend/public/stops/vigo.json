@@ -417,7 +417,8 @@
     "longitude": -8.74774586,
     "lines": [
       "6",
-      "9B"
+      "9B",
+      "28"
     ]
   },
   {
@@ -438,8 +439,7 @@
       "15C",
       "28",
       "N4",
-      "H1",
-      "-"
+      "H1"
     ]
   },
   {
@@ -451,7 +451,8 @@
     "longitude": -8.743239749,
     "lines": [
       "6",
-      "9B"
+      "9B",
+      "28"
     ]
   },
   {
@@ -971,6 +972,17 @@
     "longitude": -8.710390551,
     "lines": [
       "H2"
+    ]
+  },
+  {
+    "stopId": "vitrasa:14121",
+    "name": {
+      "original": "Rúa da Reconquista, 2"
+    },
+    "latitude": 42.238625474,
+    "longitude": -8.723242095,
+    "lines": [
+      "28"
     ]
   },
   {
@@ -1519,8 +1531,7 @@
       "9B",
       "15C",
       "N4",
-      "H1",
-      "-"
+      "H1"
     ]
   },
   {
@@ -2527,8 +2538,7 @@
       "24",
       "28",
       "N1",
-      "N4",
-      "-"
+      "N4"
     ],
     "amenities": [
       "shelter",
@@ -3098,8 +3108,7 @@
       "15C",
       "28",
       "N4",
-      "H1",
-      "-"
+      "H1"
     ]
   },
   {
@@ -3860,17 +3869,6 @@
     ]
   },
   {
-    "stopId": "vitrasa:14475",
-    "name": {
-      "original": "Rúa de Barcelona, 78"
-    },
-    "latitude": 42.222992354,
-    "longitude": -8.728300382,
-    "lines": [
-      "C1"
-    ]
-  },
-  {
     "stopId": "vitrasa:1450",
     "name": {
       "original": "Avda. de Castrelos, 366"
@@ -3948,8 +3946,7 @@
       "9B",
       "15C",
       "N4",
-      "H1",
-      "-"
+      "H1"
     ]
   },
   {
@@ -6413,6 +6410,17 @@
     ]
   },
   {
+    "stopId": "vitrasa:20194",
+    "name": {
+      "original": "Rúa de Cánovas del Castillo, 28"
+    },
+    "latitude": 42.240364985,
+    "longitude": -8.724530974,
+    "lines": [
+      "28"
+    ]
+  },
+  {
     "stopId": "vitrasa:20195",
     "name": {
       "original": "Praza de Compostela (fronte 35)"
@@ -6458,6 +6466,20 @@
     "lines": [
       "5B",
       "12A"
+    ]
+  },
+  {
+    "stopId": "vitrasa:20198",
+    "name": {
+      "original": "Rúa de Policarpo Sanz, 26"
+    },
+    "latitude": 42.237533428,
+    "longitude": -8.722195046,
+    "lines": [
+      "28"
+    ],
+    "amenities": [
+      "shelter"
     ]
   },
   {
@@ -6531,8 +6553,7 @@
       "15C",
       "28",
       "N4",
-      "H1",
-      "-"
+      "H1"
     ]
   },
   {
@@ -6551,8 +6572,7 @@
       "15C",
       "28",
       "N4",
-      "H1",
-      "-"
+      "H1"
     ]
   },
   {
@@ -7189,10 +7209,10 @@
   {
     "stopId": "vitrasa:2430",
     "name": {
-      "original": "Rúa de Barcelona, 64"
+      "original": "Rúa de Barcelona, Hospital Ribera Povisa"
     },
-    "latitude": 42.223917068,
-    "longitude": -8.726168827,
+    "latitude": 42.223280419,
+    "longitude": -8.727469542,
     "lines": [
       "C1"
     ]
@@ -7200,10 +7220,10 @@
   {
     "stopId": "vitrasa:2440",
     "name": {
-      "original": "Rúa de Barcelona, 2"
+      "original": "Rúa de Barcelona, 18"
     },
-    "latitude": 42.228315534,
-    "longitude": -8.721741958,
+    "latitude": 42.227184403,
+    "longitude": -8.722366808,
     "lines": [
       "C1"
     ]
@@ -7211,10 +7231,10 @@
   {
     "stopId": "vitrasa:2450",
     "name": {
-      "original": "Rúa de Barcelona, 32"
+      "original": "Rúa de Barcelona, 44"
     },
-    "latitude": 42.226024692,
-    "longitude": -8.723390804,
+    "latitude": 42.225283542,
+    "longitude": -8.724362504,
     "lines": [
       "C1"
     ]
@@ -7297,7 +7317,8 @@
     "longitude": -8.751597027,
     "lines": [
       "6",
-      "9B"
+      "9B",
+      "28"
     ]
   },
   {
@@ -8038,7 +8059,8 @@
     "latitude": 42.236471452,
     "longitude": -8.720164905,
     "lines": [
-      "16"
+      "16",
+      "17"
     ]
   },
   {
@@ -9355,6 +9377,17 @@
       "18A",
       "18B",
       "18H"
+    ]
+  },
+  {
+    "stopId": "vitrasa:430",
+    "name": {
+      "original": "Rúa do Areal (Aduana)"
+    },
+    "latitude": 42.239341996,
+    "longitude": -8.720234413,
+    "lines": [
+      "28"
     ]
   },
   {
@@ -10738,6 +10771,7 @@
     "latitude": 42.23720456,
     "longitude": -8.718680736,
     "lines": [
+      "17",
       "H2",
       "PSA 1"
     ],
@@ -11243,7 +11277,6 @@
       "27",
       "28",
       "N4",
-      "-",
       "PSA 4"
     ]
   },
@@ -11270,7 +11303,6 @@
       "27",
       "28",
       "N4",
-      "-",
       "PSA 4"
     ]
   },
@@ -12168,6 +12200,21 @@
     ]
   },
   {
+    "stopId": "vitrasa:6620",
+    "name": {
+      "original": "Rúa de Policarpo Sanz, 40"
+    },
+    "latitude": 42.23757846151978,
+    "longitude": -8.721031378896738,
+    "lines": [
+      "28"
+    ],
+    "amenities": [
+      "shelter",
+      "display"
+    ]
+  },
+  {
     "stopId": "vitrasa:6640",
     "name": {
       "original": "Rúa do Porriño (fronte Instituto)"
@@ -12646,8 +12693,7 @@
       "24",
       "28",
       "N1",
-      "N4",
-      "-"
+      "N4"
     ]
   },
   {
@@ -14433,8 +14479,7 @@
       "9B",
       "15C",
       "N4",
-      "H1",
-      "-"
+      "H1"
     ]
   },
   {
@@ -14451,8 +14496,7 @@
       "9B",
       "15C",
       "N4",
-      "H1",
-      "-"
+      "H1"
     ]
   },
   {
@@ -14470,8 +14514,7 @@
       "9B",
       "15C",
       "N4",
-      "H1",
-      "-"
+      "H1"
     ]
   },
   {
@@ -14489,8 +14532,7 @@
       "9B",
       "15C",
       "N4",
-      "H1",
-      "-"
+      "H1"
     ]
   },
   {
@@ -14731,8 +14773,7 @@
       "27",
       "28",
       "N1",
-      "N4",
-      "-"
+      "N4"
     ]
   },
   {
@@ -15004,8 +15045,7 @@
       "24",
       "28",
       "N1",
-      "N4",
-      "-"
+      "N4"
     ]
   },
   {
@@ -15027,8 +15067,7 @@
       "24",
       "28",
       "N1",
-      "N4",
-      "-"
+      "N4"
     ]
   },
   {
