@@ -17,7 +17,7 @@ public class SantiagoRealtimeEstimatesProvider
 
         var request = new HttpRequestMessage(HttpMethod.Get, url);
         request.Headers.Add("Accept", "application/json");
-        request.Headers.Add("User-Agent", "Mozilla/5.0 (compatible; EnMarcha/0.1; https://enmarcha.app)");
+        request.Headers.Add("User-Agent", "Mozilla/5.0 (compatible; EnMarcha; https://enmarcha.app)");
 
         var response = await _http.GetAsync(url);
         var maisbusResponse = await response.Content.ReadFromJsonAsync<MaisbusResponse>();

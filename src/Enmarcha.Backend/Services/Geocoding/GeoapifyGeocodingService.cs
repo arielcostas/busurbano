@@ -26,7 +26,7 @@ public class GeoapifyGeocodingService : IGeocodingService
         // Geoapify requires a User-Agent
         if (!_httpClient.DefaultRequestHeaders.Contains("User-Agent"))
         {
-            _httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Compatible; Enmarcha/0.1; https://enmarcha.app; contacto@enmarcha.app)");
+            _httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Compatible; EnMarcha; https://enmarcha.app; contacto@enmarcha.app)");
         }
     }
 

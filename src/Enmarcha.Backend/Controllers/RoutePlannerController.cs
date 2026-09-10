@@ -110,7 +110,7 @@ public partial class RoutePlannerController : ControllerBase
     {
         var stops = await GetCachedStopsAsync();
 
-        // Normalize query for better matching: strip diacritics and punctuation
+        // Normalise query for better matching: strip diacritics and punctuation
         var normalizedQuery = _feedService.NormalizeRouteNameForMatching(query);
 
         // 1. Exact or prefix matches by stop code

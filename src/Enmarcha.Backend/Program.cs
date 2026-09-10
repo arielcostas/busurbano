@@ -243,7 +243,7 @@ builder.Services.AddScoped<IArrivalsProcessor, ColourProcessor>();
 
 builder.Services.AddScoped<ArrivalsPipeline>();
 
-builder.Services.AddHttpClient<IGeocodingService, GeoapifyGeocodingService>();
+builder.Services.AddHttpClient<IGeocodingService, MaptilerGeocodingService>();
 builder.Services.AddHttpClient<OtpService>();
 builder.Services.AddHttpClient<BackofficeSelectorService>();
 builder.Services.AddHttpClient<Enmarcha.Sources.TranviasCoruna.CorunaRealtimeEstimatesProvider>();

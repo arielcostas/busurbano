@@ -3,9 +3,10 @@ namespace Enmarcha.Backend.Configuration;
 public class AppConfiguration
 {
     public required string OpenTripPlannerBaseUrl { get; set; }
-    public required string GeoapifyApiKey { get; set; }
     public string NominatimBaseUrl { get; set; } = "https://nominatim.openstreetmap.org";
-    public string[] OtpFeeds { get; set; } = [];
+    public required string GeoapifyApiKey { get; set; }
+    public required string MaptilerApiKey { get; set; }
+    public string[] OtpFeeds { get; set; } = []; // TODO: Replace this by a complete feed lookup
     public OpenTelemetryConfiguration? OpenTelemetry { get; set; }
     public VapidConfiguration? Vapid { get; set; }
 }
