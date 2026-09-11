@@ -44,6 +44,45 @@ public class OpenTripPlannerClient
         return await DoGraphqlHttpRequest<StopArrivalsResponse>(requestContent);
     }
 
+    public async Task<Dictionary<string, TripsGeometryResponse.TripDetails>> GetTripsGeometry(List<string> tripIds)
+    {
+        var idsList = tripIds.Distinct().ToList();
+        if (idsList.Count == 0)
+        {
+            return new Dictionary<string, TripsGeometryResponse.TripDetails>();
+        }
+
+        var requestContent = TripsGeometryContent.Query(new TripsGeometryContent.Args(idsList));
+
+        // Send the query using your existing GraphQL transport mechanism
+        TripsGeometryResponse response = await DoGraphqlHttpRequest<TripsGeometryResponse>(requestContent);
+
+        var result = new Dictionary<string, TripsGeometryResponse.TripDetails>();
+
+        if (response.DynamicTrips is null)
+        {
+            return result;
+        }
+
+        for (int i = 0; i < idsList.Count; i++)
+        {
+            var aliasKey = $"trip_{i}";
+            if (!response.DynamicTrips.TryGetValue(aliasKey, out JsonElement jsonElement) ||
+                jsonElement.ValueKind == JsonValueKind.Null)
+            {
+                continue;
+            }
+
+            var tripDetails = jsonElement.Deserialize<TripsGeometryResponse.TripDetails>();
+            if (tripDetails is not null)
+            {
+                result[idsList[i]] = tripDetails;
+            }
+        }
+
+        return result;
+    }
+
     /**
      * <exception cref="OpenTripPlannerConnectionException">If there's a problem connecting to the server</exception>
      */

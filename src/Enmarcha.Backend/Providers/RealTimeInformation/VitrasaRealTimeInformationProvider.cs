@@ -5,6 +5,7 @@ using Enmarcha.Backend.Dto;
 using Enmarcha.Backend.Services;
 using Enmarcha.Backend.Types;
 using Enmarcha.Backend.Types.Arrivals;
+using Enmarcha.Sources.OpenTripPlannerGql;
 using HeadsignInfo = Enmarcha.Backend.Dto.HeadsignInfo;
 using RouteInfo = Enmarcha.Backend.Dto.RouteInfo;
 using StopArrivalsResponse = Enmarcha.Sources.OpenTripPlannerGql.Queries.V2.StopArrivalsResponse;
@@ -15,11 +16,13 @@ public class VitrasaRealTimeInformationProvider : IRealTimeInformationProvider
 {
     private readonly HttpClient _httpClient;
     private readonly ShapeTraversalService _shapeService;
+    private readonly OpenTripPlannerClient _otp;
 
-    public VitrasaRealTimeInformationProvider(HttpClient httpClient, ShapeTraversalService shapeService)
+    public VitrasaRealTimeInformationProvider(HttpClient httpClient, ShapeTraversalService shapeService, OpenTripPlannerClient otp)
     {
         _httpClient = httpClient;
         _shapeService = shapeService;
+        _otp = otp;
     }
 
     public async Task<(List<StopEstimate> arrivals, IEnumerable<DataSource>? dataSources)> ApplyRealtimeInformation(
@@ -193,79 +196,176 @@ public class VitrasaRealTimeInformationProvider : IRealTimeInformationProvider
                 }
 
                 // Calculate position
-                if (stopLocation != null)
+                if (stopLocation != null && bestMatchArrival.RawOtpArrival is
+                        { Trip.Geometry.Points: not null } otpArrival)
                 {
-                    Position? currentPosition = null;
+                    var decodedPoints = ShapeDecoder.Decode(otpArrival.Trip.Geometry.Points)
+                        .Select(p => new Position { Latitude = p.Lat, Longitude = p.Lon })
+                        .ToList();
 
-                    if (bestMatchArrival.RawOtpArrival is { Trip.Geometry.Points: not null } otpArrival)
-                    {
-                        var decodedPoints = ShapeDecoder.Decode(otpArrival.Trip.Geometry.Points)
-                            .Select(p => new Position { Latitude = p.Lat, Longitude = p.Lon })
-                            .ToList();
+                    var shape = _shapeService.CreateShapeFromWgs84(decodedPoints);
 
-                        var shape = _shapeService.CreateShapeFromWgs84(decodedPoints);
+                    // Ensure meters is positive
+                    var meters = Math.Max(0, estimate.Meters);
+                    var result = _shapeService.GetBusPosition(shape, stopLocation, meters);
 
-                        // Ensure meters is positive
-                        var meters = Math.Max(0, estimate.Meters);
-                        var result = _shapeService.GetBusPosition(shape, stopLocation, meters);
+                    bestMatchArrival.CurrentPosition = result.BusPosition;
 
-                        currentPosition = result.BusPosition;
+                    // FIXME: Ñapa, the shape service should return something else
+                    bestMatchArrival.ShapeSizeExceeded = result.BusPosition == null && result.StopIndex != -1;
+                    bestMatchArrival.DistanceMetres = meters;
 
-                        // Populate Shape GeoJSON
-                        List<object> features =
-                        [
-                            new
-                            {
-                                type = "Feature",
-                                geometry = new
-                                {
-                                    type = "LineString",
-                                    coordinates = decodedPoints.Select(p => new[] { p.Longitude, p.Latitude })
-                                        .ToList()
-                                },
-                                properties = new { type = "route" }
-                            }
-                        ];
-
-                        // Add stops if available
-                        foreach (var stoptime in otpArrival.Trip.Stoptimes)
+                    // Populate Shape GeoJSON
+                    List<object> features =
+                    [
+                        new
                         {
-                            features.Add(new
+                            type = "Feature",
+                            geometry = new
                             {
-                                type = "Feature",
-                                geometry = new
-                                {
-                                    type = "Point",
-                                    coordinates = new[] { stoptime.Stop.Lon, stoptime.Stop.Lat }
-                                },
-                                properties = new
-                                {
-                                    type = "stop",
-                                    name = stoptime.Stop.Name
-                                }
-                            });
+                                type = "LineString",
+                                coordinates = decodedPoints.Select(p => new[] { p.Longitude, p.Latitude })
+                                    .ToList()
+                            },
+                            properties = new { type = "route" }
                         }
+                    ];
 
-                        bestMatchArrival.Shape = new
-                        {
-                            type = "FeatureCollection",
-                            features
-                        };
-                    }
-
-                    if (currentPosition != null)
+                    // Add stops if available
+                    foreach (var stoptime in otpArrival.Trip.Stoptimes)
                     {
-                        bestMatchArrival.CurrentPosition = currentPosition;
+                        features.Add(new
+                        {
+                            type = "Feature",
+                            geometry = new
+                            {
+                                type = "Point",
+                                coordinates = new[] { stoptime.Stop.Lon, stoptime.Stop.Lat }
+                            },
+                            properties = new
+                            {
+                                type = "stop",
+                                name = stoptime.Stop.Name
+                            }
+                        });
                     }
+
+                    bestMatchArrival.Shape = new
+                    {
+                        type = "FeatureCollection",
+                        features
+                    };
                 }
 
                 usedTripIds.Add(bestMatchArrival.TripId);
+            }
+
+            var previousTripIds = arrivals
+                .Where(a => a.ShapeSizeExceeded)
+                .Select(GetPreviousTripGtfsId)
+                .ToList();
+
+            var extraGeometries = await _otp.GetTripsGeometry(previousTripIds);
+
+            foreach (var trip in arrivals)
+            {
+                if (!trip.ShapeSizeExceeded)
+                {
+                    continue;
+                }
+
+                var prevId = GetPreviousTripGtfsId(trip);
+                var previousGeom = extraGeometries[prevId];
+                var decodedPointsPrevious = ShapeDecoder.Decode(previousGeom.Geometry?.Points)
+                    .Select(p => new Position { Latitude = p.Lat, Longitude = p.Lon })
+                    .ToList();
+                var decodedPointsCurrent = ShapeDecoder.Decode(trip.RawOtpArrival!.Trip.Geometry!.Points)
+                    .Select(p => new Position { Latitude = p.Lat, Longitude = p.Lon })
+                    .ToList();
+
+                // Ensure meters is positive
+                var concatenatedShape = _shapeService.CreateShapeFromWgs84([.. decodedPointsPrevious, .. decodedPointsCurrent]);
+                var meters = Math.Max(0, trip.DistanceMetres);
+                var result = _shapeService.GetBusPosition(concatenatedShape, stopLocation!, meters);
+
+                trip.CurrentPosition = result.BusPosition;
+
+                // Generate the shape
+                List<Position> slicedPreviousPoints;
+                if (result.BusPosition != null)
+                {
+                    slicedPreviousPoints = [new Position { Latitude = result.BusPosition.Latitude, Longitude = result.BusPosition.Longitude }];
+
+                    // Retain remaining points from the previous trip after bus position index
+                    if (result.StopIndex >= 0 && result.StopIndex < decodedPointsPrevious.Count)
+                    {
+                        slicedPreviousPoints.AddRange(decodedPointsPrevious.Skip(result.StopIndex + 1));
+                    }
+                }
+                else
+                {
+                    slicedPreviousPoints = decodedPointsPrevious;
+                }
+
+                List<object> features = [];
+
+                if (slicedPreviousPoints.Count > 1)
+                {
+                    features.Add(new
+                    {
+                        type = "Feature",
+                        geometry = new
+                        {
+                            type = "LineString",
+                            coordinates = slicedPreviousPoints.Select(p => new[] { p.Longitude, p.Latitude }).ToList()
+                        },
+                        properties = new { type = "previousRoute" }
+                    });
+                }
+
+                // Add current trip route
+                features.Add(new
+                {
+                    type = "Feature",
+                    geometry = new
+                    {
+                        type = "LineString",
+                        coordinates = decodedPointsCurrent.Select(p => new[] { p.Longitude, p.Latitude }).ToList()
+                    },
+                    properties = new { type = "route" }
+                });
+
+                // Add current trip stops
+                foreach (var stoptime in trip.RawOtpArrival.Trip.Stoptimes)
+                {
+                    features.Add(new
+                    {
+                        type = "Feature",
+                        geometry = new
+                        {
+                            type = "Point",
+                            coordinates = new[] { stoptime.Stop.Lon, stoptime.Stop.Lat }
+                        },
+                        properties = new
+                        {
+                            type = "stop",
+                            name = stoptime.Stop.Name
+                        }
+                    });
+                }
+
+                trip.Shape = new
+                {
+                    type = "FeatureCollection",
+                    features
+                };
             }
 
             arrivals.AddRange(newArrivals);
         }
         catch (Exception ex)
         {
+            Console.WriteLine(ex);
             // FIXME: Exception handling
         }
 
@@ -284,6 +384,14 @@ public class VitrasaRealTimeInformationProvider : IRealTimeInformationProvider
     private static bool IsRouteMatch(string a, string b)
     {
         return a == b || a.Contains(b) || b.Contains(a);
+    }
+
+    private string GetPreviousTripGtfsId(StopEstimate arrival)
+    {
+        var parts = arrival.TripId.Split("_", 3);
+        var tripNumber = int.Parse(parts[2]) - 1;
+
+        return $"{parts[0]}_{parts[1]}_{tripNumber}";
     }
 }
 

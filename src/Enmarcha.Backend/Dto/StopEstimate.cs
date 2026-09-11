@@ -46,6 +46,8 @@ public class StopEstimate
     [JsonIgnore] public StopArrivalsResponse.Arrival? RawOtpArrival { get; set; }
     [JsonIgnore] public bool Delete { get; set; }
     [JsonIgnore] public bool RealTimeOnly { get; set; } = false;
+    [JsonIgnore] public bool ShapeSizeExceeded = false;
+    [JsonIgnore] public int DistanceMetres { get; set; }
 }
 
 public enum VehicleOperation
