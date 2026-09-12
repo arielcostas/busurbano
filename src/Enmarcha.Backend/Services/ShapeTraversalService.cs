@@ -72,31 +72,57 @@ public class ShapeTraversalService
     /// <param name="stopLocation">The stop location (in EPSG:25829 meters)</param>
     /// <param name="distanceMeters">Distance in meters from the stop to traverse backwards</param>
     /// <returns>The lat/lng position of the bus and the stop index on the shape</returns>
-    public (Position? BusPosition, int StopIndex) GetBusPosition(Shape shape, Epsg25829 stopLocation, int distanceMeters)
+    public (Position? BusPosition, int StopIndex, int BusIndex) GetBusPosition(Shape shape, Epsg25829 stopLocation, int distanceMeters, Shape? previousShape = null)
     {
         if (shape.Points.Count == 0 || distanceMeters < 0)
         {
-            return (null, -1);
+            return (null, -1, -1);
         }
 
-        // Find the closest point on the shape to the stop
-        int closestPointIndex = FindClosestPointIndex(shape.Points, stopLocation);
+        // Find the closest point on the shape to the stop (current trip)
+        int closestPointIndexInCurrent = FindClosestPointIndex(shape.Points, stopLocation);
 
         // Calculate the total distance from the start of the shape to the stop
-        double totalDistanceToStop = CalculateTotalDistance(shape.Points.ToArray(), closestPointIndex);
+        double distanceToStopInCurrent = CalculateTotalDistance(shape.Points.ToArray(), closestPointIndexInCurrent);
 
-        // If the reported distance exceeds the total distance to the stop, the bus is likely
-        // on a previous trip whose shape we don't have. Don't provide position information.
-        if (distanceMeters > totalDistanceToStop)
+        Shape effectiveShape = shape;
+        int startIndex = closestPointIndexInCurrent;
+
+        // si la distancia supera lo que recorre en la forma actual Y tenemos previousShape, las unimos
+        if (distanceMeters > distanceToStopInCurrent)
         {
-            _logger.LogDebug("Distance {Distance}m exceeds total shape distance to stop ({Total}m) - bus likely on previous trip", distanceMeters, totalDistanceToStop);
-            return (null, closestPointIndex);
+            if (previousShape != null && previousShape.Points.Count > 0)
+            {
+                // Creamos una forma combinada
+                var combinedPoints = new List<Epsg25829>(previousShape.Points.Count + shape.Points.Count);
+                combinedPoints.AddRange(previousShape.Points);
+                combinedPoints.AddRange(shape.Points);
+
+                effectiveShape = new Shape { Points = combinedPoints };
+
+                // El índice REAL en la lista combinada es la longitud de la anterior + el índice local
+                startIndex = previousShape.Points.Count + closestPointIndexInCurrent;
+
+                // Verificamos si la distancia total combinada también se excede
+                double totalCombinedDistance = CalculateTotalDistance(effectiveShape.Points.ToArray(), startIndex);
+                if (distanceMeters > totalCombinedDistance)
+                {
+                    _logger.LogDebug("Distance {Distance}m exceeds combined shape distance to stop ({Total}m)", distanceMeters, totalCombinedDistance);
+                    return (null, closestPointIndexInCurrent, -1);
+                }
+            }
+            else
+            {
+                _logger.LogDebug("Distance {Distance}m exceeds current shape distance ({Total}m) and no previousShape provided", distanceMeters, distanceToStopInCurrent);
+                return (null, closestPointIndexInCurrent, -1);
+            }
         }
 
         // Traverse backwards from the closest point to find the position at the given distance
-        var (busPoint, forwardIndex) = TraverseBackwards(shape.Points.ToArray(), closestPointIndex, distanceMeters);
+        var (busPoint, forwardIndex) = TraverseBackwards(effectiveShape.Points.ToArray(), startIndex, distanceMeters);
 
-        var forwardPoint = shape.Points[forwardIndex];
+        var forwardPoint = effectiveShape.Points[forwardIndex];
+        int busIndex = forwardIndex - 1;
 
         // Compute orientation in EPSG:25829 (meters): 0°=North, 90°=East (azimuth)
         var dx = forwardPoint.X - busPoint.X; // Easting difference
@@ -108,7 +134,8 @@ public class ShapeTraversalService
         var pos = TransformToLatLng(busPoint);
         pos.Bearing = (int)Math.Round(bearing);
         pos.Distance = distanceMeters;
-        return (pos, closestPointIndex);
+
+        return (pos, closestPointIndexInCurrent, busIndex);
     }
 
     /// <summary>

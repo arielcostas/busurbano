@@ -16,12 +16,15 @@ public class VitrasaRealTimeInformationProvider : IRealTimeInformationProvider
     private readonly HttpClient _httpClient;
     private readonly ShapeTraversalService _shapeService;
     private readonly OpenTripPlannerClient _otp;
+    private readonly ILogger<VitrasaRealTimeInformationProvider> _logger;
 
-    public VitrasaRealTimeInformationProvider(HttpClient httpClient, ShapeTraversalService shapeService, OpenTripPlannerClient otp)
+    public VitrasaRealTimeInformationProvider(HttpClient httpClient, ShapeTraversalService shapeService,
+        OpenTripPlannerClient otp, ILogger<VitrasaRealTimeInformationProvider> logger)
     {
         _httpClient = httpClient;
         _shapeService = shapeService;
         _otp = otp;
+        _logger = logger;
     }
 
     public async Task<(List<StopEstimate> arrivals, IEnumerable<DataSource>? dataSources)> ApplyRealtimeInformation(
@@ -218,106 +221,111 @@ public class VitrasaRealTimeInformationProvider : IRealTimeInformationProvider
                 usedTripIds.Add(bestMatchArrival.TripId);
             }
 
-            var previousTripIds = arrivals
+            var shapeExceededPreviousTripIds = arrivals
                 .Where(a => a.ShapeSizeExceeded)
                 .Select(GetPreviousTripGtfsId)
                 .ToList();
 
-            var extraGeometries = await _otp.GetTripsGeometry(previousTripIds);
-
-            foreach (var trip in arrivals)
+            if (shapeExceededPreviousTripIds.Any())
             {
-                if (!trip.ShapeSizeExceeded)
+                var extraGeometries = await _otp.GetTripsGeometry(shapeExceededPreviousTripIds);
+
+                foreach (var trip in arrivals)
                 {
-                    continue;
-                }
-
-                var prevId = GetPreviousTripGtfsId(trip);
-                var previousGeom = extraGeometries[prevId];
-                var decodedPointsPrevious = ShapeDecoder.Decode(previousGeom.Geometry?.Points)
-                    .Select(p => new Position { Latitude = p.Lat, Longitude = p.Lon })
-                    .ToList();
-                var decodedPointsCurrent = ShapeDecoder.Decode(trip.RawOtpArrival!.Trip.Geometry!.Points)
-                    .Select(p => new Position { Latitude = p.Lat, Longitude = p.Lon })
-                    .ToList();
-
-                // Ensure meters is positive
-                var concatenatedShape = _shapeService.CreateShapeFromWgs84([.. decodedPointsPrevious, .. decodedPointsCurrent]);
-                var meters = Math.Max(0, trip.DistanceMetres);
-                var result = _shapeService.GetBusPosition(concatenatedShape, stopLocation!, meters);
-
-                trip.CurrentPosition = result.BusPosition;
-
-                // Generate the shape
-                List<Position> slicedPreviousPoints;
-                if (result.BusPosition != null)
-                {
-                    slicedPreviousPoints = [new Position { Latitude = result.BusPosition.Latitude, Longitude = result.BusPosition.Longitude }];
-
-                    // Retain remaining points from the previous trip after bus position index
-                    if (result.StopIndex >= 0 && result.StopIndex < decodedPointsPrevious.Count)
+                    if (!trip.ShapeSizeExceeded)
                     {
-                        slicedPreviousPoints.AddRange(decodedPointsPrevious.Skip(result.StopIndex + 1));
+                        continue;
                     }
-                }
-                else
-                {
-                    slicedPreviousPoints = decodedPointsPrevious;
-                }
 
-                List<object> features = [];
+                    var prevId = GetPreviousTripGtfsId(trip);
+                    var previousGeom = extraGeometries[prevId];
+                    var decodedPointsPrevious = ShapeDecoder.Decode(previousGeom.Geometry?.Points)
+                        .Select(p => new Position { Latitude = p.Lat, Longitude = p.Lon })
+                        .ToList();
+                    var decodedPointsCurrent = ShapeDecoder.Decode(trip.RawOtpArrival!.Trip.Geometry!.Points)
+                        .Select(p => new Position { Latitude = p.Lat, Longitude = p.Lon })
+                        .ToList();
 
-                if (slicedPreviousPoints.Count > 1)
-                {
+                    // Ensure meters is positive
+                    var currentShape =
+                        _shapeService.CreateShapeFromWgs84(decodedPointsCurrent);
+                    var previousShape =
+                        _shapeService.CreateShapeFromWgs84(decodedPointsPrevious);
+                    var meters = Math.Max(0, trip.DistanceMetres);
+                    var result = _shapeService.GetBusPosition(currentShape, stopLocation!, meters, previousShape);
+
+                    trip.CurrentPosition = result.BusPosition;
+
+                    // Generate the shape
+                    List<Position> slicedPreviousPoints = [];
+
+                    int previousCount = decodedPointsPrevious.Count;
+
+                    if (result.BusPosition != null)
+                    {
+                        int busIndex = result.BusIndex;
+
+                        if (busIndex < previousCount)
+                        {
+                            // Previous trip to end
+                            slicedPreviousPoints = decodedPointsPrevious.Skip(busIndex).ToList();
+                        }
+                    }
+
+                    List<object> features = [];
+
+                    if (slicedPreviousPoints.Count > 1)
+                    {
+                        features.Add(new
+                        {
+                            type = "Feature",
+                            geometry = new
+                            {
+                                type = "LineString",
+                                coordinates = slicedPreviousPoints.Select(p => new[] { p.Longitude, p.Latitude }).ToList()
+                            },
+                            properties = new { type = "previousRoute" }
+                        });
+                    }
+
+                    // Add current trip route
+                    // TODO: This should be appended to the existing shape generated in the StopsController
                     features.Add(new
                     {
                         type = "Feature",
                         geometry = new
                         {
                             type = "LineString",
-                            coordinates = slicedPreviousPoints.Select(p => new[] { p.Longitude, p.Latitude }).ToList()
+                            coordinates = decodedPointsCurrent.Select(p => new[] { p.Longitude, p.Latitude }).ToList()
                         },
-                        properties = new { type = "previousRoute" }
+                        properties = new { type = "route" }
                     });
-                }
 
-                // Add current trip route
-                // TODO: This should be appended to the existing shape generated in the StopsController
-                features.Add(new
-                {
-                    type = "Feature",
-                    geometry = new
+                    // Add current trip stops
+                    foreach (var stoptime in trip.RawOtpArrival.Trip.Stoptimes)
                     {
-                        type = "LineString",
-                        coordinates = decodedPointsCurrent.Select(p => new[] { p.Longitude, p.Latitude }).ToList()
-                    },
-                    properties = new { type = "route" }
-                });
+                        features.Add(new
+                        {
+                            type = "Feature",
+                            geometry = new
+                            {
+                                type = "Point",
+                                coordinates = new[] { stoptime.Stop.Lon, stoptime.Stop.Lat }
+                            },
+                            properties = new
+                            {
+                                type = "stop",
+                                name = stoptime.Stop.Name
+                            }
+                        });
+                    }
 
-                // Add current trip stops
-                foreach (var stoptime in trip.RawOtpArrival.Trip.Stoptimes)
-                {
-                    features.Add(new
+                    trip.Shape = new
                     {
-                        type = "Feature",
-                        geometry = new
-                        {
-                            type = "Point",
-                            coordinates = new[] { stoptime.Stop.Lon, stoptime.Stop.Lat }
-                        },
-                        properties = new
-                        {
-                            type = "stop",
-                            name = stoptime.Stop.Name
-                        }
-                    });
+                        type = "FeatureCollection",
+                        features
+                    };
                 }
-
-                trip.Shape = new
-                {
-                    type = "FeatureCollection",
-                    features
-                };
             }
 
             arrivals.AddRange(newArrivals);
