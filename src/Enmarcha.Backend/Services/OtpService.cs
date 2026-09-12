@@ -48,7 +48,7 @@ public class OtpService
         return new RouteDto
         {
             Id = route.GtfsId,
-            ShortName = _feedService.NormalizeRouteShortName(feedId, route.ShortName ?? string.Empty),
+            ShortName = FeedService.NormalizeRouteShortName(feedId, route.ShortName ?? string.Empty),
             LongName = route.LongName,
             Color = color,
             TextColor = textColor,
@@ -77,7 +77,7 @@ public class OtpService
 
         return new RouteDetailsDto
         {
-            ShortName = _feedService.NormalizeRouteShortName(feedId, route.ShortName ?? string.Empty),
+            ShortName = FeedService.NormalizeRouteShortName(feedId, route.ShortName ?? string.Empty),
             LongName = route.LongName,
             Color = color,
             TextColor = textColor,
@@ -301,7 +301,7 @@ public class OtpService
     private Leg MapLeg(PlanConnectionResponse.Leg leg)
     {
         var feedId = leg.From.Stop?.GtfsId?.Split(':')[0] ?? "unknown";
-        var shortName = _feedService.NormalizeRouteShortName(feedId, leg.Route?.ShortName ?? string.Empty);
+        var shortName = FeedService.NormalizeRouteShortName(feedId, leg.Route?.ShortName ?? string.Empty);
         var headsign = leg.Headsign;
 
         var headsignTrimmed = headsign?.Trim();

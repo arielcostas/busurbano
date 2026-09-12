@@ -1,11 +1,7 @@
 using System.Text.RegularExpressions;
 using Enmarcha.Backend.Dto;
-using Enmarcha.Backend.Services;
-using Enmarcha.Backend.Services.Processors;
 using Enmarcha.Backend.Types;
-using Enmarcha.Backend.Types.Arrivals;
 using Enmarcha.Sources.Renfe;
-using Arrival = Enmarcha.Backend.Types.Arrivals.Arrival;
 using StopArrivalsResponse = Enmarcha.Sources.OpenTripPlannerGql.Queries.V2.StopArrivalsResponse;
 
 namespace Enmarcha.Backend.Providers.RealTimeInformation;

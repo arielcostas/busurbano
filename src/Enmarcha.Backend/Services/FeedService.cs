@@ -63,7 +63,7 @@ public partial class FeedService
         return code;
     }
 
-    public string NormalizeRouteShortName(string feedId, string shortName, bool stripOperator = false)
+    public static string NormalizeRouteShortName(string feedId, string shortName, bool stripOperator = false)
     {
         if (feedId != "xunta")
         {

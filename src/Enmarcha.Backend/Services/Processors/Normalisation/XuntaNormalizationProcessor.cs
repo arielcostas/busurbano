@@ -18,7 +18,7 @@ public class XuntaNormalizationProcessor : IArrivalsProcessor
 
         foreach (var arrival in context.Arrivals)
         {
-            arrival.Route.ShortName = _feedService.NormalizeRouteShortName("xunta", arrival.Route.ShortName, true);
+            arrival.Route.ShortName = FeedService.NormalizeRouteShortName("xunta", arrival.Route.ShortName, true);
         }
 
         return Task.CompletedTask;

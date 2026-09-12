@@ -1,6 +1,5 @@
 using System.Text.Json;
 using Enmarcha.Backend.Providers.StopUsage;
-using Enmarcha.Backend.Types.Arrivals;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Enmarcha.Backend.Services.Processors;

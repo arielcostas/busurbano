@@ -78,7 +78,7 @@ public partial class ArrivalsController : ControllerBase
                         {
                             GtfsId = r.GtfsId,
                             OriginalShortName = r.ShortName ?? "",
-                            ShortName = _feedService.NormalizeRouteShortName(feedId, r.ShortName ?? ""),
+                            ShortName = FeedService.NormalizeRouteShortName(feedId, r.ShortName ?? ""),
                             Colour = r.Color ?? fallbackColor,
                             TextColour = r.TextColor is null or "000000"
                                 ? ContrastHelper.GetBestTextColour(r.Color ?? fallbackColor)
@@ -346,7 +346,7 @@ public partial class ArrivalsController : ControllerBase
                                     {
                                         GtfsId = r.GtfsId,
                                         OriginalShortName = r.ShortName ?? "",
-                                        ShortName = _feedService.NormalizeRouteShortName(feedId, r.ShortName ?? ""),
+                                        ShortName = FeedService.NormalizeRouteShortName(feedId, r.ShortName ?? ""),
                                         Colour = r.Color ?? fallbackColor,
                                         TextColour = r.TextColor is null or "000000"
                                             ? ContrastHelper.GetBestTextColour(r.Color ?? fallbackColor)
@@ -400,7 +400,7 @@ public partial class ArrivalsController : ControllerBase
                             {
                                 GtfsId = r.GtfsId,
                                 OriginalShortName = r.ShortName ?? "",
-                                ShortName = _feedService.NormalizeRouteShortName(feedId, r.ShortName ?? ""),
+                                ShortName = FeedService.NormalizeRouteShortName(feedId, r.ShortName ?? ""),
                                 Colour = r.Color ?? fallbackColor,
                                 TextColour = r.TextColor is null or "000000"
                                     ? ContrastHelper.GetBestTextColour(r.Color ?? fallbackColor)
@@ -495,7 +495,7 @@ public partial class ArrivalsController : ControllerBase
                 var textColor = p.Pattern.Route.TextColor is null or "000000"
                     ? ContrastHelper.GetBestTextColour(color)
                     : p.Pattern.Route.TextColor;
-                var shortName = _feedService.NormalizeRouteShortName(feedId, p.Pattern.Route.ShortName ?? "");
+                var shortName = FeedService.NormalizeRouteShortName(feedId, p.Pattern.Route.ShortName ?? "");
 
                 return p.Stoptimes.Select(s => new ScheduledTripDto
                 {

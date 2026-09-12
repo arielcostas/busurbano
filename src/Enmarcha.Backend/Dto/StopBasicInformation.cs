@@ -1,7 +1,4 @@
-﻿using Enmarcha.Sources.OpenTripPlannerGql.Queries;
-using Enmarcha.Sources.OpenTripPlannerGql.Queries.V2;
-
-namespace Enmarcha.Backend.Dto;
+﻿namespace Enmarcha.Backend.Dto;
 
 public class StopBasicInformation
 {

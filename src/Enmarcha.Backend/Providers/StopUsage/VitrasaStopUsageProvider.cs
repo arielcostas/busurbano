@@ -1,6 +1,5 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
-using Enmarcha.Backend.Types.Arrivals;
 
 namespace Enmarcha.Backend.Providers.StopUsage;
 

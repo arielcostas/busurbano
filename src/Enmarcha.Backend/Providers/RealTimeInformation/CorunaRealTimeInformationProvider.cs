@@ -1,8 +1,6 @@
 using Enmarcha.Backend.Dto;
-using Enmarcha.Backend.Helpers;
 using Enmarcha.Backend.Services;
 using Enmarcha.Backend.Types;
-using Enmarcha.Backend.Types.Arrivals;
 using HeadsignInfo = Enmarcha.Backend.Dto.HeadsignInfo;
 using RouteInfo = Enmarcha.Backend.Dto.RouteInfo;
 using StopArrivalsResponse = Enmarcha.Sources.OpenTripPlannerGql.Queries.V2.StopArrivalsResponse;

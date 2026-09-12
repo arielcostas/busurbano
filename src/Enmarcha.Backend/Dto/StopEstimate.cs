@@ -1,6 +1,5 @@
 ﻿using System.Text.Json.Serialization;
 using Enmarcha.Backend.Types;
-using Enmarcha.Sources.OpenTripPlannerGql.Queries;
 using Enmarcha.Sources.OpenTripPlannerGql.Queries.V2;
 
 namespace Enmarcha.Backend.Dto;
@@ -90,10 +89,9 @@ public class RouteInfo
 
 public class HeadsignInfo
 {
-    [JsonPropertyName("origin")] public string? Origin { get; set; }
     [JsonPropertyName("destination")] public required string Destination { get; set; }
-    [JsonPropertyName("zonesBefore")] public string? ZonesBefore { get; set; }
-    [JsonPropertyName("zonesAfter")] public string? ZonesAfter { get; set; }
+    [JsonPropertyName("zonesBefore")] public List<string> ZonesBefore { get; set; } = [];
+    [JsonPropertyName("zonesAfter")] public List<string> ZonesAfter { get; set; } = [];
 }
 
 public class EstimateDetails

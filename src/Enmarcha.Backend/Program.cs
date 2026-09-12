@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Enmarcha.Backend.Configuration;
 using Enmarcha.Backend.Data;
 using Enmarcha.Backend.Providers.FilterAndSort;
+using Enmarcha.Backend.Providers.Normalisation;
 using Enmarcha.Backend.Providers.RealTimeInformation;
 using Enmarcha.Backend.Providers.StopUsage;
+using Enmarcha.Backend.Providers.ZoneNames;
 using Enmarcha.Backend.Services;
 using Enmarcha.Backend.Services.Fares;
 using Enmarcha.Backend.Services.Geocoding;
@@ -253,6 +255,7 @@ builder.Services.AddHttpClient<Enmarcha.Sources.Renfe.RenfeRealtimeEstimatesProv
 builder.Services.AddHttpClient<Enmarcha.Sources.Xunta.XuntaRealtimeEstimatesProvider>();
 builder.Services.AddHttpClient<Costasdev.VigoTransitApi.VigoTransitApiClient>();
 
+// V2 Endpoints
 builder.Services.AddKeyedScoped<IStopUsageProvider, VitrasaStopUsageProvider>("vitrasa");
 builder.Services.AddScoped<IStopUsageProvider, NullStopUsageProvider>();
 
@@ -261,6 +264,15 @@ builder.Services.AddKeyedScoped<IRealTimeInformationProvider, RenfeRealTimeInfor
 builder.Services.AddKeyedScoped<IRealTimeInformationProvider, TussaRealTimeInformationProvider>("tussa");
 builder.Services.AddKeyedScoped<IRealTimeInformationProvider, VitrasaRealTimeInformationProvider>("vitrasa");
 builder.Services.AddKeyedScoped<IRealTimeInformationProvider, XuntaRealTimeInformationProvider>("xunta");
+
+builder.Services.AddKeyedScoped<INormalisationProvider, CorunaNormalisationProvider>("coruna");
+builder.Services.AddKeyedScoped<INormalisationProvider, RenfeNormalisationProvider>("coruna");
+builder.Services.AddKeyedScoped<INormalisationProvider, VitrasaNormalisationProvider>("vitrasa");
+builder.Services.AddKeyedScoped<INormalisationProvider, XuntaNormalisationProvider>("xunta");
+
+builder.Services.AddKeyedScoped<IZoneNamesProvider, RenfeZoneNamesProvider>("renfe");
+builder.Services.AddKeyedScoped<IZoneNamesProvider, XuntaZoneNamesProvider>("xunta");
+builder.Services.AddScoped<IZoneNamesProvider, GenericZoneNamesProvider>();
 
 builder.Services.AddKeyedScoped<IFilterAndSortingProvider, XuntaFilterAndSortingProvider>("xunta");
 builder.Services.AddScoped<IFilterAndSortingProvider, GenericFilterAndSortingProvider>();

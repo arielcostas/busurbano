@@ -1,5 +1,3 @@
-using Enmarcha.Sources.OpenTripPlannerGql.Queries;
-
 namespace Enmarcha.Backend.Services.Processors;
 
 public class ShapeProcessor : IArrivalsProcessor
@@ -21,9 +19,15 @@ public class ShapeProcessor : IArrivalsProcessor
         foreach (var arrival in context.Arrivals)
         {
             // If shape is already populated (e.g. by VitrasaRealTimeProcessor), skip
-            if (arrival.Shape != null) continue;
+            if (arrival.Shape != null)
+            {
+                continue;
+            }
 
-            if (arrival.RawOtpArrival is not ArrivalsAtStopResponse.Arrival otpArrival) continue;
+            if (arrival.RawOtpArrival is not { } otpArrival)
+            {
+                continue;
+            }
 
             var encodedPoints = otpArrival.Trip.Geometry?.Points;
             if (string.IsNullOrEmpty(encodedPoints))

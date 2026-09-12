@@ -4,7 +4,6 @@ using System.Text.RegularExpressions;
 using Enmarcha.Backend.Dto;
 using Enmarcha.Backend.Services;
 using Enmarcha.Backend.Types;
-using Enmarcha.Backend.Types.Arrivals;
 using Enmarcha.Sources.OpenTripPlannerGql;
 using HeadsignInfo = Enmarcha.Backend.Dto.HeadsignInfo;
 using RouteInfo = Enmarcha.Backend.Dto.RouteInfo;
@@ -214,47 +213,6 @@ public class VitrasaRealTimeInformationProvider : IRealTimeInformationProvider
                     // FIXME: Ñapa, the shape service should return something else
                     bestMatchArrival.ShapeSizeExceeded = result.BusPosition == null && result.StopIndex != -1;
                     bestMatchArrival.DistanceMetres = meters;
-
-                    // Populate Shape GeoJSON
-                    List<object> features =
-                    [
-                        new
-                        {
-                            type = "Feature",
-                            geometry = new
-                            {
-                                type = "LineString",
-                                coordinates = decodedPoints.Select(p => new[] { p.Longitude, p.Latitude })
-                                    .ToList()
-                            },
-                            properties = new { type = "route" }
-                        }
-                    ];
-
-                    // Add stops if available
-                    foreach (var stoptime in otpArrival.Trip.Stoptimes)
-                    {
-                        features.Add(new
-                        {
-                            type = "Feature",
-                            geometry = new
-                            {
-                                type = "Point",
-                                coordinates = new[] { stoptime.Stop.Lon, stoptime.Stop.Lat }
-                            },
-                            properties = new
-                            {
-                                type = "stop",
-                                name = stoptime.Stop.Name
-                            }
-                        });
-                    }
-
-                    bestMatchArrival.Shape = new
-                    {
-                        type = "FeatureCollection",
-                        features
-                    };
                 }
 
                 usedTripIds.Add(bestMatchArrival.TripId);
@@ -324,6 +282,7 @@ public class VitrasaRealTimeInformationProvider : IRealTimeInformationProvider
                 }
 
                 // Add current trip route
+                // TODO: This should be appended to the existing shape generated in the StopsController
                 features.Add(new
                 {
                     type = "Feature",

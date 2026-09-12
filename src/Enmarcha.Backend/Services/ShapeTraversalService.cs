@@ -1,6 +1,4 @@
-using Enmarcha.Backend.Configuration;
 using Enmarcha.Backend.Types;
-using Microsoft.Extensions.Options;
 using ProjNet.CoordinateSystems;
 using ProjNet.CoordinateSystems.Transformations;
 

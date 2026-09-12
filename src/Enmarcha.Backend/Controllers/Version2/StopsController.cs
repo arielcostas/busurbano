@@ -1,11 +1,11 @@
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using Enmarcha.Backend.Dto;
 using Enmarcha.Backend.Helpers;
 using Enmarcha.Backend.Providers.FilterAndSort;
 using Enmarcha.Backend.Providers.Normalisation;
 using Enmarcha.Backend.Providers.RealTimeInformation;
 using Enmarcha.Backend.Providers.StopUsage;
+using Enmarcha.Backend.Providers.ZoneNames;
 using Enmarcha.Backend.Services;
 using Enmarcha.Backend.Types;
 using Enmarcha.Sources.OpenTripPlannerGql;
@@ -252,9 +252,20 @@ public class StopsController : ControllerBase
             }
         }
 
+        var zoneNamesProvider = GetZoneNamesProvider(feedId);
+        if (zoneNamesProvider is not null)
+        {
+            foreach (var estimate in estimates)
+            {
+                estimate.Headsign.ZonesBefore = zoneNamesProvider.GetPreviousZones(estimate);
+                estimate.Headsign.ZonesAfter = zoneNamesProvider.GetNextZones(estimate);
+            }
+        }
+
         var normalisationProvider = GetNormalisationProvider(feedId);
         if (normalisationProvider is not null)
         {
+            estimates = estimates.Select(normalisationProvider.NormaliseArrival).ToList();
         }
 
         var fsProvider = GetFilterAndSortingProvider(feedId);
@@ -278,17 +289,19 @@ public class StopsController : ControllerBase
             .Select(p => new Position { Latitude = p.Lat, Longitude = p.Lon })
             .ToList();
 
-        var features = new List<object>();
-        features.Add(new
+        var features = new List<object>
         {
-            type = "Feature",
-            geometry = new
+            new
             {
-                type = "LineString",
-                coordinates = decodedPoints.Select(p => new[] { p.Longitude, p.Latitude }).ToList()
-            },
-            properties = new { type = "route" }
-        });
+                type = "Feature",
+                geometry = new
+                {
+                    type = "LineString",
+                    coordinates = decodedPoints.Select(p => new[] { p.Longitude, p.Latitude }).ToList()
+                },
+                properties = new { type = "route" }
+            }
+        };
 
         // Add stops if available
         foreach (var stoptime in arrival.Trip.Stoptimes)
@@ -316,6 +329,7 @@ public class StopsController : ControllerBase
         };
     }
 
+    // TODO: Move this
     private static List<DataSource> GetStaticDataSources(string feedId)
     {
         return feedId switch
@@ -341,7 +355,7 @@ public class StopsController : ControllerBase
             [
                 new DataSource
                 {
-                    DatasetName = "Media, Larga Distancia y AVE",
+                    DatasetName = "GTFS Media, Larga Distancia y AVE",
                     Authors = ["Renfe Viajeros SME S.A."],
                     Source = "NAP Transportes",
                     Url = "https://nap.transportes.gob.es/Files/Detail/897"
@@ -474,6 +488,12 @@ public class StopsController : ControllerBase
         return _serviceProvider.GetKeyedService<IRealTimeInformationProvider>(feedId);
     }
 
+    private IZoneNamesProvider? GetZoneNamesProvider(string feedId)
+    {
+        return _serviceProvider.GetKeyedService<IZoneNamesProvider>(feedId) ??
+               _serviceProvider.GetRequiredService<IZoneNamesProvider>();
+    }
+
     private INormalisationProvider? GetNormalisationProvider(string feedId)
     {
         return _serviceProvider.GetKeyedService<INormalisationProvider>(feedId);
@@ -485,15 +505,15 @@ public class StopsController : ControllerBase
                _serviceProvider.GetRequiredService<IFilterAndSortingProvider>();
     }
 
-    // [HttpGet("{id}/timetable")]
-    // [ResponseCache(VaryByQueryKeys = [nameof(date)], Duration = 60 * 5)]
-    // public async Task<IActionResult> GetStopTimetable(
-    //     [FromRoute] string id,
-    //     [FromQuery] string date
-    // )
-    // {
-    //     return Ok();
-    // }
+    [HttpGet("{id}/timetable")]
+    [ResponseCache(VaryByQueryKeys = [nameof(date)], Duration = 60 * 5)]
+    public async Task<IActionResult> GetStopTimetable(
+        [FromRoute] string id,
+        [FromQuery] string date
+    )
+    {
+        return Ok();
+    }
 
     [HttpGet("{id}/usage")]
     public async Task<ActionResult<StopUsageResponse>> GetStopUsage(
