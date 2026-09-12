@@ -9,15 +9,15 @@ using Enmarcha.Sources.TranviasCoruna;
 
 namespace Enmarcha.Backend.Providers.RealTimeInformation;
 
-public class CorunaRealTimeInformationProvider : IRealTimeInformationProvider
+public class TranviasRealTimeInformationProvider : IRealTimeInformationProvider
 {
     private readonly CorunaRealtimeEstimatesProvider _realtime;
-    private readonly ILogger<CorunaRealTimeInformationProvider> _logger;
+    private readonly ILogger<TranviasRealTimeInformationProvider> _logger;
     private readonly ShapeTraversalService _shapeService;
 
-    public CorunaRealTimeInformationProvider(
+    public TranviasRealTimeInformationProvider(
         CorunaRealtimeEstimatesProvider realtime,
-        ILogger<CorunaRealTimeInformationProvider> logger,
+        ILogger<TranviasRealTimeInformationProvider> logger,
         ShapeTraversalService shapeService
     )
     {

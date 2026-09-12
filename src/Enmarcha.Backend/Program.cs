@@ -259,14 +259,14 @@ builder.Services.AddHttpClient<Costasdev.VigoTransitApi.VigoTransitApiClient>();
 builder.Services.AddKeyedScoped<IStopUsageProvider, VitrasaStopUsageProvider>("vitrasa");
 builder.Services.AddScoped<IStopUsageProvider, NullStopUsageProvider>();
 
-builder.Services.AddKeyedScoped<IRealTimeInformationProvider, CorunaRealTimeInformationProvider>("coruna");
+builder.Services.AddKeyedScoped<IRealTimeInformationProvider, TranviasRealTimeInformationProvider>("tranvias");
 builder.Services.AddKeyedScoped<IRealTimeInformationProvider, RenfeRealTimeInformationProvider>("renfe");
 builder.Services.AddKeyedScoped<IRealTimeInformationProvider, TussaRealTimeInformationProvider>("tussa");
 builder.Services.AddKeyedScoped<IRealTimeInformationProvider, VitrasaRealTimeInformationProvider>("vitrasa");
 builder.Services.AddKeyedScoped<IRealTimeInformationProvider, XuntaRealTimeInformationProvider>("xunta");
 
-builder.Services.AddKeyedScoped<INormalisationProvider, CorunaNormalisationProvider>("coruna");
-builder.Services.AddKeyedScoped<INormalisationProvider, RenfeNormalisationProvider>("coruna");
+builder.Services.AddKeyedScoped<INormalisationProvider, TranviasNormalisationProvider>("tranvias");
+builder.Services.AddKeyedScoped<INormalisationProvider, RenfeNormalisationProvider>("renfe");
 builder.Services.AddKeyedScoped<INormalisationProvider, VitrasaNormalisationProvider>("vitrasa");
 builder.Services.AddKeyedScoped<INormalisationProvider, XuntaNormalisationProvider>("xunta");
 

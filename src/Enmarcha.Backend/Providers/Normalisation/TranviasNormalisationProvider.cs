@@ -2,11 +2,11 @@
 
 namespace Enmarcha.Backend.Providers.Normalisation;
 
-public class CorunaNormalisationProvider : INormalisationProvider
+public class TranviasNormalisationProvider : INormalisationProvider
 {
     public StopEstimate NormaliseArrival(StopEstimate estimate)
     {
-        estimate.Circulation = GetTranviasCirculation(estimate.TripId, estimate.Circulation);
+        estimate.Circulation = GetTranviasCirculation(estimate.TripId.Split(':', 2)[1], estimate.Circulation); // TODO: Update the spliting logic
 
         return estimate;
     }
@@ -34,7 +34,7 @@ public class CorunaNormalisationProvider : INormalisationProvider
             DepartureTime = $"{padded[6..8]}:{padded[8..]}"
         };
         circulation.ShiftName = padded[..4].Trim();
-        circulation.TripName = $"{dayOfWeek} {padded[6..]}";
+        circulation.ShiftTrip = $"{dayOfWeek} {padded[6..]}";
         return circulation;
     }
 }
